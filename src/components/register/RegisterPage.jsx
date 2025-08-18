@@ -1,0 +1,165 @@
+import { useState } from "react";
+import Layout from "../layout/Layout";
+import FormField from "../common/FormField";
+import SocialButton from "../common/SocialButton";
+import ErrorMessage from "../common/ErrorMessage";
+
+export default function RegisterPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+  });
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Validation functions - using same method as LoginPage
+  const validateEmail = (email) =>
+    !email
+      ? "Email is required"
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? "Invalid email address"
+      : "";
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    // Validate on blur (when user moves out of the field)
+    if (name === "email") {
+      setValidationErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const emailError = validateEmail(formData.email);
+
+    if (emailError) {
+      setValidationErrors({
+        email: emailError,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      console.log("Registration success:", formData);
+    }, 1000);
+  };
+
+  // Check if form is valid for button state
+  const isFormValid = () => {
+    const emailError = validateEmail(formData.email);
+    return formData.email.trim() !== "" && !emailError;
+  };
+
+  const socialProviders = [
+    {
+      id: "google",
+      icon: "https://developers.google.com/identity/images/g-logo.png",
+      label: "Continue with Google",
+    },
+    { id: "facebook", icon: "/facebook.png", label: "Continue with Facebook" },
+    {
+      id: "apple",
+      icon: "/apple.png",
+      label: "Continue with Apple",
+    },
+  ];
+
+  return (
+    <Layout className="flex items-center justify-center px-3 max-w-xl mx-auto">
+      <div className="w-full max-w-md py-8">
+        {/* Header with Piggy Bank Icon */}
+        <div className="text-center mb-8">
+          <img
+            src="/logo.png"
+            alt="Budget Buddy Mascot"
+            className="mx-auto mb-4 w-14 h-14"
+          />
+          <h1 className="text-2xl font-bold text-gray-800 font-inter">
+            Create your free account
+          </h1>
+        </div>
+
+        <ErrorMessage message={error} />
+
+        {/* Registration Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <FormField
+            label="Your email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={validationErrors.email}
+            disabled={isLoading}
+            placeholder="e.g. username@kinety.com"
+          />
+
+          <button
+            type="submit"
+            disabled={isLoading || !isFormValid()}
+            className={`w-full py-3 rounded-2xl font-medium transition-colors ${
+              isLoading || !isFormValid()
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primary text-white hover:bg-secondary"
+            }`}
+          >
+            {isLoading ? "Creating account..." : "Continue"}
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <div className="flex-1 border-t border-gray-300"></div>
+          <span className="px-3 text-gray-500 text-sm">or</span>
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        {/* Social Registration Buttons */}
+        <div className="space-y-3 flex flex-col">
+          {socialProviders.map((provider) => (
+            <SocialButton
+              key={provider.id}
+              {...provider}
+              onClick={() => console.log("Register with", provider.id)}
+              disabled={isLoading}
+            />
+          ))}
+        </div>
+
+        {/* Terms and Conditions */}
+        <p className="mt-6 text-xs text-gray-500 text-center font-inter">
+          By opening an account, you agree to the{" "}
+          <a href="#" className="text-primary hover:underline">
+            Terms & Conditions
+          </a>
+        </p>
+
+        {/* Sign in link */}
+        <p className="mt-4 text-sm text-gray-600 text-center font-inter">
+          Have an account?{" "}
+          <a href="/login" className="text-primary hover:underline">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </Layout>
+  );
+}
