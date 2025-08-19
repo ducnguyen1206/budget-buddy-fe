@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import FormField from "../common/FormField";
 import SocialButton from "../common/SocialButton";
 import ErrorMessage from "../common/ErrorMessage";
+import { registerUser } from "../../services/authService";
+import { validateEmail, isFormValid } from "../../utils/validation";
+import { SOCIAL_PROVIDERS } from "../../constants/socialProviders";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -12,13 +17,7 @@ export default function RegisterPage() {
   });
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Validation functions - using same method as LoginPage
-  const validateEmail = (email) =>
-    !email
-      ? "Email is required"
-      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      ? "Invalid email address"
-      : "";
+  // Form state management
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,47 +38,32 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const emailError = validateEmail(formData.email);
 
     if (emailError) {
-      setValidationErrors({
-        email: emailError,
-      });
+      setValidationErrors({ email: emailError });
       return;
     }
 
     setIsLoading(true);
     setError("");
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log("Registration success:", formData);
-    }, 1000);
+    const result = await registerUser(formData.email);
+
+    if (result.success) {
+      navigate("/verify-email", { state: { email: formData.email } });
+    } else {
+      setError(result.error);
+    }
+
+    setIsLoading(false);
   };
 
-  // Check if form is valid for button state
-  const isFormValid = () => {
-    const emailError = validateEmail(formData.email);
-    return formData.email.trim() !== "" && !emailError;
-  };
-
-  const socialProviders = [
-    {
-      id: "google",
-      icon: "https://developers.google.com/identity/images/g-logo.png",
-      label: "Continue with Google",
-    },
-    { id: "facebook", icon: "/facebook.png", label: "Continue with Facebook" },
-    {
-      id: "apple",
-      icon: "/apple.png",
-      label: "Continue with Apple",
-    },
-  ];
+  // Form validation
+  const formIsValid = isFormValid(formData, validationErrors);
 
   return (
     <Layout className="flex items-center justify-center px-3 max-w-xl mx-auto">
@@ -114,9 +98,9 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={isLoading || !isFormValid()}
+            disabled={isLoading || !formIsValid}
             className={`w-full py-3 rounded-2xl font-medium transition-colors ${
-              isLoading || !isFormValid()
+              isLoading || !formIsValid
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-primary text-white hover:bg-secondary"
             }`}
@@ -128,13 +112,13 @@ export default function RegisterPage() {
         {/* Divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-3 text-gray-500 text-sm">or</span>
+          <span className="px-3 text-gray-500 text-lg font-inter">or</span>
           <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
         {/* Social Registration Buttons */}
         <div className="space-y-3 flex flex-col">
-          {socialProviders.map((provider) => (
+          {SOCIAL_PROVIDERS.map((provider) => (
             <SocialButton
               key={provider.id}
               {...provider}
@@ -144,16 +128,8 @@ export default function RegisterPage() {
           ))}
         </div>
 
-        {/* Terms and Conditions */}
-        <p className="mt-6 text-xs text-gray-500 text-center font-inter">
-          By opening an account, you agree to the{" "}
-          <a href="#" className="text-primary hover:underline">
-            Terms & Conditions
-          </a>
-        </p>
-
         {/* Sign in link */}
-        <p className="mt-4 text-sm text-gray-600 text-center font-inter">
+        <p className="mt-6 text-sm text-gray-600 text-center font-inter">
           Have an account?{" "}
           <a href="/login" className="text-primary hover:underline">
             Sign in

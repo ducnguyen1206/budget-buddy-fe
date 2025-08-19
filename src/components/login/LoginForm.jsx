@@ -2,29 +2,24 @@ import { useState } from "react";
 import FormField from "../common/FormField";
 import ErrorMessage from "../common/ErrorMessage";
 import SocialButton from "../common/SocialButton";
+import {
+  validateEmail,
+  validatePassword,
+  isLoginFormValid,
+} from "../../utils/validation";
+import { LOGIN_SOCIAL_PROVIDERS } from "../../constants/socialProviders";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Example simple validators
-  const validateEmail = (email) =>
-    !email
-      ? "Email is required"
-      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      ? "Invalid email address"
-      : "";
-
-  const validatePassword = (password) =>
-    !password
-      ? "Password is required"
-      : password.length < 8
-      ? "Password must be at least 8 characters"
-      : "";
-
+  // Form state management
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -52,43 +47,30 @@ export default function LoginForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
+
     if (emailError || passwordError) {
       setValidationErrors({ email: emailError, password: passwordError });
       return;
     }
+
     setIsLoading(true);
+
+    // TODO: Implement actual login API call
     setTimeout(() => {
       setIsLoading(false);
       console.log("Login success:", formData);
     }, 1000);
   };
 
-  // Check if form is valid for button state
-  const isFormValid = () => {
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
-    return (
-      formData.email.trim() !== "" &&
-      formData.password.trim() !== "" &&
-      !emailError &&
-      !passwordError
-    );
-  };
-
-  const socialProviders = [
-    {
-      id: "google",
-      icon: "https://developers.google.com/identity/images/g-logo.png",
-      label: "Google",
-    },
-    { id: "apple", icon: "/apple.png", label: "Apple" },
-    { id: "facebook", icon: "/facebook.png", label: "Facebook" },
-  ];
+  // Form validation
+  const formIsValid = isLoginFormValid(formData, validationErrors);
 
   return (
     <div className="p-8 w-full max-w-7xl">
+      {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-bold text-gray-800 mb-4 font-inter">
           Welcome back
@@ -100,6 +82,7 @@ export default function LoginForm() {
 
       <ErrorMessage message={error} />
 
+      {/* Login Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormField
           label="Email"
@@ -133,11 +116,21 @@ export default function LoginForm() {
           </button>
         </FormField>
 
+        {/* Forgot Password Link */}
+        <div className="text-left -mt-2">
+          <a
+            href="#"
+            className="text-primary hover:text-secondary text-md font-medium font-inter"
+          >
+            Forgot password?
+          </a>
+        </div>
+
         <button
           type="submit"
-          disabled={isLoading || !isFormValid()}
+          disabled={isLoading || !formIsValid}
           className={`w-full py-3 px-6 rounded-2xl font-semibold text-lg font-inter ${
-            isLoading || !isFormValid()
+            isLoading || !formIsValid
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-primary text-white hover:bg-secondary"
           }`}
@@ -146,7 +139,7 @@ export default function LoginForm() {
         </button>
       </form>
 
-      {/* Social logins */}
+      {/* Social Login Divider */}
       <div className="my-6 flex items-center">
         <div className="flex-1 border-t border-gray-300"></div>
         <span className="px-4 text-lg text-gray-500 font-inter">
@@ -155,12 +148,13 @@ export default function LoginForm() {
         <div className="flex-1 border-t border-gray-300"></div>
       </div>
 
+      {/* Social Login Buttons */}
       <div className="grid grid-cols-3 gap-4">
-        {socialProviders.map((btn) => (
+        {LOGIN_SOCIAL_PROVIDERS.map((provider) => (
           <SocialButton
-            key={btn.id}
-            {...btn}
-            onClick={() => console.log("Social:", btn.id)}
+            key={provider.id}
+            {...provider}
+            onClick={() => console.log("Social:", provider.id)}
             disabled={isLoading}
           />
         ))}

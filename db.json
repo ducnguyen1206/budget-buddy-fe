@@ -1,0 +1,350 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "john.doe@example.com",
+      "name": "John Doe",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "settings": {
+        "currency": "USD",
+        "timezone": "America/New_York",
+        "notifications": {
+          "email": true,
+          "push": true
+        }
+      }
+    },
+    {
+      "id": 2,
+      "email": "jane.smith@example.com",
+      "name": "Jane Smith",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      "createdAt": "2024-01-20T14:45:00Z",
+      "settings": {
+        "currency": "USD",
+        "timezone": "America/Los_Angeles",
+        "notifications": {
+          "email": true,
+          "push": false
+        }
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Food & Dining",
+      "type": "expense",
+      "color": "#FF6B6B",
+      "icon": "🍽️",
+      "budget": 500,
+      "userId": 1
+    },
+    {
+      "id": 2,
+      "name": "Transportation",
+      "type": "expense",
+      "color": "#4ECDC4",
+      "icon": "🚗",
+      "budget": 300,
+      "userId": 1
+    },
+    {
+      "id": 3,
+      "name": "Shopping",
+      "type": "expense",
+      "color": "#45B7D1",
+      "icon": "🛍️",
+      "budget": 200,
+      "userId": 1
+    },
+    {
+      "id": 4,
+      "name": "Entertainment",
+      "type": "expense",
+      "color": "#96CEB4",
+      "icon": "🎬",
+      "budget": 150,
+      "userId": 1
+    },
+    {
+      "id": 5,
+      "name": "Bills & Utilities",
+      "type": "expense",
+      "color": "#FFEAA7",
+      "icon": "💡",
+      "budget": 400,
+      "userId": 1
+    },
+    {
+      "id": 6,
+      "name": "Healthcare",
+      "type": "expense",
+      "color": "#DDA0DD",
+      "icon": "🏥",
+      "budget": 100,
+      "userId": 1
+    },
+    {
+      "id": 7,
+      "name": "Salary",
+      "type": "income",
+      "color": "#98D8C8",
+      "icon": "💰",
+      "budget": 0,
+      "userId": 1
+    },
+    {
+      "id": 8,
+      "name": "Freelance",
+      "type": "income",
+      "color": "#F7DC6F",
+      "icon": "💼",
+      "budget": 0,
+      "userId": 1
+    },
+    {
+      "id": 9,
+      "name": "Investment Returns",
+      "type": "income",
+      "color": "#BB8FCE",
+      "icon": "📈",
+      "budget": 0,
+      "userId": 1
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "description": "Grocery shopping at Walmart",
+      "amount": 85.50,
+      "type": "expense",
+      "categoryId": 1,
+      "userId": 1,
+      "date": "2024-01-25T10:30:00Z",
+      "location": "Walmart Supercenter",
+      "notes": "Weekly groceries"
+    },
+    {
+      "id": 2,
+      "description": "Gas station fill-up",
+      "amount": 45.00,
+      "type": "expense",
+      "categoryId": 2,
+      "userId": 1,
+      "date": "2024-01-24T16:20:00Z",
+      "location": "Shell Gas Station",
+      "notes": "Full tank"
+    },
+    {
+      "id": 3,
+      "description": "Monthly salary",
+      "amount": 3500.00,
+      "type": "income",
+      "categoryId": 7,
+      "userId": 1,
+      "date": "2024-01-25T09:00:00Z",
+      "location": "Company Inc.",
+      "notes": "January salary"
+    },
+    {
+      "id": 4,
+      "description": "Netflix subscription",
+      "amount": 15.99,
+      "type": "expense",
+      "categoryId": 4,
+      "userId": 1,
+      "date": "2024-01-23T00:00:00Z",
+      "location": "Netflix",
+      "notes": "Monthly subscription"
+    },
+    {
+      "id": 5,
+      "description": "Electricity bill",
+      "amount": 120.50,
+      "type": "expense",
+      "categoryId": 5,
+      "userId": 1,
+      "date": "2024-01-22T12:00:00Z",
+      "location": "Power Company",
+      "notes": "December electricity"
+    },
+    {
+      "id": 6,
+      "description": "Coffee at Starbucks",
+      "amount": 4.75,
+      "type": "expense",
+      "categoryId": 1,
+      "userId": 1,
+      "date": "2024-01-25T08:15:00Z",
+      "location": "Starbucks",
+      "notes": "Morning coffee"
+    },
+    {
+      "id": 7,
+      "description": "Freelance web design project",
+      "amount": 500.00,
+      "type": "income",
+      "categoryId": 8,
+      "userId": 1,
+      "date": "2024-01-24T14:30:00Z",
+      "location": "Client XYZ",
+      "notes": "Website redesign project"
+    },
+    {
+      "id": 8,
+      "description": "New shoes",
+      "amount": 89.99,
+      "type": "expense",
+      "categoryId": 3,
+      "userId": 1,
+      "date": "2024-01-21T15:45:00Z",
+      "location": "Nike Store",
+      "notes": "Running shoes"
+    },
+    {
+      "id": 9,
+      "description": "Doctor appointment",
+      "amount": 25.00,
+      "type": "expense",
+      "categoryId": 6,
+      "userId": 1,
+      "date": "2024-01-20T11:00:00Z",
+      "location": "Medical Center",
+      "notes": "Annual checkup"
+    },
+    {
+      "id": 10,
+      "description": "Stock dividend",
+      "amount": 150.00,
+      "type": "income",
+      "categoryId": 9,
+      "userId": 1,
+      "date": "2024-01-19T09:00:00Z",
+      "location": "Investment Broker",
+      "notes": "Quarterly dividend"
+    }
+  ],
+  "budgets": [
+    {
+      "id": 1,
+      "userId": 1,
+      "month": "2024-01",
+      "totalIncome": 4150.00,
+      "totalExpense": 390.73,
+      "savings": 3759.27,
+      "categories": [
+        {
+          "categoryId": 1,
+          "budget": 500,
+          "spent": 90.25,
+          "remaining": 409.75
+        },
+        {
+          "categoryId": 2,
+          "budget": 300,
+          "spent": 45.00,
+          "remaining": 255.00
+        },
+        {
+          "categoryId": 3,
+          "budget": 200,
+          "spent": 89.99,
+          "remaining": 110.01
+        },
+        {
+          "categoryId": 4,
+          "budget": 150,
+          "spent": 15.99,
+          "remaining": 134.01
+        },
+        {
+          "categoryId": 5,
+          "budget": 400,
+          "spent": 120.50,
+          "remaining": 279.50
+        },
+        {
+          "categoryId": 6,
+          "budget": 100,
+          "spent": 25.00,
+          "remaining": 75.00
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "id": 1,
+      "userId": 1,
+      "name": "Emergency Fund",
+      "targetAmount": 10000,
+      "currentAmount": 3500,
+      "targetDate": "2024-12-31",
+      "color": "#FF6B6B",
+      "icon": "🛡️",
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "name": "Vacation Fund",
+      "targetAmount": 3000,
+      "currentAmount": 1200,
+      "targetDate": "2024-06-30",
+      "color": "#4ECDC4",
+      "icon": "✈️",
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "name": "New Car",
+      "targetAmount": 25000,
+      "currentAmount": 5000,
+      "targetDate": "2025-12-31",
+      "color": "#45B7D1",
+      "icon": "🚗",
+      "createdAt": "2024-01-10T00:00:00Z"
+    }
+  ],
+  "recurringTransactions": [
+    {
+      "id": 1,
+      "userId": 1,
+      "description": "Monthly salary",
+      "amount": 3500,
+      "type": "income",
+      "categoryId": 7,
+      "frequency": "monthly",
+      "dayOfMonth": 25,
+      "isActive": true,
+      "nextDueDate": "2024-02-25"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "description": "Netflix subscription",
+      "amount": 15.99,
+      "type": "expense",
+      "categoryId": 4,
+      "frequency": "monthly",
+      "dayOfMonth": 23,
+      "isActive": true,
+      "nextDueDate": "2024-02-23"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "description": "Electricity bill",
+      "amount": 120.50,
+      "type": "expense",
+      "categoryId": 5,
+      "frequency": "monthly",
+      "dayOfMonth": 22,
+      "isActive": true,
+      "nextDueDate": "2024-02-22"
+    }
+  ]
+}
