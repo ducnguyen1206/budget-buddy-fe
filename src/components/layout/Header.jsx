@@ -1,8 +1,11 @@
 import Container from "../common/Container";
 import Button from "../common/Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
   return (
     <header className="py-6 border-b border-gray-100">
       <Container className="flex items-center justify-between">
@@ -18,16 +21,18 @@ export default function Header() {
           </span>
         </div>
 
-        {/* Action */}
-        <div className="text-base text-gray-600 flex items-center space-x-2">
-          <span>Don’t have an account?</span>
-          <Link
-            to="/register"
-            className="text-color3 hover:text-primary font-medium"
-          >
-            Register Now
-          </Link>
-        </div>
+        {/* Action - Only show on login page */}
+        {isLoginPage && (
+          <div className="text-base text-gray-600 flex items-center space-x-2">
+            <span>Don't have an account?</span>
+            <Link
+              to="/register"
+              className="text-color3 hover:text-primary font-medium"
+            >
+              Register Now
+            </Link>
+          </div>
+        )}
       </Container>
     </header>
   );
