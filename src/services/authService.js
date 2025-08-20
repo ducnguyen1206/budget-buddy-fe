@@ -1,12 +1,91 @@
-import { getApiUrl, API_ENDPOINTS, API_CONFIG } from "../config/api";
+import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
+import { storeTokens } from "../utils/tokenManager";
+
+// Login service
+export const loginUser = async (email, password) => {
+  try {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.LOGIN), {
+      method: "POST",
+      headers: getApiHeaders(false), // No auth needed for login
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (response.status === 200) {
+      try {
+        const responseData = await response.json();
+        const { token, refreshToken } = responseData;
+
+        // Store tokens in localStorage
+        if (token || refreshToken) {
+          storeTokens(token, refreshToken);
+        }
+
+        return {
+          success: true,
+          data: {
+            email,
+            token,
+            refreshToken,
+          },
+        };
+      } catch (jsonError) {
+        console.warn("JSON parsing failed for login response:", jsonError);
+        return { success: true, data: { email } };
+      }
+    } else if (response.status === 401) {
+      return {
+        success: false,
+        error: API_ERROR_MESSAGES.INVALID_CREDENTIALS,
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: API_ERROR_MESSAGES.SERVER_ERROR,
+      };
+    } else {
+      return {
+        success: false,
+        error: API_ERROR_MESSAGES.LOGIN_FAILED,
+      };
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+
+    if (
+      error.name === "TypeError" &&
+      error.message.includes("Failed to fetch")
+    ) {
+      return {
+        success: false,
+        error:
+          "Unable to reach our servers. Please check your internet connection and try again.",
+      };
+    }
+
+    if (
+      error.message.includes("NetworkError") ||
+      error.message.includes("ERR_NETWORK")
+    ) {
+      return {
+        success: false,
+        error: API_ERROR_MESSAGES.SERVER_CONNECTION_ERROR,
+      };
+    }
+
+    return {
+      success: false,
+      error: API_ERROR_MESSAGES.NETWORK_ERROR,
+    };
+  }
+};
 
 // Registration service
 export const registerUser = async (email) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.REGISTER), {
       method: "POST",
-      headers: API_CONFIG.headers,
+      headers: getApiHeaders(false), // No auth needed for registration
       body: JSON.stringify({ email }),
     });
 
@@ -75,7 +154,7 @@ export const verifyToken = async (token) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.VERIFY), {
       method: "POST",
-      headers: API_CONFIG.headers,
+      headers: getApiHeaders(false), // No auth needed for token verification
       body: JSON.stringify({ refreshToken: token }),
     });
 
@@ -180,7 +259,7 @@ export const resetPassword = async (token, password, reenterPassword) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.RESET_PASSWORD), {
       method: "POST",
-      headers: API_CONFIG.headers,
+      headers: getApiHeaders(false), // No auth needed for password reset
       body: JSON.stringify({ token, password, reenterPassword }),
     });
 

@@ -41,6 +41,9 @@ export const API_ERROR_MESSAGES = {
     "Password reset failed. Please try again or contact support.",
   USER_NOT_FOUND: "User not found. Please check your email and try again.",
   INVALID_PASSWORD_REQUEST: "Invalid password reset request. Please try again.",
+  LOGIN_FAILED: "Login failed. Please try again or contact support.",
+  INVALID_CREDENTIALS:
+    "Invalid email or password. Please check your credentials and try again.",
 };
 
 // HTTP status codes

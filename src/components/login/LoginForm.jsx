@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FormField from "../common/FormField";
 import ErrorMessage from "../common/ErrorMessage";
 import SocialButton from "../common/SocialButton";
@@ -8,8 +9,10 @@ import {
   isLoginFormValid,
 } from "../../utils/validation";
 import { LOGIN_SOCIAL_PROVIDERS } from "../../constants/socialProviders";
+import { loginUser } from "../../services/authService";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +48,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const emailError = validateEmail(formData.email);
@@ -57,12 +60,19 @@ export default function LoginForm() {
     }
 
     setIsLoading(true);
+    setError("");
 
-    // TODO: Implement actual login API call
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log("Login success:", formData);
-    }, 1000);
+    const result = await loginUser(formData.email, formData.password);
+
+    if (result.success) {
+      console.log("Login success:", result.data);
+      // Redirect to dashboard or main application page
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
+    }
+
+    setIsLoading(false);
   };
 
   // Form validation
