@@ -1,6 +1,8 @@
 import { useMemo } from "react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function PasswordStrengthMeter({ password }) {
+  const { t } = useLanguage();
   const strength = useMemo(() => {
     if (!password) return { score: 0, label: "", color: "", textColor: "" };
 
@@ -20,28 +22,28 @@ export default function PasswordStrengthMeter({ password }) {
     if (score <= 2) {
       return {
         score,
-        label: "Weak",
+        label: t("registration.weak"),
         color: "bg-red-500",
         textColor: "text-red-500",
       };
     } else if (score <= 4) {
       return {
         score,
-        label: "Fair",
+        label: t("registration.fair"),
         color: "bg-yellow-500",
         textColor: "text-yellow-600",
       };
     } else if (score <= 5) {
       return {
         score,
-        label: "Good",
+        label: t("registration.good"),
         color: "bg-blue-500",
         textColor: "text-blue-500",
       };
     } else {
       return {
         score,
-        label: "Strong",
+        label: t("registration.strong"),
         color: "bg-green-500",
         textColor: "text-green-500",
       };
@@ -71,7 +73,7 @@ export default function PasswordStrengthMeter({ password }) {
       {/* Strength Text */}
       <div className="flex items-center justify-between">
         <span className="text-base text-gray-600 font-medium">
-          Password strength:{" "}
+          {t("registration.passwordStrength")}:{" "}
           <span className={`font-bold ${strength.textColor}`}>
             {strength.label}
           </span>

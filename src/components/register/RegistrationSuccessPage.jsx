@@ -2,9 +2,11 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Button from "../common/Button";
 import { CheckCircle } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function RegistrationSuccessPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleLoginNow = () => {
     navigate("/login");
@@ -19,10 +21,10 @@ export default function RegistrationSuccessPage() {
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 font-inter mb-4">
-            Registered successfully!
+            {t("registration.registeredSuccessfully")}
           </h1>
           <p className="text-gray-600 text-base leading-relaxed">
-            You've Successfully Completed The Registration!
+            {t("registration.registrationComplete")}
           </p>
         </div>
 
@@ -33,7 +35,7 @@ export default function RegistrationSuccessPage() {
             className="w-96 py-3 text-lg"
             variant="primary"
           >
-            Log In Now
+            {t("registration.logInNow")}
           </Button>
         </div>
       </div>

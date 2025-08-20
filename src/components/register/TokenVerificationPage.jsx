@@ -5,17 +5,19 @@ import ErrorMessage from "../common/ErrorMessage";
 import { verifyToken } from "../../services/authService";
 import { API_ERROR_MESSAGES } from "../../constants/validation";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function TokenVerificationPage() {
   const { token } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isVerifying, setIsVerifying] = useState(true);
   const [error, setError] = useState("");
 
   // Token verification function
   const performTokenVerification = async () => {
     if (!token) {
-      setError(API_ERROR_MESSAGES.TOKEN_MISSING);
+      setError(t(API_ERROR_MESSAGES.TOKEN_MISSING));
       setIsVerifying(false);
       return;
     }
@@ -23,7 +25,7 @@ export default function TokenVerificationPage() {
     setIsVerifying(true);
     setError("");
 
-    const result = await verifyToken(token);
+    const result = await verifyToken(token, t);
 
     if (result.success) {
       navigate("/reset-password", {
@@ -56,7 +58,7 @@ export default function TokenVerificationPage() {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-gray-800 font-inter mb-4">
-            Verification Failed
+            {t("common.error")}
           </h1>
           <ErrorMessage message={error} />
           <button
@@ -68,7 +70,7 @@ export default function TokenVerificationPage() {
                 : "bg-primary text-white hover:bg-secondary"
             }`}
           >
-            {isVerifying ? "Retrying..." : "Try Again"}
+            {isVerifying ? t("common.retry") : t("common.tryAgain")}
           </button>
         </div>
       </Layout>
@@ -85,10 +87,10 @@ export default function TokenVerificationPage() {
           </div>
         </div>
         <h1 className="text-2xl font-bold text-gray-800 font-inter mb-4">
-          Verifying your email...
+          {t("auth.verifying")}
         </h1>
         <p className="text-gray-600 text-base leading-relaxed">
-          Please wait while we verify your email address.
+          {t("common.loading")}
         </p>
       </div>
     </Layout>

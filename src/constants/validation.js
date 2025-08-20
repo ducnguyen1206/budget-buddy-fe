@@ -1,49 +1,38 @@
-// Validation constants
+// Validation constants - These will be replaced by translation keys
 export const VALIDATION_RULES = {
   EMAIL: {
-    REQUIRED: "Please enter your email address",
-    INVALID: "Please enter a valid email address (e.g., user@example.com)",
+    REQUIRED: "validation.emailRequired",
+    INVALID: "validation.emailInvalid",
     PATTERN: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   },
   PASSWORD: {
-    REQUIRED: "Password is required",
-    MIN_LENGTH: "Password must be at least 8 characters",
-    LOWERCASE: "Password must contain at least one lowercase letter",
-    UPPERCASE: "Password must contain at least one uppercase letter",
-    NUMBER: "Password must contain at least one number",
-    CONFIRM_REQUIRED: "Please re-enter your password",
-    MISMATCH: "Passwords do not match",
+    REQUIRED: "validation.passwordRequired",
+    MIN_LENGTH: "validation.passwordMinLength",
+    LOWERCASE: "validation.passwordLowercase",
+    UPPERCASE: "validation.passwordUppercase",
+    NUMBER: "validation.passwordNumber",
+    CONFIRM_REQUIRED: "validation.confirmPasswordRequired",
+    MISMATCH: "validation.passwordsMismatch",
   },
 };
 
-// API error messages
+// API error messages - These will be replaced by translation keys
 export const API_ERROR_MESSAGES = {
-  NETWORK_ERROR:
-    "Connection issue detected. Please check your internet connection and try again.",
-  SERVER_CONNECTION_ERROR:
-    "We're having trouble connecting to our servers. Please try again in a few moments.",
-  INVALID_INPUT: "Please enter a valid email address (e.g., user@example.com).",
-  EMAIL_EXISTS:
-    "This email is already registered. Would you like to sign in instead?",
-  REGISTRATION_FAILED:
-    "Something went wrong. Please try again or contact support if the problem persists.",
-  SERVER_ERROR:
-    "Our servers are experiencing issues. Please try again in a few minutes.",
-  TIMEOUT_ERROR:
-    "Request timed out. Please check your connection and try again.",
-  TOKEN_INVALID:
-    "This verification link is invalid or has expired. Please request a new one.",
-  TOKEN_MISSING:
-    "No verification token provided. Please check your email for the correct link.",
-  VERIFICATION_FAILED:
-    "Email verification failed. Please try again or contact support.",
-  PASSWORD_RESET_FAILED:
-    "Password reset failed. Please try again or contact support.",
-  USER_NOT_FOUND: "User not found. Please check your email and try again.",
-  INVALID_PASSWORD_REQUEST: "Invalid password reset request. Please try again.",
-  LOGIN_FAILED: "Login failed. Please try again or contact support.",
-  INVALID_CREDENTIALS:
-    "Invalid email or password. Please check your credentials and try again.",
+  NETWORK_ERROR: "errors.networkError",
+  SERVER_CONNECTION_ERROR: "errors.serverConnectionError",
+  INVALID_INPUT: "errors.invalidInput",
+  EMAIL_EXISTS: "errors.emailExists",
+  REGISTRATION_FAILED: "errors.registrationFailed",
+  SERVER_ERROR: "errors.serverError",
+  TIMEOUT_ERROR: "errors.timeoutError",
+  TOKEN_INVALID: "errors.tokenInvalid",
+  TOKEN_MISSING: "errors.tokenMissing",
+  VERIFICATION_FAILED: "errors.verificationFailed",
+  PASSWORD_RESET_FAILED: "errors.passwordResetFailed",
+  USER_NOT_FOUND: "errors.userNotFound",
+  INVALID_PASSWORD_REQUEST: "errors.invalidPasswordRequest",
+  LOGIN_FAILED: "errors.loginFailed",
+  INVALID_CREDENTIALS: "errors.invalidCredentials",
 };
 
 // HTTP status codes

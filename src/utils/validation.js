@@ -1,26 +1,34 @@
 import { VALIDATION_RULES } from "../constants/validation";
 
 // Email validation function
-export const validateEmail = (email) => {
+export const validateEmail = (email, t) => {
   if (!email) {
-    return VALIDATION_RULES.EMAIL.REQUIRED;
+    return t
+      ? t(VALIDATION_RULES.EMAIL.REQUIRED)
+      : VALIDATION_RULES.EMAIL.REQUIRED;
   }
 
   if (!VALIDATION_RULES.EMAIL.PATTERN.test(email)) {
-    return VALIDATION_RULES.EMAIL.INVALID;
+    return t
+      ? t(VALIDATION_RULES.EMAIL.INVALID)
+      : VALIDATION_RULES.EMAIL.INVALID;
   }
 
   return "";
 };
 
 // Password validation function (for login)
-export const validatePassword = (password) => {
+export const validatePassword = (password, t) => {
   if (!password) {
-    return VALIDATION_RULES.PASSWORD.REQUIRED;
+    return t
+      ? t(VALIDATION_RULES.PASSWORD.REQUIRED)
+      : VALIDATION_RULES.PASSWORD.REQUIRED;
   }
 
   if (password.length < 8) {
-    return VALIDATION_RULES.PASSWORD.MIN_LENGTH;
+    return t
+      ? t(VALIDATION_RULES.PASSWORD.MIN_LENGTH)
+      : VALIDATION_RULES.PASSWORD.MIN_LENGTH;
   }
 
   return "";

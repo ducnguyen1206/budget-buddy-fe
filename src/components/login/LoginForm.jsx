@@ -10,9 +10,11 @@ import {
 } from "../../utils/validation";
 import { LOGIN_SOCIAL_PROVIDERS } from "../../constants/socialProviders";
 import { loginUser } from "../../services/authService";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,12 +40,15 @@ export default function LoginForm() {
 
     // Validate on blur (when user moves out of the field)
     if (name === "email") {
-      setValidationErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+      setValidationErrors((prev) => ({
+        ...prev,
+        email: validateEmail(value, t),
+      }));
     }
     if (name === "password") {
       setValidationErrors((prev) => ({
         ...prev,
-        password: validatePassword(value),
+        password: validatePassword(value, t),
       }));
     }
   };
@@ -51,8 +56,8 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
+    const emailError = validateEmail(formData.email, t);
+    const passwordError = validatePassword(formData.password, t);
 
     if (emailError || passwordError) {
       setValidationErrors({ email: emailError, password: passwordError });
@@ -62,7 +67,7 @@ export default function LoginForm() {
     setIsLoading(true);
     setError("");
 
-    const result = await loginUser(formData.email, formData.password);
+    const result = await loginUser(formData.email, formData.password, t);
 
     if (result.success) {
       console.log("Login success:", result.data);
@@ -83,10 +88,10 @@ export default function LoginForm() {
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-bold text-gray-800 mb-4 font-inter">
-          Welcome back
+          {t("auth.welcomeBack")}
         </h1>
         <p className="text-gray-600 text-lg font-normal font-inter">
-          Enter your details to get signed in to your account.
+          {t("auth.enterDetails")}
         </p>
       </div>
 
@@ -95,7 +100,7 @@ export default function LoginForm() {
       {/* Login Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormField
-          label="Email"
+          label={t("auth.email")}
           name="email"
           type="email"
           value={formData.email}
@@ -103,11 +108,11 @@ export default function LoginForm() {
           onBlur={handleBlur}
           error={validationErrors.email}
           disabled={isLoading}
-          placeholder="e.g. username@kinety.com"
+          placeholder={t("auth.emailPlaceholder")}
         />
 
         <FormField
-          label="Password"
+          label={t("auth.password")}
           name="password"
           type={showPassword ? "text" : "password"}
           value={formData.password}
@@ -115,7 +120,7 @@ export default function LoginForm() {
           onBlur={handleBlur}
           error={validationErrors.password}
           disabled={isLoading}
-          placeholder="Enter your password"
+          placeholder={t("auth.passwordPlaceholder")}
         >
           <button
             type="button"
@@ -132,7 +137,7 @@ export default function LoginForm() {
             href="#"
             className="text-primary hover:text-secondary text-md font-medium font-inter"
           >
-            Forgot password?
+            {t("auth.forgotPassword")}
           </a>
         </div>
 
@@ -145,7 +150,7 @@ export default function LoginForm() {
               : "bg-primary text-white hover:bg-secondary"
           }`}
         >
-          {isLoading ? "Signing in..." : "Continue"}
+          {isLoading ? t("auth.signingIn") : t("auth.continue")}
         </button>
       </form>
 
@@ -153,7 +158,7 @@ export default function LoginForm() {
       <div className="my-6 flex items-center">
         <div className="flex-1 border-t border-gray-300"></div>
         <span className="px-4 text-lg text-gray-500 font-inter">
-          Or sign in with
+          {t("auth.orSignInWith")}
         </span>
         <div className="flex-1 border-t border-gray-300"></div>
       </div>

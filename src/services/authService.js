@@ -1,9 +1,10 @@
 import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
 import { storeTokens } from "../utils/tokenManager";
+import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 
 // Login service
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password, t = null) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.LOGIN), {
       method: "POST",
@@ -36,52 +37,30 @@ export const loginUser = async (email, password) => {
     } else if (response.status === 401) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.INVALID_CREDENTIALS,
+        error: handleApiError("INVALID_CREDENTIALS", t),
       };
     } else if (response.status >= 500) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.SERVER_ERROR,
+        error: handleApiError("SERVER_ERROR", t),
       };
     } else {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.LOGIN_FAILED,
+        error: handleApiError("LOGIN_FAILED", t),
       };
     }
   } catch (error) {
     console.error("Login error:", error);
-
-    if (
-      error.name === "TypeError" &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        error:
-          "Unable to reach our servers. Please check your internet connection and try again.",
-      };
-    }
-
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("ERR_NETWORK")
-    ) {
-      return {
-        success: false,
-        error: API_ERROR_MESSAGES.SERVER_CONNECTION_ERROR,
-      };
-    }
-
     return {
       success: false,
-      error: API_ERROR_MESSAGES.NETWORK_ERROR,
+      error: handleNetworkError(error, t),
     };
   }
 };
 
 // Registration service
-export const registerUser = async (email) => {
+export const registerUser = async (email, t = null) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.REGISTER), {
       method: "POST",
@@ -97,7 +76,7 @@ export const registerUser = async (email) => {
       const errorMessage =
         errorData.message ||
         errorData.error ||
-        API_ERROR_MESSAGES.INVALID_INPUT;
+        handleApiError("INVALID_INPUT", t);
       return {
         success: false,
         error: errorMessage,
@@ -105,52 +84,30 @@ export const registerUser = async (email) => {
     } else if (response.status === HTTP_STATUS.CONFLICT) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.EMAIL_EXISTS,
+        error: handleApiError("EMAIL_EXISTS", t),
       };
     } else if (response.status >= 500) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.SERVER_ERROR,
+        error: handleApiError("SERVER_ERROR", t),
       };
     } else {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.REGISTRATION_FAILED,
+        error: handleApiError("REGISTRATION_FAILED", t),
       };
     }
   } catch (error) {
     console.error("Registration error:", error);
-
-    if (
-      error.name === "TypeError" &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        error:
-          "Unable to reach our servers. Please check your internet connection and try again.",
-      };
-    }
-
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("ERR_NETWORK")
-    ) {
-      return {
-        success: false,
-        error: API_ERROR_MESSAGES.SERVER_CONNECTION_ERROR,
-      };
-    }
-
     return {
       success: false,
-      error: API_ERROR_MESSAGES.NETWORK_ERROR,
+      error: handleNetworkError(error, t),
     };
   }
 };
 
 // Token verification service
-export const verifyToken = async (token) => {
+export const verifyToken = async (token, t = null) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.VERIFY), {
       method: "POST",
@@ -174,7 +131,7 @@ export const verifyToken = async (token) => {
         } else {
           return {
             success: false,
-            error: API_ERROR_MESSAGES.VERIFICATION_FAILED,
+            error: handleApiError("VERIFICATION_FAILED", t),
           };
         }
       } catch (textError) {
@@ -195,7 +152,7 @@ export const verifyToken = async (token) => {
         const errorMessage =
           errorData.message ||
           errorData.error ||
-          API_ERROR_MESSAGES.TOKEN_INVALID;
+          handleApiError("TOKEN_INVALID", t);
         return {
           success: false,
           error: errorMessage,
@@ -204,58 +161,41 @@ export const verifyToken = async (token) => {
         console.warn("JSON parsing failed for error response:", jsonError);
         return {
           success: false,
-          error: API_ERROR_MESSAGES.TOKEN_INVALID,
+          error: handleApiError("TOKEN_INVALID", t),
         };
       }
     } else if (response.status === 401) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.TOKEN_INVALID,
+        error: handleApiError("TOKEN_INVALID", t),
       };
     } else if (response.status >= 500) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.SERVER_ERROR,
+        error: handleApiError("SERVER_ERROR", t),
       };
     } else {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.VERIFICATION_FAILED,
+        error: handleApiError("VERIFICATION_FAILED", t),
       };
     }
   } catch (error) {
     console.error("Token verification error:", error);
-
-    if (
-      error.name === "TypeError" &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        error:
-          "Unable to reach our servers. Please check your internet connection and try again.",
-      };
-    }
-
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("ERR_NETWORK")
-    ) {
-      return {
-        success: false,
-        error: API_ERROR_MESSAGES.SERVER_CONNECTION_ERROR,
-      };
-    }
-
     return {
       success: false,
-      error: API_ERROR_MESSAGES.NETWORK_ERROR,
+      error: handleNetworkError(error, t),
     };
   }
 };
 
 // Password reset service
-export const resetPassword = async (token, password, reenterPassword) => {
+export const resetPassword = async (
+  token,
+  password,
+  reenterPassword,
+  t = null
+) => {
   try {
     const response = await fetch(getApiUrl(API_ENDPOINTS.RESET_PASSWORD), {
       method: "POST",
@@ -270,7 +210,7 @@ export const resetPassword = async (token, password, reenterPassword) => {
       const errorMessage =
         errorData.message ||
         errorData.error ||
-        API_ERROR_MESSAGES.INVALID_PASSWORD_REQUEST;
+        handleApiError("INVALID_PASSWORD_REQUEST", t);
       return {
         success: false,
         error: errorMessage,
@@ -278,46 +218,24 @@ export const resetPassword = async (token, password, reenterPassword) => {
     } else if (response.status === 404) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.USER_NOT_FOUND,
+        error: handleApiError("USER_NOT_FOUND", t),
       };
     } else if (response.status >= 500) {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.SERVER_ERROR,
+        error: handleApiError("SERVER_ERROR", t),
       };
     } else {
       return {
         success: false,
-        error: API_ERROR_MESSAGES.PASSWORD_RESET_FAILED,
+        error: handleApiError("PASSWORD_RESET_FAILED", t),
       };
     }
   } catch (error) {
     console.error("Password reset error:", error);
-
-    if (
-      error.name === "TypeError" &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        error:
-          "Unable to reach our servers. Please check your internet connection and try again.",
-      };
-    }
-
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("ERR_NETWORK")
-    ) {
-      return {
-        success: false,
-        error: API_ERROR_MESSAGES.SERVER_CONNECTION_ERROR,
-      };
-    }
-
     return {
       success: false,
-      error: API_ERROR_MESSAGES.NETWORK_ERROR,
+      error: handleNetworkError(error, t),
     };
   }
 };

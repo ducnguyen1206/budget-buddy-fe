@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Button from "../common/Button";
 import { ArrowLeft, Mail } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function EmailVerificationPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleOpenEmailInbox = () => {
     // Open Gmail in new tab
@@ -25,18 +27,10 @@ export default function EmailVerificationPage() {
             <Mail className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 font-inter mb-4">
-            Check your email!
+            {t("registration.checkEmail")}
           </h1>
           <p className="text-gray-600 text-base leading-relaxed">
-            Thanks! An email was sent that will ask you to click on a link to
-            register for the new account. If you don't get the email, please
-            contact{" "}
-            <a
-              href="mailto:budgetbuddy@budgetbd.com"
-              className="text-primary hover:text-secondary underline"
-            >
-              budgetbuddy@budgetbd.com
-            </a>
+            {t("registration.emailSent")}
           </p>
         </div>
 
@@ -47,7 +41,7 @@ export default function EmailVerificationPage() {
             className="w-96 py-3 text-lg"
             variant="primary"
           >
-            Open email inbox
+            {t("registration.openEmailInbox")}
           </Button>
 
           <Button
@@ -56,7 +50,7 @@ export default function EmailVerificationPage() {
             variant="text"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to login
+            {t("registration.backToLogin")}
           </Button>
         </div>
       </div>

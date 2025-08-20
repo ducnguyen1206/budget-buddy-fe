@@ -7,9 +7,11 @@ import ErrorMessage from "../common/ErrorMessage";
 import { registerUser } from "../../services/authService";
 import { validateEmail, isFormValid } from "../../utils/validation";
 import { SOCIAL_PROVIDERS } from "../../constants/socialProviders";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -34,14 +36,17 @@ export default function RegisterPage() {
 
     // Validate on blur (when user moves out of the field)
     if (name === "email") {
-      setValidationErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+      setValidationErrors((prev) => ({
+        ...prev,
+        email: validateEmail(value, t),
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const emailError = validateEmail(formData.email);
+    const emailError = validateEmail(formData.email, t);
 
     if (emailError) {
       setValidationErrors({ email: emailError });
@@ -51,7 +56,7 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError("");
 
-    const result = await registerUser(formData.email);
+    const result = await registerUser(formData.email, t);
 
     if (result.success) {
       navigate("/verify-email", { state: { email: formData.email } });
@@ -76,7 +81,7 @@ export default function RegisterPage() {
             className="mx-auto mb-4 w-14 h-14"
           />
           <h1 className="text-2xl font-bold text-gray-800 font-inter">
-            Create your free account
+            {t("registration.title")}
           </h1>
         </div>
 
@@ -85,7 +90,7 @@ export default function RegisterPage() {
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <FormField
-            label="Your email"
+            label={t("auth.email")}
             name="email"
             type="email"
             value={formData.email}
@@ -93,7 +98,7 @@ export default function RegisterPage() {
             onBlur={handleBlur}
             error={validationErrors.email}
             disabled={isLoading}
-            placeholder="e.g. username@kinety.com"
+            placeholder={t("auth.emailPlaceholder")}
           />
 
           <button
@@ -105,14 +110,16 @@ export default function RegisterPage() {
                 : "bg-primary text-white hover:bg-secondary"
             }`}
           >
-            {isLoading ? "Creating account..." : "Continue"}
+            {isLoading ? t("auth.registering") : t("auth.continue")}
           </button>
         </form>
 
         {/* Divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-3 text-gray-500 text-lg font-inter">or</span>
+          <span className="px-3 text-gray-500 text-lg font-inter">
+            {t("auth.orSignUpWith")}
+          </span>
           <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
@@ -130,9 +137,9 @@ export default function RegisterPage() {
 
         {/* Sign in link */}
         <p className="mt-6 text-md text-gray-600 text-center font-inter">
-          Have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <a href="/login" className="text-primary hover:underline">
-            Sign in
+            {t("auth.signIn")}
           </a>
         </p>
       </div>

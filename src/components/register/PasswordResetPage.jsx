@@ -11,10 +11,12 @@ import {
   isPasswordFormValid,
 } from "../../utils/passwordValidation";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function PasswordResetPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
 
   // State management
   const [isLoading, setIsLoading] = useState(false);
@@ -107,7 +109,8 @@ export default function PasswordResetPage() {
     const result = await resetPassword(
       token,
       formData.password,
-      formData.confirmPassword
+      formData.confirmPassword,
+      t
     );
 
     if (result.success) {
@@ -131,10 +134,10 @@ export default function PasswordResetPage() {
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 font-inter mb-4">
-            Input your password
+            {t("registration.inputPassword")}
           </h1>
           <p className="text-gray-600 text-base leading-relaxed">
-            Please kindly set your new password.
+            {t("registration.setNewPassword")}
           </p>
         </div>
 
@@ -148,7 +151,7 @@ export default function PasswordResetPage() {
           {/* New Password Field */}
           <div className="w-[500px]">
             <FormField
-              label="New password"
+              label={t("auth.newPassword")}
               name="password"
               type={showPassword ? "text" : "password"}
               value={formData.password}
@@ -156,7 +159,7 @@ export default function PasswordResetPage() {
               onBlur={handleBlur}
               error={validationErrors.password}
               disabled={isLoading}
-              placeholder="Enter your new password"
+              placeholder={t("auth.passwordPlaceholder")}
             >
               <button
                 type="button"
@@ -177,7 +180,7 @@ export default function PasswordResetPage() {
           {/* Confirm Password Field */}
           <div className="w-[500px]">
             <FormField
-              label="Re-enter password"
+              label={t("auth.confirmPassword")}
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               value={formData.confirmPassword}
@@ -185,7 +188,7 @@ export default function PasswordResetPage() {
               onBlur={handleBlur}
               error={validationErrors.confirmPassword}
               disabled={isLoading}
-              placeholder="Re-enter your new password"
+              placeholder={t("auth.confirmPasswordPlaceholder")}
             >
               <button
                 type="button"
@@ -213,7 +216,7 @@ export default function PasswordResetPage() {
                   : "bg-primary text-white hover:bg-secondary"
               }`}
             >
-              {isLoading ? "Setting password..." : "Confirm"}
+              {isLoading ? t("auth.resetting") : t("common.confirm")}
             </button>
           </div>
         </form>
