@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Button from "../common/Button";
 import { ArrowLeft, Mail } from "lucide-react";
@@ -7,7 +7,11 @@ import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function EmailVerificationPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
+
+  // Check if this is a password reset flow
+  const isPasswordReset = location.state?.isPasswordReset || false;
 
   const handleOpenEmailInbox = () => {
     // Open Gmail in new tab
@@ -27,10 +31,14 @@ export default function EmailVerificationPage() {
             <Mail className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 font-inter mb-4">
-            {t("registration.checkEmail")}
+            {isPasswordReset
+              ? t("forgotPassword.checkEmail")
+              : t("registration.checkEmail")}
           </h1>
           <p className="text-gray-600 text-base leading-relaxed">
-            {t("registration.emailSent")}
+            {isPasswordReset
+              ? t("forgotPassword.emailSent")
+              : t("registration.emailSent")}
           </p>
         </div>
 

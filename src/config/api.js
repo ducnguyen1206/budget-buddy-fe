@@ -7,7 +7,7 @@ export const API_BASE_URL =
 
 // API endpoints
 export const API_ENDPOINTS = {
-  REGISTER: "/api/v1/auth/register",
+  REGISTER: "/api/v1/auth/token",
   LOGIN: "/api/v1/auth/login",
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",

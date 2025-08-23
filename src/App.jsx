@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import LoginPage from "./components/login/LoginPage";
 import RegisterPage from "./components/register/RegisterPage";
+import ForgotPasswordPage from "./components/register/ForgotPasswordPage";
 import EmailVerificationPage from "./components/register/EmailVerificationPage";
 import TokenVerificationPage from "./components/register/TokenVerificationPage";
 import PasswordResetPage from "./components/register/PasswordResetPage";
@@ -33,6 +34,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/token/:token" element={<TokenVerificationPage />} />
           <Route path="/reset-password" element={<PasswordResetPage />} />

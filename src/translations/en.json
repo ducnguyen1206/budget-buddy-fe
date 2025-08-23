@@ -100,5 +100,14 @@
   },
   "header": {
     "brandName": "Budget Buddy"
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "description": "Enter your email so that we can send you password reset link",
+    "sendEmail": "Send reset email",
+    "sending": "Sending...",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email!",
+    "emailSent": "Thanks! An email was sent that will ask you to click on a link to reset your password. If you don't get the email, please contact budgetbuddy@budgetbd.com"
   }
 }

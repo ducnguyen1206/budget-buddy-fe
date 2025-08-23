@@ -77,7 +77,7 @@
     "passwordsMismatch": "Mật khẩu không khớp"
   },
   "errors": {
-    "networkError": "Phát hiện vấn đề kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
+    "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
     "serverConnectionError": "Chúng tôi đang gặp khó khăn khi kết nối với máy chủ. Vui lòng thử lại trong vài phút.",
     "invalidInput": "Vui lòng nhập địa chỉ email hợp lệ (vd: user@example.com).",
     "emailExists": "Email này đã được đăng ký. Bạn có muốn đăng nhập thay thế không?",
@@ -100,5 +100,14 @@
   },
   "header": {
     "brandName": "Budget Buddy"
+  },
+  "forgotPassword": {
+    "title": "Quên mật khẩu?",
+    "description": "Nhập email của bạn để chúng tôi có thể gửi liên kết đặt lại mật khẩu",
+    "sendEmail": "Gửi email đặt lại",
+    "sending": "Đang gửi...",
+    "backToLogin": "Quay lại đăng nhập",
+    "checkEmail": "Kiểm tra email của bạn!",
+    "emailSent": "Cảm ơn! Một email đã được gửi yêu cầu bạn nhấp vào liên kết để đặt lại mật khẩu. Nếu bạn không nhận được email, vui lòng liên hệ budgetbuddy@budgetbd.com"
   }
 }
