@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",
   REFRESH_TOKEN: "/api/v1/auth/refresh-token",
+  CATEGORIES: "/api/v1/categories",
 };
 
 // Helper function to get full API URL

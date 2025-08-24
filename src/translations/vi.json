@@ -95,7 +95,9 @@
     "loginFailed": "Đăng nhập thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ.",
     "invalidCredentials": "Email hoặc mật khẩu không hợp lệ. Vui lòng kiểm tra thông tin đăng nhập và thử lại.",
     "refreshTokenFailed": "Làm mới token thất bại. Vui lòng đăng nhập lại.",
-    "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+    "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
+    "unauthorized": "Bạn không có quyền truy cập tài nguyên này. Vui lòng đăng nhập lại.",
+    "fetchCategoriesFailed": "Không thể tải danh mục. Vui lòng thử lại."
   },
   "dashboard": {
     "title": "Bảng điều khiển",

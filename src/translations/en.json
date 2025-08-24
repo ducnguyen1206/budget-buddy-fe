@@ -95,7 +95,9 @@
     "loginFailed": "Login failed. Please try again or contact support.",
     "invalidCredentials": "Invalid email or password. Please check your credentials and try again.",
     "refreshTokenFailed": "Token refresh failed. Please login again.",
-    "sessionExpired": "Session expired, please login again."
+    "sessionExpired": "Session expired, please login again.",
+    "unauthorized": "You are not authorized to access this resource. Please login again.",
+    "fetchCategoriesFailed": "Failed to fetch categories. Please try again."
   },
   "dashboard": {
     "title": "Dashboard",

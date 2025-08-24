@@ -35,6 +35,8 @@ export const API_ERROR_MESSAGES = {
   INVALID_CREDENTIALS: "errors.invalidCredentials",
   REFRESH_TOKEN_FAILED: "errors.refreshTokenFailed",
   SESSION_EXPIRED: "errors.sessionExpired",
+  UNAUTHORIZED: "errors.unauthorized",
+  FETCH_CATEGORIES_FAILED: "errors.fetchCategoriesFailed",
 };
 
 // HTTP status codes
