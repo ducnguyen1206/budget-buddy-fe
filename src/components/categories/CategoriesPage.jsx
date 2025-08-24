@@ -4,6 +4,7 @@ import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { fetchCategories } from "../../services/categoryService";
+import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 export default function CategoriesPage() {
   // Hooks
@@ -40,6 +41,14 @@ export default function CategoriesPage() {
     setError("");
 
     const result = await fetchCategories(t);
+
+    // Check if the result indicates a redirect should happen
+    if (shouldRedirectToLogin(result)) {
+      console.log(
+        "Categories API returned redirect response - user will be redirected to login"
+      );
+      return; // The redirect will be handled by the API interceptor
+    }
 
     if (result.success) {
       setCategories(result.data);

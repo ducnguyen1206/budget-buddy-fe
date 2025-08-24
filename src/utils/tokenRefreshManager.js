@@ -1,5 +1,6 @@
 import { refreshToken } from "../services/authService";
 import { getToken, removeTokens } from "./tokenManager";
+import { shouldRedirectToLogin } from "./apiInterceptor";
 
 class TokenRefreshManager {
   constructor() {
@@ -10,17 +11,24 @@ class TokenRefreshManager {
 
   // Start the token refresh interval
   start() {
-    // Only start if user is authenticated and not already running
-    if (!getToken() || this.refreshInterval) {
+    if (!getToken()) {
+      console.log("Token refresh manager: No token found, cannot start");
+      return;
+    }
+
+    if (this.refreshInterval) {
+      console.log("Token refresh manager: Already running, skipping start");
       return;
     }
 
     console.log("Starting token refresh manager - refreshing every 5 minutes");
 
-    // Initial refresh after 5 minutes
     this.refreshInterval = setInterval(async () => {
+      console.log("Token refresh interval triggered");
       await this.performRefresh();
     }, this.REFRESH_INTERVAL_MS);
+
+    console.log("Token refresh manager started successfully");
   }
 
   // Stop the token refresh interval
@@ -29,22 +37,31 @@ class TokenRefreshManager {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
       console.log("Token refresh manager stopped");
+    } else {
+      console.log("Token refresh manager: Not running, nothing to stop");
     }
   }
 
   // Perform the actual token refresh
   async performRefresh() {
-    // Prevent multiple simultaneous refresh attempts
     if (this.isRefreshing) {
       console.log("Token refresh already in progress, skipping...");
       return;
     }
 
     this.isRefreshing = true;
+    console.log("Starting token refresh process...");
 
     try {
-      console.log("Refreshing token...");
       const result = await refreshToken();
+
+      // Check if the result indicates a redirect should happen
+      if (shouldRedirectToLogin(result)) {
+        console.log(
+          "Token refresh returned redirect response - user will be redirected to login"
+        );
+        return; // The redirect will be handled by the API interceptor
+      }
 
       if (result.success) {
         console.log("Token refreshed successfully");
@@ -56,9 +73,11 @@ class TokenRefreshManager {
           result.error.includes("Session expired") ||
           result.error.includes("invalid")
         ) {
+          console.log(
+            "Invalid refresh token, stopping manager and clearing tokens"
+          );
           this.stop();
           removeTokens();
-          // Optionally redirect to login page
           window.location.href = "/login";
         }
       }
@@ -71,6 +90,7 @@ class TokenRefreshManager {
 
   // Manually trigger a token refresh (useful for testing)
   async manualRefresh() {
+    console.log("Manual token refresh triggered");
     await this.performRefresh();
   }
 

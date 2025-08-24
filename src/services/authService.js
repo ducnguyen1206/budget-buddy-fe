@@ -7,6 +7,7 @@ import {
 } from "../utils/tokenManager";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import tokenRefreshManager from "../utils/tokenRefreshManager";
+import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
 
 // Login service
 export const loginUser = async (email, password, t = null) => {
@@ -260,11 +261,20 @@ export const refreshToken = async (t = null) => {
       };
     }
 
-    const response = await fetch(getApiUrl(API_ENDPOINTS.REFRESH_TOKEN), {
-      method: "POST",
-      headers: getApiHeaders(false), // No auth needed for token refresh
-      body: JSON.stringify({ refreshToken: refreshTokenValue }),
-    });
+    const response = await fetchWithAuth(
+      getApiUrl(API_ENDPOINTS.REFRESH_TOKEN),
+      {
+        method: "POST",
+        headers: getApiHeaders(false), // No auth needed for token refresh
+        body: JSON.stringify({ refreshToken: refreshTokenValue }),
+      },
+      t
+    );
+
+    // Check if response indicates a redirect should happen
+    if (shouldRedirectToLogin(response)) {
+      return response; // Return the redirect response
+    }
 
     if (response.status === 200) {
       try {
@@ -294,14 +304,6 @@ export const refreshToken = async (t = null) => {
           error: "Invalid response format",
         };
       }
-    } else if (response.status === 401) {
-      // Refresh token is invalid, user needs to login again
-      console.warn("Refresh token is invalid, removing tokens");
-      removeTokens();
-      return {
-        success: false,
-        error: handleApiError("SESSION_EXPIRED", t),
-      };
     } else if (response.status >= 500) {
       return {
         success: false,

@@ -20,13 +20,29 @@ import { isAuthenticated } from "./utils/tokenManager";
 // Component to handle token refresh
 function TokenRefreshHandler() {
   useEffect(() => {
-    // Start token refresh manager if user is authenticated
-    if (isAuthenticated()) {
-      tokenRefreshManager.start();
-    }
+    // Check authentication status and start/stop token refresh manager accordingly
+    const checkAuthAndManageRefresh = () => {
+      if (isAuthenticated()) {
+        console.log("User is authenticated, starting token refresh manager");
+        tokenRefreshManager.start();
+      } else {
+        console.log(
+          "User is not authenticated, stopping token refresh manager"
+        );
+        tokenRefreshManager.stop();
+      }
+    };
+
+    // Initial check
+    checkAuthAndManageRefresh();
+
+    // Set up an interval to check authentication status every 30 seconds
+    // This ensures the token refresh manager starts when user logs in
+    const authCheckInterval = setInterval(checkAuthAndManageRefresh, 30000);
 
     // Cleanup on unmount
     return () => {
+      clearInterval(authCheckInterval);
       tokenRefreshManager.stop();
     };
   }, []);

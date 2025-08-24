@@ -1,13 +1,22 @@
 import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
+import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
 
-// Fetch all categories
 export const fetchCategories = async (t = null) => {
   try {
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CATEGORIES), {
-      method: "GET",
-      headers: getApiHeaders(true), // Include auth token
-    });
+    const response = await fetchWithAuth(
+      getApiUrl(API_ENDPOINTS.CATEGORIES),
+      {
+        method: "GET",
+        headers: getApiHeaders(true), // Include auth token
+      },
+      t
+    );
+
+    // Check if response indicates a redirect should happen
+    if (shouldRedirectToLogin(response)) {
+      return response; // Return the redirect response
+    }
 
     if (response.status === 200) {
       try {
@@ -23,11 +32,6 @@ export const fetchCategories = async (t = null) => {
           error: "Invalid response format",
         };
       }
-    } else if (response.status === 401) {
-      return {
-        success: false,
-        error: handleApiError("UNAUTHORIZED", t),
-      };
     } else if (response.status >= 500) {
       return {
         success: false,
