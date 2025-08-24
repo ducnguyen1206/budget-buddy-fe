@@ -64,6 +64,15 @@ budget-buddy/
 - **Password Reset**: Token-based password reset flow
 - **Email Verification**: Email verification with token validation
 
+### 2. **Dashboard Navigation**
+
+- **Reusable Sidebar**: Consistent navigation across all dashboard pages
+- **Active Page Highlighting**: Visual indication of current page
+- **Logo Integration**: Uses project logo from `/public/logo.png`
+- **Multi-Language Support**: All navigation items support English and Vietnamese
+- **Functional Navigation**: Click navigation items to navigate between pages
+- **Organized Structure**: Feature pages organized in dedicated folders
+
 ### 2. **Multi-Language Support**
 
 - **Languages**: English and Vietnamese
@@ -97,6 +106,19 @@ budget-buddy/
 - `TokenVerificationPage.jsx` - Token verification handler
 - `PasswordResetPage.jsx` - Password reset form
 - `RegistrationSuccessPage.jsx` - Registration success page
+
+#### **Dashboard Components**
+
+- `DashboardSidebar.jsx` - Reusable sidebar navigation with logo
+- `DashboardLayout.jsx` - Layout wrapper with sidebar and main content
+- `DashboardPage.jsx` - Overview dashboard page
+
+#### **Feature Pages**
+
+- `src/components/accounts/AccountsPage.jsx` - Accounts management page
+- `src/components/transactions/TransactionsPage.jsx` - Transactions management page
+- `src/components/budgets/BudgetsPage.jsx` - Budget management page
+- `src/components/categories/CategoriesPage.jsx` - Categories management page
 
 #### **Common Components**
 

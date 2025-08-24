@@ -7,25 +7,12 @@ import EmailVerificationPage from "./components/register/EmailVerificationPage";
 import TokenVerificationPage from "./components/register/TokenVerificationPage";
 import PasswordResetPage from "./components/register/PasswordResetPage";
 import RegistrationSuccessPage from "./components/register/RegistrationSuccessPage";
-
-// Temporary Dashboard component for testing
-const Dashboard = () => {
-  const { t } = useLanguage();
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          {t("dashboard.title")}
-        </h1>
-        <p className="text-gray-600">{t("dashboard.welcome")}</p>
-        <p className="text-sm text-gray-500 mt-2">
-          {t("dashboard.tokenReady")}
-        </p>
-      </div>
-    </div>
-  );
-};
+import DashboardPage from "./components/dashboard/DashboardPage";
+import AccountsPage from "./components/accounts/AccountsPage";
+import TransactionsPage from "./components/transactions/TransactionsPage";
+import BudgetsPage from "./components/budgets/BudgetsPage";
+import CategoriesPage from "./components/categories/CategoriesPage";
+import CategoryForm from "./components/categories/CategoryForm";
 
 export default function App() {
   return (
@@ -42,8 +29,14 @@ export default function App() {
             path="/registration-success"
             element={<RegistrationSuccessPage />}
           />
-          {/* Dashboard route */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Dashboard routes */}
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/budgets" element={<BudgetsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/categories/new" element={<CategoryForm />} />
+          <Route path="/categories/edit/:id" element={<CategoryForm />} />
           {/* Root path redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           {/* Catch-all redirect for any undefined routes */}

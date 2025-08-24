@@ -74,7 +74,9 @@
     "passwordUppercase": "Password must contain at least one uppercase letter",
     "passwordNumber": "Password must contain at least one number",
     "confirmPasswordRequired": "Please re-enter your password",
-    "passwordsMismatch": "Passwords do not match"
+    "passwordsMismatch": "Passwords do not match",
+    "nameRequired": "Please enter a category name",
+    "categoryTypeRequired": "Please select a category type"
   },
   "errors": {
     "networkError": "Connection issue detected. Please check your internet connection and try again.",
@@ -96,7 +98,19 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome! You are successfully logged in.",
-    "tokenReady": "Token is stored and ready for API calls."
+    "tokenReady": "Token is stored and ready for API calls.",
+    "nav": {
+      "overview": "Overview",
+      "accounts": "Accounts",
+      "transactions": "Transactions",
+      "budgets": "Budgets",
+      "categories": "Categories"
+    },
+    "overviewDescription": "Get a quick overview of your financial status and recent activities.",
+    "quickStats": "Quick Stats",
+    "statsComingSoon": "Financial statistics will appear here soon.",
+    "recentActivity": "Recent Activity",
+    "activityComingSoon": "Your recent transactions and activities will appear here."
   },
   "header": {
     "brandName": "Budget Buddy"
@@ -109,5 +123,18 @@
     "backToLogin": "Back to login",
     "checkEmail": "Check your email!",
     "emailSent": "Thanks! An email was sent that will ask you to click on a link to reset your password. If you don't get the email, please contact budgetbuddy@budgetbd.com"
+  },
+  "categories": {
+    "searchPlaceholder": "Search categories...",
+    "new": "New",
+    "name": "Name",
+    "categoryType": "Category Type",
+    "INCOME": "Income",
+    "EXPENSE": "Expense",
+    "noCategoriesFound": "No categories found.",
+    "noCategoriesMatching": "No categories found matching your search.",
+    "createCategory": "Create Category",
+    "updateCategory": "Update Category",
+    "namePlaceholder": "Enter category name"
   }
 }

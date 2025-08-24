@@ -74,7 +74,9 @@
     "passwordUppercase": "Mật khẩu phải chứa ít nhất một chữ hoa",
     "passwordNumber": "Mật khẩu phải chứa ít nhất một số",
     "confirmPasswordRequired": "Vui lòng nhập lại mật khẩu của bạn",
-    "passwordsMismatch": "Mật khẩu không khớp"
+    "passwordsMismatch": "Mật khẩu không khớp",
+    "nameRequired": "Vui lòng nhập tên danh mục",
+    "categoryTypeRequired": "Vui lòng chọn loại danh mục"
   },
   "errors": {
     "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
@@ -96,7 +98,19 @@
   "dashboard": {
     "title": "Bảng điều khiển",
     "welcome": "Chào mừng! Bạn đã đăng nhập thành công.",
-    "tokenReady": "Token đã được lưu trữ và sẵn sàng cho các cuộc gọi API."
+    "tokenReady": "Token đã được lưu trữ và sẵn sàng cho các cuộc gọi API.",
+    "nav": {
+      "overview": "Tổng quan",
+      "accounts": "Tài khoản",
+      "transactions": "Giao dịch",
+      "budgets": "Ngân sách",
+      "categories": "Danh mục"
+    },
+    "overviewDescription": "Xem tổng quan nhanh về tình trạng tài chính và hoạt động gần đây của bạn.",
+    "quickStats": "Thống kê nhanh",
+    "statsComingSoon": "Thống kê tài chính sẽ xuất hiện ở đây sớm.",
+    "recentActivity": "Hoạt động gần đây",
+    "activityComingSoon": "Các giao dịch và hoạt động gần đây của bạn sẽ xuất hiện ở đây."
   },
   "header": {
     "brandName": "Budget Buddy"
@@ -109,5 +123,18 @@
     "backToLogin": "Quay lại đăng nhập",
     "checkEmail": "Kiểm tra email của bạn!",
     "emailSent": "Cảm ơn! Một email đã được gửi yêu cầu bạn nhấp vào liên kết để đặt lại mật khẩu. Nếu bạn không nhận được email, vui lòng liên hệ budgetbuddy@budgetbd.com"
+  },
+  "categories": {
+    "searchPlaceholder": "Tìm kiếm danh mục...",
+    "new": "Mới",
+    "name": "Tên",
+    "categoryType": "Loại danh mục",
+    "INCOME": "Thu nhập",
+    "EXPENSE": "Chi tiêu",
+    "noCategoriesFound": "Không tìm thấy danh mục nào.",
+    "noCategoriesMatching": "Không tìm thấy danh mục nào phù hợp với tìm kiếm của bạn.",
+    "createCategory": "Tạo Danh Mục",
+    "updateCategory": "Cập Nhật Danh Mục",
+    "namePlaceholder": "Nhập tên danh mục"
   }
 }
