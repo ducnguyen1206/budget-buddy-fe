@@ -93,7 +93,9 @@
     "userNotFound": "Không tìm thấy người dùng. Vui lòng kiểm tra email và thử lại.",
     "invalidPasswordRequest": "Yêu cầu đặt lại mật khẩu không hợp lệ. Vui lòng thử lại.",
     "loginFailed": "Đăng nhập thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ.",
-    "invalidCredentials": "Email hoặc mật khẩu không hợp lệ. Vui lòng kiểm tra thông tin đăng nhập và thử lại."
+    "invalidCredentials": "Email hoặc mật khẩu không hợp lệ. Vui lòng kiểm tra thông tin đăng nhập và thử lại.",
+    "refreshTokenFailed": "Làm mới token thất bại. Vui lòng đăng nhập lại.",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
   },
   "dashboard": {
     "title": "Bảng điều khiển",

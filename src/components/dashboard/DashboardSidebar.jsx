@@ -8,10 +8,21 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { removeTokens } from "../../utils/tokenManager";
+import tokenRefreshManager from "../../utils/tokenRefreshManager";
 
 export default function DashboardSidebar({ activePage = "overview" }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  const handleLogout = () => {
+    // Stop token refresh manager
+    tokenRefreshManager.stop();
+    // Remove tokens
+    removeTokens();
+    // Redirect to login page
+    navigate("/login");
+  };
 
   const navigationItems = [
     {
@@ -90,7 +101,10 @@ export default function DashboardSidebar({ activePage = "overview" }) {
 
       {/* Sign Out Button */}
       <div className="p-4 border-t border-blue-100">
-        <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors"
+        >
           <LogOut className="w-5 h-5 text-gray-600" />
           <span className="font-medium">{t("auth.signOut")}</span>
         </button>

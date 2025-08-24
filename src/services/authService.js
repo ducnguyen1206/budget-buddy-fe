@@ -1,7 +1,12 @@
 import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
-import { storeTokens } from "../utils/tokenManager";
+import {
+  storeTokens,
+  getRefreshToken,
+  removeTokens,
+} from "../utils/tokenManager";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
+import tokenRefreshManager from "../utils/tokenRefreshManager";
 
 // Login service
 export const loginUser = async (email, password, t = null) => {
@@ -20,6 +25,8 @@ export const loginUser = async (email, password, t = null) => {
         // Store tokens in localStorage
         if (token || refreshToken) {
           storeTokens(token, refreshToken);
+          // Start token refresh manager after successful login
+          tokenRefreshManager.start();
         }
 
         return {
@@ -233,6 +240,81 @@ export const resetPassword = async (
     }
   } catch (error) {
     console.error("Password reset error:", error);
+    return {
+      success: false,
+      error: handleNetworkError(error, t),
+    };
+  }
+};
+
+// Refresh token service
+export const refreshToken = async (t = null) => {
+  try {
+    const refreshTokenValue = getRefreshToken();
+
+    if (!refreshTokenValue) {
+      console.warn("No refresh token available");
+      return {
+        success: false,
+        error: "No refresh token available",
+      };
+    }
+
+    const response = await fetch(getApiUrl(API_ENDPOINTS.REFRESH_TOKEN), {
+      method: "POST",
+      headers: getApiHeaders(false), // No auth needed for token refresh
+      body: JSON.stringify({ refreshToken: refreshTokenValue }),
+    });
+
+    if (response.status === 200) {
+      try {
+        const responseData = await response.json();
+        const { token, refreshToken: newRefreshToken } = responseData;
+
+        // Store new tokens
+        if (token || newRefreshToken) {
+          storeTokens(token, newRefreshToken);
+        }
+
+        console.log("Token refreshed successfully");
+        return {
+          success: true,
+          data: {
+            token,
+            refreshToken: newRefreshToken,
+          },
+        };
+      } catch (jsonError) {
+        console.warn(
+          "JSON parsing failed for refresh token response:",
+          jsonError
+        );
+        return {
+          success: false,
+          error: "Invalid response format",
+        };
+      }
+    } else if (response.status === 401) {
+      // Refresh token is invalid, user needs to login again
+      console.warn("Refresh token is invalid, removing tokens");
+      removeTokens();
+      return {
+        success: false,
+        error: handleApiError("SESSION_EXPIRED", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("REFRESH_TOKEN_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Token refresh error:", error);
     return {
       success: false,
       error: handleNetworkError(error, t),

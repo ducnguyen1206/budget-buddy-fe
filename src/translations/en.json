@@ -93,7 +93,9 @@
     "userNotFound": "User not found. Please check your email and try again.",
     "invalidPasswordRequest": "Invalid password reset request. Please try again.",
     "loginFailed": "Login failed. Please try again or contact support.",
-    "invalidCredentials": "Invalid email or password. Please check your credentials and try again."
+    "invalidCredentials": "Invalid email or password. Please check your credentials and try again.",
+    "refreshTokenFailed": "Token refresh failed. Please login again.",
+    "sessionExpired": "Session expired, please login again."
   },
   "dashboard": {
     "title": "Dashboard",

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
+import { useEffect } from "react";
 import LoginPage from "./components/login/LoginPage";
 import RegisterPage from "./components/register/RegisterPage";
 import ForgotPasswordPage from "./components/register/ForgotPasswordPage";
@@ -13,11 +14,31 @@ import TransactionsPage from "./components/transactions/TransactionsPage";
 import BudgetsPage from "./components/budgets/BudgetsPage";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
+import tokenRefreshManager from "./utils/tokenRefreshManager";
+import { isAuthenticated } from "./utils/tokenManager";
+
+// Component to handle token refresh
+function TokenRefreshHandler() {
+  useEffect(() => {
+    // Start token refresh manager if user is authenticated
+    if (isAuthenticated()) {
+      tokenRefreshManager.start();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      tokenRefreshManager.stop();
+    };
+  }, []);
+
+  return null; // This component doesn't render anything
+}
 
 export default function App() {
   return (
     <LanguageProvider>
       <BrowserRouter>
+        <TokenRefreshHandler />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

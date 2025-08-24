@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   LOGIN: "/api/v1/auth/login",
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",
+  REFRESH_TOKEN: "/api/v1/auth/refresh-token",
 };
 
 // Helper function to get full API URL
