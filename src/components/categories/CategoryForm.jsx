@@ -5,11 +5,15 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { ArrowLeft } from "lucide-react";
 
 export default function CategoryForm() {
+  // Hooks
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { id } = useParams(); // For edit mode
+
+  // Determine if we're in edit mode
   const isEditMode = !!id;
 
+  // Form state
   const [formData, setFormData] = useState({
     name: "",
     type: "EXPENSE",
@@ -23,9 +27,10 @@ export default function CategoryForm() {
     type: "EXPENSE",
   };
 
+  // Load category data when in edit mode
   useEffect(() => {
     if (isEditMode) {
-      // In real app, fetch category data by ID
+      // In real app, fetch category data by ID from API
       setFormData({
         name: mockCategory.name,
         type: mockCategory.type,
@@ -33,8 +38,11 @@ export default function CategoryForm() {
     }
   }, [isEditMode]);
 
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update form data
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -49,13 +57,16 @@ export default function CategoryForm() {
     }
   };
 
+  // Validate form fields
   const validateForm = () => {
     const errors = {};
 
+    // Validate name field
     if (!formData.name.trim()) {
       errors.name = t("validation.nameRequired");
     }
 
+    // Validate type field
     if (!formData.type) {
       errors.type = t("validation.categoryTypeRequired");
     }
@@ -64,9 +75,11 @@ export default function CategoryForm() {
     return Object.keys(errors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validate form before submission
     if (!validateForm()) {
       return;
     }
@@ -78,9 +91,74 @@ export default function CategoryForm() {
     navigate("/categories");
   };
 
+  // Handle cancel action
   const handleCancel = () => {
     navigate("/categories");
   };
+
+  // Render form field with validation
+  const renderFormField = (fieldName, label, type = "text", options = null) => (
+    <div>
+      <label
+        htmlFor={fieldName}
+        className="block text-sm font-medium text-gray-700 mb-2"
+      >
+        {label}
+      </label>
+
+      {type === "select" ? (
+        <select
+          id={fieldName}
+          name={fieldName}
+          value={formData[fieldName]}
+          onChange={handleChange}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out appearance-none bg-white ${
+            validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
+          }`}
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+            backgroundPosition: "right 0.5rem center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "1.5em 1.5em",
+            paddingRight: "2.5rem",
+          }}
+        >
+          {options?.map((option) => (
+            <option key={option.value} value={option.value} className="py-2">
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          id={fieldName}
+          name={fieldName}
+          value={formData[fieldName]}
+          onChange={handleChange}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
+          }`}
+          placeholder={
+            fieldName === "name" ? t("categories.namePlaceholder") : ""
+          }
+        />
+      )}
+
+      {/* Show validation error if exists */}
+      {validationErrors[fieldName] && (
+        <p className="mt-1 text-sm text-red-600">
+          {validationErrors[fieldName]}
+        </p>
+      )}
+    </div>
+  );
+
+  // Category type options
+  const categoryTypeOptions = [
+    { value: "EXPENSE", label: t("categories.EXPENSE") },
+    { value: "INCOME", label: t("categories.INCOME") },
+  ];
 
   return (
     <DashboardLayout activePage="categories">
@@ -94,72 +172,19 @@ export default function CategoryForm() {
           </h1>
         </div>
 
-        {/* Form */}
+        {/* Form Container */}
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                {t("categories.name")}
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  validationErrors.name ? "border-red-300" : "border-gray-300"
-                }`}
-                placeholder={t("categories.namePlaceholder")}
-              />
-              {validationErrors.name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {validationErrors.name}
-                </p>
-              )}
-            </div>
+            {renderFormField("name", t("categories.name"))}
 
             {/* Category Type Field */}
-            <div>
-              <label
-                htmlFor="type"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                {t("categories.categoryType")}
-              </label>
-              <select
-                id="type"
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out appearance-none bg-white ${
-                  validationErrors.type ? "border-red-300" : "border-gray-300"
-                }`}
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: "right 0.5rem center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "1.5em 1.5em",
-                  paddingRight: "2.5rem",
-                }}
-              >
-                <option value="EXPENSE" className="py-2">
-                  {t("categories.EXPENSE")}
-                </option>
-                <option value="INCOME" className="py-2">
-                  {t("categories.INCOME")}
-                </option>
-              </select>
-              {validationErrors.type && (
-                <p className="mt-1 text-sm text-red-600">
-                  {validationErrors.type}
-                </p>
-              )}
-            </div>
+            {renderFormField(
+              "type",
+              t("categories.categoryType"),
+              "select",
+              categoryTypeOptions
+            )}
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-4 pt-6">
