@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
+import {
+  createCategory,
+  updateCategory,
+  fetchCategoryById,
+} from "../../services/categoryService";
 import { ArrowLeft } from "lucide-react";
 
 export default function CategoryForm() {
@@ -16,27 +21,45 @@ export default function CategoryForm() {
   // Form state
   const [formData, setFormData] = useState({
     name: "",
-    type: "EXPENSE",
+    type: "",
   });
   const [validationErrors, setValidationErrors] = useState({});
-
-  // Mock data for editing - in real app, fetch from API
-  const mockCategory = {
-    id: 1,
-    name: "Groceries",
-    type: "EXPENSE",
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [loadError, setLoadError] = useState("");
 
   // Load category data when in edit mode
   useEffect(() => {
-    if (isEditMode) {
-      // In real app, fetch category data by ID from API
-      setFormData({
-        name: mockCategory.name,
-        type: mockCategory.type,
-      });
+    if (isEditMode && id) {
+      loadCategoryData();
     }
-  }, [isEditMode]);
+  }, [isEditMode, id]);
+
+  // Load category data from API
+  const loadCategoryData = async () => {
+    setIsLoading(true);
+    setLoadError("");
+
+    try {
+      const result = await fetchCategoryById(id, t);
+
+      if (result.success) {
+        const category = result.data;
+        setFormData({
+          name: category.name || "",
+          type: category.type || "",
+        });
+      } else {
+        setLoadError(result.error);
+      }
+    } catch (error) {
+      console.error("Error loading category:", error);
+      setLoadError(t("errors.fetchCategoryFailed"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -54,6 +77,11 @@ export default function CategoryForm() {
         ...prev,
         [name]: "",
       }));
+    }
+
+    // Clear submit error when user makes changes
+    if (submitError) {
+      setSubmitError("");
     }
   };
 
@@ -76,25 +104,105 @@ export default function CategoryForm() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Clear previous errors
+    setSubmitError("");
 
     // Validate form before submission
     if (!validateForm()) {
       return;
     }
 
-    // In real app, call API to create/update category
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
 
-    // Navigate back to categories page
-    navigate("/categories");
+    try {
+      if (isEditMode) {
+        // Update existing category
+        const result = await updateCategory(id, formData, t);
+
+        if (result.success) {
+          console.log("Category updated successfully:", result.data);
+          navigate("/categories");
+        } else {
+          setSubmitError(result.error);
+        }
+      } else {
+        // Create new category
+        const result = await createCategory(formData, t);
+
+        if (result.success) {
+          console.log("Category created successfully:", result.data);
+          navigate("/categories");
+        } else {
+          setSubmitError(result.error);
+        }
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setSubmitError(
+        isEditMode
+          ? t("errors.updateCategoryFailed")
+          : t("errors.createCategoryFailed")
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Handle cancel action
   const handleCancel = () => {
     navigate("/categories");
   };
+
+  // Show loading state while fetching category data
+  if (isLoading) {
+    return (
+      <DashboardLayout activePage="categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-center min-h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-600">{t("common.loading")}</p>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Show error state if category loading failed
+  if (loadError) {
+    return (
+      <DashboardLayout activePage="categories">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {t("categories.updateCategory")}
+            </h1>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <p className="text-red-600 mb-4">{loadError}</p>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => loadCategoryData()}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t("common.retry")}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {t("common.cancel")}
+              </button>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   // Render form field with validation
   const renderFormField = (fieldName, label, type = "text", options = null) => (
@@ -123,6 +231,9 @@ export default function CategoryForm() {
             paddingRight: "2.5rem",
           }}
         >
+          <option value="" className="py-2">
+            {t("categories.selectType")}
+          </option>
           {options?.map((option) => (
             <option key={option.value} value={option.value} className="py-2">
               {option.label}
@@ -154,7 +265,7 @@ export default function CategoryForm() {
     </div>
   );
 
-  // Category type options
+  // Category type options - could be fetched from API in the future
   const categoryTypeOptions = [
     { value: "EXPENSE", label: t("categories.EXPENSE") },
     { value: "INCOME", label: t("categories.INCOME") },
@@ -186,20 +297,29 @@ export default function CategoryForm() {
               categoryTypeOptions
             )}
 
+            {/* Submit Error */}
+            {submitError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{submitError}</p>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex justify-end space-x-4 pt-6">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors"
+                disabled={isSubmitting}
+                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t("common.save")}
+                {isSubmitting ? t("common.saving") : t("common.save")}
               </button>
             </div>
           </form>

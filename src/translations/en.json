@@ -6,8 +6,10 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saving": "Saving...",
     "edit": "Edit",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
@@ -97,7 +99,15 @@
     "refreshTokenFailed": "Token refresh failed. Please login again.",
     "sessionExpired": "Session expired, please login again.",
     "unauthorized": "You are not authorized to access this resource. Please login again.",
-    "fetchCategoriesFailed": "Failed to fetch categories. Please try again."
+    "fetchCategoriesFailed": "Failed to fetch categories. Please try again.",
+    "fetchCategoryFailed": "Failed to fetch category. Please try again.",
+    "createCategoryFailed": "Failed to create category. Please try again.",
+    "updateCategoryFailed": "Failed to update category. Please try again.",
+    "deleteCategoryFailed": "Failed to delete category. Please try again.",
+    "invalidCategoryData": "Invalid category data. Please check your input and try again.",
+    "categoryAlreadyExists": "A category with this name already exists. Please choose a different name.",
+    "categoryNotFound": "Category not found. Please check the category ID and try again.",
+    "categoryInUse": "This category is currently in use and cannot be deleted. Please remove all references to this category first."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -133,12 +143,15 @@
     "new": "New",
     "name": "Name",
     "categoryType": "Category Type",
+    "selectType": "Select category type",
     "INCOME": "Income",
     "EXPENSE": "Expense",
     "noCategoriesFound": "No categories found.",
     "noCategoriesMatching": "No categories found matching your search.",
     "createCategory": "Create Category",
     "updateCategory": "Update Category",
-    "namePlaceholder": "Enter category name"
+    "namePlaceholder": "Enter category name",
+    "confirmDelete": "Confirm Delete",
+    "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This action cannot be undone."
   }
 }

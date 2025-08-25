@@ -6,8 +6,10 @@
     "cancel": "Hủy",
     "confirm": "Xác nhận",
     "save": "Lưu",
+    "saving": "Đang lưu...",
     "edit": "Chỉnh sửa",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "back": "Quay lại",
     "next": "Tiếp theo",
     "previous": "Trước",
@@ -97,7 +99,15 @@
     "refreshTokenFailed": "Làm mới token thất bại. Vui lòng đăng nhập lại.",
     "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
     "unauthorized": "Bạn không có quyền truy cập tài nguyên này. Vui lòng đăng nhập lại.",
-    "fetchCategoriesFailed": "Không thể tải danh mục. Vui lòng thử lại."
+    "fetchCategoriesFailed": "Không thể tải danh mục. Vui lòng thử lại.",
+    "fetchCategoryFailed": "Không thể tải danh mục. Vui lòng thử lại.",
+    "createCategoryFailed": "Không thể tạo danh mục. Vui lòng thử lại.",
+    "updateCategoryFailed": "Không thể cập nhật danh mục. Vui lòng thử lại.",
+    "deleteCategoryFailed": "Không thể xóa danh mục. Vui lòng thử lại.",
+    "invalidCategoryData": "Dữ liệu danh mục không hợp lệ. Vui lòng kiểm tra thông tin nhập và thử lại.",
+    "categoryAlreadyExists": "Một danh mục với tên này đã tồn tại. Vui lòng chọn tên khác.",
+    "categoryNotFound": "Không tìm thấy danh mục. Vui lòng kiểm tra ID danh mục và thử lại.",
+    "categoryInUse": "Danh mục này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tham chiếu đến danh mục này trước."
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -133,12 +143,15 @@
     "new": "Mới",
     "name": "Tên",
     "categoryType": "Loại danh mục",
+    "selectType": "Chọn loại danh mục",
     "INCOME": "Thu nhập",
     "EXPENSE": "Chi tiêu",
     "noCategoriesFound": "Không tìm thấy danh mục nào.",
     "noCategoriesMatching": "Không tìm thấy danh mục nào phù hợp với tìm kiếm của bạn.",
     "createCategory": "Tạo Danh Mục",
     "updateCategory": "Cập Nhật Danh Mục",
-    "namePlaceholder": "Nhập tên danh mục"
+    "namePlaceholder": "Nhập tên danh mục",
+    "confirmDelete": "Xác Nhận Xóa",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa danh mục \"{name}\"? Hành động này không thể hoàn tác."
   }
 }

@@ -14,6 +14,10 @@ export const VALIDATION_RULES = {
     CONFIRM_REQUIRED: "validation.confirmPasswordRequired",
     MISMATCH: "validation.passwordsMismatch",
   },
+  CATEGORY: {
+    NAME_REQUIRED: "validation.nameRequired",
+    TYPE_REQUIRED: "validation.categoryTypeRequired",
+  },
 };
 
 // API error messages - These will be replaced by translation keys
@@ -37,11 +41,21 @@ export const API_ERROR_MESSAGES = {
   SESSION_EXPIRED: "errors.sessionExpired",
   UNAUTHORIZED: "errors.unauthorized",
   FETCH_CATEGORIES_FAILED: "errors.fetchCategoriesFailed",
+  FETCH_CATEGORY_FAILED: "errors.fetchCategoryFailed",
+  CREATE_CATEGORY_FAILED: "errors.createCategoryFailed",
+  UPDATE_CATEGORY_FAILED: "errors.updateCategoryFailed",
+  DELETE_CATEGORY_FAILED: "errors.deleteCategoryFailed",
+  INVALID_CATEGORY_DATA: "errors.invalidCategoryData",
+  CATEGORY_ALREADY_EXISTS: "errors.categoryAlreadyExists",
+  CATEGORY_NOT_FOUND: "errors.categoryNotFound",
+  CATEGORY_IN_USE: "errors.categoryInUse",
 };
 
 // HTTP status codes
 export const HTTP_STATUS = {
   CREATED: 201,
   BAD_REQUEST: 400,
+  NOT_FOUND: 404,
   CONFLICT: 409,
+  NO_CONTENT: 204,
 };

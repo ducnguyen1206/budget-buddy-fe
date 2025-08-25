@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus, MoreHorizontal, Edit, Trash2 } from "lucide-react";
-import { fetchCategories } from "../../services/categoryService";
+import {
+  fetchCategories,
+  deleteCategory,
+} from "../../services/categoryService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 export default function CategoriesPage() {
@@ -18,6 +21,8 @@ export default function CategoriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [dropdownPositions, setDropdownPositions] = useState({});
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch categories from API on component mount
   useEffect(() => {
@@ -95,7 +100,47 @@ export default function CategoriesPage() {
   // Handle delete category action
   const handleDelete = (id) => {
     console.log("Delete category:", id);
+    setDeleteConfirm(id);
     setOpenDropdown(null);
+  };
+
+  // Confirm delete action
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+
+    setIsDeleting(true);
+    setError("");
+
+    try {
+      const result = await deleteCategory(deleteConfirm, t);
+
+      // Check if the result indicates a redirect should happen
+      if (shouldRedirectToLogin(result)) {
+        console.log(
+          "Delete category API returned redirect response - user will be redirected to login"
+        );
+        return; // The redirect will be handled by the API interceptor
+      }
+
+      if (result.success) {
+        console.log("Category deleted successfully");
+        // Remove the deleted category from the list
+        setCategories((prev) => prev.filter((cat) => cat.id !== deleteConfirm));
+        setDeleteConfirm(null);
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      console.error("Delete category error:", error);
+      setError(t("errors.deleteCategoryFailed"));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Cancel delete action
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   // Render loading state
@@ -114,6 +159,47 @@ export default function CategoriesPage() {
       <p className="text-red-600 text-sm">{error}</p>
     </div>
   );
+
+  // Render delete confirmation dialog
+  const renderDeleteConfirmation = () => {
+    if (!deleteConfirm) return null;
+
+    const categoryToDelete = categories.find((cat) => cat.id === deleteConfirm);
+    if (!categoryToDelete) return null;
+
+    // Replace the {name} placeholder with the actual category name
+    const deleteWarningText = t("categories.deleteWarning").replace(
+      "{name}",
+      categoryToDelete.name
+    );
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {t("categories.confirmDelete")}
+          </h3>
+          <p className="text-gray-600 mb-6">{deleteWarningText}</p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={cancelDelete}
+              disabled={isDeleting}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("common.cancel")}
+            </button>
+            <button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDeleting ? t("common.deleting") : t("common.delete")}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Render empty state
   const renderEmptyState = () => (
@@ -255,6 +341,9 @@ export default function CategoriesPage() {
 
         {/* Empty State */}
         {!isLoading && filteredCategories.length === 0 && renderEmptyState()}
+
+        {/* Delete Confirmation Dialog */}
+        {renderDeleteConfirmation()}
       </div>
     </DashboardLayout>
   );
