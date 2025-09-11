@@ -107,7 +107,16 @@
     "invalidCategoryData": "Invalid category data. Please check your input and try again.",
     "categoryAlreadyExists": "A category with this name already exists. Please choose a different name.",
     "categoryNotFound": "Category not found. Please check the category ID and try again.",
-    "categoryInUse": "This category is currently in use and cannot be deleted. Please remove all references to this category first."
+    "categoryInUse": "This category is currently in use and cannot be deleted. Please remove all references to this category first.",
+    "fetchAccountsFailed": "Failed to fetch accounts. Please try again.",
+    "fetchAccountFailed": "Failed to fetch account. Please try again.",
+    "createAccountFailed": "Failed to create account. Please try again.",
+    "updateAccountFailed": "Failed to update account. Please try again.",
+    "deleteAccountFailed": "Failed to delete account. Please try again.",
+    "invalidAccountData": "Invalid account data. Please check your input and try again.",
+    "accountAlreadyExists": "An account with this name already exists. Please choose a different name.",
+    "accountNotFound": "Account not found. Please check the account ID and try again.",
+    "accountInUse": "This account is currently in use and cannot be deleted. Please remove all references to this account first."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -153,5 +162,26 @@
     "namePlaceholder": "Enter category name",
     "confirmDelete": "Confirm Delete",
     "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This action cannot be undone."
+  },
+  "accounts": {
+    "searchPlaceholder": "Search accounts...",
+    "new": "New",
+    "name": "Name",
+    "availableBalance": "Available Balance",
+    "accountType": "Account Type",
+    "balance": "Balance",
+    "currency": "Currency",
+    "noAccountsFound": "No accounts found.",
+    "noAccountsMatching": "No accounts found matching your search.",
+    "createAccount": "Create Account",
+    "updateAccount": "Update Account",
+    "namePlaceholder": "Enter account name",
+    "balancePlaceholder": "Enter balance",
+    "selectType": "Select account type",
+    "confirmDelete": "Confirm Delete",
+    "deleteWarning": "Are you sure you want to delete the account \"{name}\"? This action cannot be undone.",
+    "expandGroup": "Expand group",
+    "collapseGroup": "Collapse group",
+    "totalConsolidated": "Total Consolidated"
   }
 }

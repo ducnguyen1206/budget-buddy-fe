@@ -49,6 +49,15 @@ export const API_ERROR_MESSAGES = {
   CATEGORY_ALREADY_EXISTS: "errors.categoryAlreadyExists",
   CATEGORY_NOT_FOUND: "errors.categoryNotFound",
   CATEGORY_IN_USE: "errors.categoryInUse",
+  FETCH_ACCOUNTS_FAILED: "errors.fetchAccountsFailed",
+  FETCH_ACCOUNT_FAILED: "errors.fetchAccountFailed",
+  CREATE_ACCOUNT_FAILED: "errors.createAccountFailed",
+  UPDATE_ACCOUNT_FAILED: "errors.updateAccountFailed",
+  DELETE_ACCOUNT_FAILED: "errors.deleteAccountFailed",
+  INVALID_ACCOUNT_DATA: "errors.invalidAccountData",
+  ACCOUNT_ALREADY_EXISTS: "errors.accountAlreadyExists",
+  ACCOUNT_NOT_FOUND: "errors.accountNotFound",
+  ACCOUNT_IN_USE: "errors.accountInUse",
 };
 
 // HTTP status codes

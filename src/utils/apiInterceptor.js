@@ -3,7 +3,7 @@ import tokenRefreshManager from "./tokenRefreshManager";
 
 // Global API interceptor to handle 401 errors
 export const handleApiResponse = async (response, t = null) => {
-  if (response.status === 401) {
+  if (response.status === 401 || response.status === 403) {
     console.log("API returned 401 - User unauthorized, redirecting to login");
 
     // Stop token refresh manager
@@ -28,13 +28,13 @@ export const handleApiResponse = async (response, t = null) => {
   return response;
 };
 
-// Wrapper function for fetch that includes 401 handling
+// Wrapper function for fetch that includes 401/403 handling
 export const fetchWithAuth = async (url, options = {}, t = null) => {
   try {
     const response = await fetch(url, options);
 
     // Check for 401 and handle globally
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       return await handleApiResponse(response, t);
     }
 

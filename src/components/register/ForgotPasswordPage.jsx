@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
       });
     } else {
       setError(result.error);
-    }
+    } 
 
     setIsLoading(false);
   };

@@ -107,7 +107,16 @@
     "invalidCategoryData": "Dữ liệu danh mục không hợp lệ. Vui lòng kiểm tra thông tin nhập và thử lại.",
     "categoryAlreadyExists": "Một danh mục với tên này đã tồn tại. Vui lòng chọn tên khác.",
     "categoryNotFound": "Không tìm thấy danh mục. Vui lòng kiểm tra ID danh mục và thử lại.",
-    "categoryInUse": "Danh mục này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tham chiếu đến danh mục này trước."
+    "categoryInUse": "Danh mục này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tham chiếu đến danh mục này trước.",
+    "fetchAccountsFailed": "Không thể tải tài khoản. Vui lòng thử lại.",
+    "fetchAccountFailed": "Không thể tải tài khoản. Vui lòng thử lại.",
+    "createAccountFailed": "Không thể tạo tài khoản. Vui lòng thử lại.",
+    "updateAccountFailed": "Không thể cập nhật tài khoản. Vui lòng thử lại.",
+    "deleteAccountFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
+    "invalidAccountData": "Dữ liệu tài khoản không hợp lệ. Vui lòng kiểm tra thông tin nhập và thử lại.",
+    "accountAlreadyExists": "Một tài khoản với tên này đã tồn tại. Vui lòng chọn tên khác.",
+    "accountNotFound": "Không tìm thấy tài khoản. Vui lòng kiểm tra ID tài khoản và thử lại.",
+    "accountInUse": "Tài khoản này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tham chiếu đến tài khoản này trước."
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -153,5 +162,26 @@
     "namePlaceholder": "Nhập tên danh mục",
     "confirmDelete": "Xác Nhận Xóa",
     "deleteWarning": "Bạn có chắc chắn muốn xóa danh mục \"{name}\"? Hành động này không thể hoàn tác."
+  },
+  "accounts": {
+    "searchPlaceholder": "Tìm kiếm tài khoản...",
+    "new": "Mới",
+    "name": "Tên",
+    "availableBalance": "Số dư khả dụng",
+    "accountType": "Loại tài khoản",
+    "balance": "Số dư",
+    "currency": "Tiền tệ",
+    "noAccountsFound": "Không tìm thấy tài khoản nào.",
+    "noAccountsMatching": "Không tìm thấy tài khoản nào phù hợp với tìm kiếm của bạn.",
+    "createAccount": "Tạo Tài Khoản",
+    "updateAccount": "Cập Nhật Tài Khoản",
+    "namePlaceholder": "Nhập tên tài khoản",
+    "balancePlaceholder": "Nhập số dư",
+    "selectType": "Chọn loại tài khoản",
+    "confirmDelete": "Xác Nhận Xóa",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa tài khoản \"{name}\"? Hành động này không thể hoàn tác.",
+    "expandGroup": "Mở rộng nhóm",
+    "collapseGroup": "Thu gọn nhóm",
+    "totalConsolidated": "Tổng Cộng"
   }
 }

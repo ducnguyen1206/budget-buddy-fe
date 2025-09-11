@@ -1,9 +1,452 @@
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
+import {
+  Search,
+  Plus,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
+import { fetchAccounts, deleteAccount } from "../../services/accountService";
+import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
+
+// Currency formatting utility (moved inside component to avoid context issues)
 
 export default function AccountsPage() {
+  // Hooks
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
+  // State management
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [expandedGroups, setExpandedGroups] = useState(new Set());
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dropdownPositions, setDropdownPositions] = useState({});
+
+  // Effects
+  useEffect(() => {
+    loadAccounts();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // API functions
+  const loadAccounts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await fetchAccounts(t);
+
+      if (shouldRedirectToLogin(result)) return;
+
+      if (result.success) {
+        setAccounts(result.data || []);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      console.error("Error loading accounts:", err);
+      setError(t("errors.fetchAccountsFailed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+
+    try {
+      setIsDeleting(true);
+      const result = await deleteAccount(deleteConfirm, t);
+
+      if (shouldRedirectToLogin(result)) return;
+
+      if (result.success) {
+        await loadAccounts();
+        setDeleteConfirm(null);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      setError(t("errors.deleteAccountFailed"));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Event handlers
+  const handleSearch = (e) => setSearchTerm(e.target.value);
+
+  const handleDropdownToggle = (accountId, event) => {
+    event.stopPropagation();
+
+    if (openDropdown === accountId) {
+      setOpenDropdown(null);
+      return;
+    }
+
+    setOpenDropdown(accountId);
+
+    // Calculate dropdown position with viewport bounds checking
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const dropdownWidth = 192; // w-48 = 192px
+    const dropdownHeight = 88; // Approximate height of dropdown with 2 items
+
+    let top = rect.bottom + 4;
+    let left = rect.left;
+
+    // Check if dropdown would go off the right edge
+    if (left + dropdownWidth > viewportWidth) {
+      left = viewportWidth - dropdownWidth - 8; // 8px margin from edge
+    }
+
+    // Check if dropdown would go off the bottom edge
+    if (top + dropdownHeight > viewportHeight) {
+      top = rect.top - dropdownHeight - 4; // Position above the button
+    }
+
+    // Ensure dropdown doesn't go off the left edge
+    if (left < 8) {
+      left = 8;
+    }
+
+    // Ensure dropdown doesn't go off the top edge
+    if (top < 8) {
+      top = 8;
+    }
+
+    setDropdownPositions((prev) => ({
+      ...prev,
+      [accountId]: {
+        position: "fixed",
+        top: `${top}px`,
+        left: `${left}px`,
+        zIndex: 50,
+      },
+    }));
+  };
+
+  const handleEdit = (accountId) => {
+    setOpenDropdown(null);
+    navigate(`/accounts/edit/${accountId}`);
+  };
+
+  const handleDelete = (accountId) => {
+    setOpenDropdown(null);
+    setDeleteConfirm(accountId);
+  };
+
+  const cancelDelete = () => setDeleteConfirm(null);
+
+  const toggleGroupExpansion = (accountType) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(accountType)) {
+        newSet.delete(accountType);
+      } else {
+        newSet.add(accountType);
+      }
+      return newSet;
+    });
+  };
+
+  // Utility functions
+  const calculateGroupBalance = (accounts) => {
+    return accounts.reduce(
+      (total, account) => total + (account.balance || 0),
+      0
+    );
+  };
+
+  const getGroupCurrency = (accounts) => {
+    return accounts.length > 0 ? accounts[0].currency || "SGD" : "SGD";
+  };
+
+  const formatCurrency = (amount, currency = "SGD") => {
+    const getCurrencySymbol = (currency) => {
+      switch (currency.toUpperCase()) {
+        case "USD":
+        case "SGD":
+          return "$";
+        case "EUR":
+          return "€";
+        case "VND":
+          return "₫";
+        case "GBP":
+          return "£";
+        case "JPY":
+        case "CNY":
+          return "¥";
+        default:
+          return `${currency} `;
+      }
+    };
+
+    const decimalPlaces =
+      currency.toUpperCase() === "VND" || currency.toUpperCase() === "JPY"
+        ? 0
+        : 2;
+
+    const formattedNumber = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(amount);
+
+    return `${getCurrencySymbol(currency)}${formattedNumber}`;
+  };
+
+  // Computed values
+  const filteredAccounts = accounts.filter(
+    (accountGroup) =>
+      accountGroup.accountType
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      accountGroup.accounts.some((account) =>
+        account.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  );
+
+  // Render functions
+  const renderExpandButton = (accountType, isExpanded, hasAccounts) => {
+    if (!hasAccounts) return <div className="flex items-center w-8" />;
+
+    return (
+      <div className="flex items-center w-8">
+        <button
+          onClick={() => toggleGroupExpansion(accountType)}
+          className="p-1 hover:bg-gray-200 rounded transition-colors"
+          aria-label={
+            isExpanded ? t("accounts.collapseGroup") : t("accounts.expandGroup")
+          }
+        >
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4 text-gray-600" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-gray-600" />
+          )}
+        </button>
+      </div>
+    );
+  };
+
+  const renderActionsDropdown = (itemId, isOpen) => (
+    <div className="relative dropdown-container">
+      <button
+        onClick={(e) => handleDropdownToggle(itemId, e)}
+        className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+        aria-label="Account actions"
+      >
+        <MoreHorizontal className="w-5 h-5 text-gray-600" />
+      </button>
+      {isOpen && (
+        <div
+          className="w-48 bg-white rounded-md shadow-xl border border-gray-200"
+          style={dropdownPositions[itemId]}
+        >
+          <button
+            onClick={() => handleEdit(itemId)}
+            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+          >
+            <Edit className="w-4 h-4 text-gray-600" />
+            <span className="text-gray-700">{t("common.edit")}</span>
+          </button>
+          <button
+            onClick={() => handleDelete(itemId)}
+            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors text-red-600"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>{t("common.delete")}</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderAccountRow = (account) => (
+    <div
+      key={account.id}
+      className="flex items-center py-3 px-6 pl-16 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+    >
+      <div className="flex-1 px-4">
+        <span className="text-gray-700">{account.name}</span>
+      </div>
+      <div className="flex-1 px-4 text-right">
+        <span className="text-gray-700">
+          {formatCurrency(account.balance, account.currency)}
+        </span>
+      </div>
+      <div className="w-16 flex justify-center">
+        {renderActionsDropdown(account.id, openDropdown === account.id)}
+      </div>
+    </div>
+  );
+
+  const renderAccountGroup = (accountGroup) => {
+    const isExpanded = expandedGroups.has(accountGroup.accountType);
+    const groupBalance = calculateGroupBalance(accountGroup.accounts);
+    const hasAccounts =
+      accountGroup.accounts && accountGroup.accounts.length > 0;
+
+    return (
+      <div key={accountGroup.accountType} className="border-b border-gray-200">
+        {/* Group Header */}
+        <div className="flex items-center py-4 px-6 hover:bg-gray-50">
+          {renderExpandButton(
+            accountGroup.accountType,
+            isExpanded,
+            hasAccounts
+          )}
+
+          <div className="flex-1 px-4">
+            <h3 className="text-lg font-medium text-gray-900">
+              {accountGroup.accountType}
+            </h3>
+          </div>
+
+          <div className="flex-1 px-4 text-right">
+            <span className="text-lg font-semibold text-gray-900">
+              {formatCurrency(
+                groupBalance,
+                getGroupCurrency(accountGroup.accounts)
+              )}
+            </span>
+          </div>
+
+          <div className="w-16 flex justify-center">
+            {renderActionsDropdown(
+              accountGroup.accountType,
+              openDropdown === accountGroup.accountType
+            )}
+          </div>
+        </div>
+
+        {/* Individual Accounts */}
+        {isExpanded && hasAccounts && (
+          <div>{accountGroup.accounts.map(renderAccountRow)}</div>
+        )}
+      </div>
+    );
+  };
+
+  const renderDeleteConfirmation = () => {
+    if (!deleteConfirm) return null;
+
+    // Find item to delete
+    const accountGroup = accounts.find(
+      (group) => group.accountType === deleteConfirm
+    );
+    let itemName = "";
+
+    if (accountGroup) {
+      itemName = accountGroup.accountType;
+    } else {
+      // Find individual account
+      for (const group of accounts) {
+        const account = group.accounts.find((acc) => acc.id === deleteConfirm);
+        if (account) {
+          itemName = account.name;
+          break;
+        }
+      }
+    }
+
+    if (!itemName) return null;
+
+    const deleteWarningText = t("accounts.deleteWarning").replace(
+      "{name}",
+      itemName
+    );
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {t("accounts.confirmDelete")}
+          </h3>
+          <p className="text-gray-600 mb-6">{deleteWarningText}</p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={cancelDelete}
+              disabled={isDeleting}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("common.cancel")}
+            </button>
+            <button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDeleting ? t("common.deleting") : t("common.delete")}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <DashboardLayout activePage="accounts">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">{t("common.loading")}</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <DashboardLayout activePage="accounts">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {t("dashboard.nav.accounts")}
+            </h1>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-600">{error}</p>
+            <button
+              onClick={loadAccounts}
+              className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              {t("common.retry")}
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Main render
   return (
     <DashboardLayout activePage="accounts">
       <div className="max-w-8xl mx-auto">
@@ -12,20 +455,67 @@ export default function AccountsPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {t("dashboard.nav.accounts")}
           </h1>
-          <p className="text-gray-600">
-            Manage your bank accounts and financial institutions.
-          </p>
         </div>
 
-        {/* Accounts Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Your Accounts
-          </h3>
-          <p className="text-gray-600">
-            Account management features will be implemented here.
-          </p>
+        {/* Search and Actions */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder={t("accounts.searchPlaceholder")}
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full pl-10 pr-4 py-2 bg-transparent border-none rounded-lg focus:outline-none focus:border-b-2 focus:border-blue-500 placeholder-gray-400 transition-colors"
+              />
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/accounts/new")}
+            className="inline-flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span>{t("accounts.new")}</span>
+          </button>
         </div>
+
+        {/* Accounts Table */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          {/* Table Header */}
+          <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
+            <div className="w-8"></div>
+            <div className="flex-1 px-4">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                {t("accounts.name")}
+              </h3>
+            </div>
+            <div className="flex-1 px-4 text-right">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                {t("accounts.availableBalance")}
+              </h3>
+            </div>
+            <div className="w-16"></div>
+          </div>
+
+          {/* Table Body */}
+          <div className="divide-y divide-gray-200">
+            {filteredAccounts.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-gray-500 text-lg">
+                  {searchTerm
+                    ? t("accounts.noAccountsMatching")
+                    : t("accounts.noAccountsFound")}
+                </p>
+              </div>
+            ) : (
+              filteredAccounts.map(renderAccountGroup)
+            )}
+          </div>
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        {renderDeleteConfirmation()}
       </div>
     </DashboardLayout>
   );
