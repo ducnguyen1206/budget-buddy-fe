@@ -167,6 +167,7 @@
     "selectType": "Select category type",
     "INCOME": "Income",
     "EXPENSE": "Expense",
+    "TRANSFER": "Transfer",
     "noCategoriesFound": "No categories found.",
     "noCategoriesMatching": "No categories found matching your search.",
     "createCategory": "Create Category",

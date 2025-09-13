@@ -269,6 +269,7 @@ export default function CategoryForm() {
   const categoryTypeOptions = [
     { value: "EXPENSE", label: t("categories.EXPENSE") },
     { value: "INCOME", label: t("categories.INCOME") },
+    { value: "TRANSFER", label: t("categories.TRANSFER") },
   ];
 
   return (

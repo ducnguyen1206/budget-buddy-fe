@@ -223,6 +223,8 @@ export default function CategoriesPage() {
           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
             category.type === "INCOME"
               ? "bg-green-100 text-green-800"
+              : category.type === "TRANSFER"
+              ? "bg-blue-100 text-blue-800"
               : "bg-red-100 text-red-800"
           }`}
         >

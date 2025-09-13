@@ -167,6 +167,7 @@
     "selectType": "Chọn loại danh mục",
     "INCOME": "Thu nhập",
     "EXPENSE": "Chi tiêu",
+    "TRANSFER": "Chuyển khoản",
     "noCategoriesFound": "Không tìm thấy danh mục nào.",
     "noCategoriesMatching": "Không tìm thấy danh mục nào phù hợp với tìm kiếm của bạn.",
     "createCategory": "Tạo Danh Mục",
