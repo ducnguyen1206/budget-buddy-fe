@@ -23,11 +23,19 @@ export const loginUser = async (email, password, t = null) => {
         const responseData = await response.json();
         const { token, refreshToken } = responseData;
 
-        // Store tokens in localStorage
+        // Store tokens in sessionStorage
         if (token || refreshToken) {
           storeTokens(token, refreshToken);
-          // Start token refresh manager after successful login
-          tokenRefreshManager.start();
+          // TODO: Uncomment when backend refresh token API is ready
+          console.log("🔑 Tokens stored, refresh token manager disabled");
+          // tokenRefreshManager.start();
+
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(
+            new CustomEvent("authTokensStored", {
+              detail: { token, refreshToken },
+            })
+          );
         }
 
         return {
@@ -261,15 +269,26 @@ export const refreshToken = async (t = null) => {
       };
     }
 
+    console.log(
+      "🔄 Making refresh token API call to:",
+      getApiUrl(API_ENDPOINTS.REFRESH_TOKEN)
+    );
+    console.log("🔄 Refresh token payload:", {
+      refreshToken: refreshTokenValue,
+    });
+    console.log("🔄 Request headers:", getApiHeaders(true));
+
     const response = await fetchWithAuth(
       getApiUrl(API_ENDPOINTS.REFRESH_TOKEN),
       {
         method: "POST",
-        headers: getApiHeaders(false), // No auth needed for token refresh
+        headers: getApiHeaders(true), // Include auth token for refresh token API
         body: JSON.stringify({ refreshToken: refreshTokenValue }),
       },
       t
     );
+
+    console.log("🔄 Refresh token response status:", response.status);
 
     // Check if response indicates a redirect should happen
     if (shouldRedirectToLogin(response)) {

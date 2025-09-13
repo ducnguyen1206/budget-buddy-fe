@@ -1,8 +1,14 @@
 import DashboardLayout from "./DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
+import tokenRefreshManager from "../../utils/tokenRefreshManager";
 
 export default function DashboardPage() {
   const { t } = useLanguage();
+
+  const handleTestRefresh = () => {
+    console.log("🧪 Manual refresh token test triggered");
+    tokenRefreshManager.manualRefresh();
+  };
 
   return (
     <DashboardLayout activePage="overview">
@@ -22,7 +28,15 @@ export default function DashboardPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {t("dashboard.welcome")}
             </h3>
-            <p className="text-gray-600 text-sm">{t("dashboard.tokenReady")}</p>
+            <p className="text-gray-600 text-sm mb-4">
+              {t("dashboard.tokenReady")}
+            </p>
+            <button
+              onClick={handleTestRefresh}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              🧪 Test Refresh Token
+            </button>
           </div>
 
           {/* Quick Stats Placeholder */}
