@@ -11,7 +11,11 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-import { fetchAccounts, deleteAccount } from "../../services/accountService";
+import {
+  fetchAccounts,
+  deleteAccount,
+  deleteAccountGroup,
+} from "../../services/accountService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 // Constants
@@ -115,7 +119,25 @@ export default function AccountsPage() {
 
     try {
       setIsDeleting(true);
-      const result = await deleteAccount(deleteConfirm, t);
+
+      // Check if it's a group deletion or individual account deletion
+      const accountGroup = accounts.find(
+        (group) => group.accountType === deleteConfirm
+      );
+      const isGroupDeletion = !!accountGroup;
+
+      let result;
+      if (isGroupDeletion) {
+        // For group deletion, we need to get the group ID from the first account in the group
+        const groupId = accountGroup.accounts[0]?.accountGroupId;
+        if (!groupId) {
+          setError(t("errors.accountGroupNotFound"));
+          return;
+        }
+        result = await deleteAccountGroup(groupId, t);
+      } else {
+        result = await deleteAccount(deleteConfirm, t);
+      }
 
       if (shouldRedirectToLogin(result)) return;
 
@@ -126,8 +148,13 @@ export default function AccountsPage() {
         setError(result.error);
       }
     } catch (err) {
-      console.error("Error deleting account:", err);
-      setError(t("errors.deleteAccountFailed"));
+      console.error("Error deleting item:", err);
+      const errorKey = accounts.some(
+        (group) => group.accountType === deleteConfirm
+      )
+        ? "deleteAccountGroupFailed"
+        : "deleteAccountFailed";
+      setError(t(`errors.${errorKey}`));
     } finally {
       setIsDeleting(false);
     }
@@ -346,9 +373,11 @@ export default function AccountsPage() {
       (group) => group.accountType === deleteConfirm
     );
     let itemName = "";
+    let isGroupDeletion = false;
 
     if (accountGroup) {
       itemName = accountGroup.accountType;
+      isGroupDeletion = true;
     } else {
       // Find individual account
       for (const group of accounts) {
@@ -362,10 +391,10 @@ export default function AccountsPage() {
 
     if (!itemName) return null;
 
-    const deleteWarningText = t("accounts.deleteWarning").replace(
-      "{name}",
-      itemName
-    );
+    const warningKey = isGroupDeletion
+      ? "accounts.deleteGroupWarning"
+      : "accounts.deleteWarning";
+    const deleteWarningText = t(warningKey).replace("{name}", itemName);
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -124,7 +124,11 @@
     "invalidAccountData": "Invalid account data. Please check your input and try again.",
     "accountAlreadyExists": "An account with this name already exists. Please choose a different name.",
     "accountNotFound": "Account not found. Please check the account ID and try again.",
-    "accountInUse": "This account is currently in use and cannot be deleted. Please remove all references to this account first."
+    "accountInUse": "This account is currently in use and cannot be deleted. Please remove all references to this account first.",
+    "accountGroupNotFound": "Account group not found. Please check the group ID and try again.",
+    "accountGroupInUse": "This account group is currently in use and cannot be deleted. Please remove all accounts from this group first.",
+    "deleteAccountGroupFailed": "Failed to delete account group. Please try again.",
+    "currencyMismatch": "Currency must match the group accounts. Please select a different currency."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -193,6 +197,7 @@
     "loadingAccountTypes": "Loading account types...",
     "confirmDelete": "Confirm Delete",
     "deleteWarning": "Are you sure you want to delete the account \"{name}\"? This action cannot be undone.",
+    "deleteGroupWarning": "Are you sure you want to delete the account group \"{name}\"? This will delete all accounts in this group. This action cannot be undone.",
     "expandGroup": "Expand group",
     "collapseGroup": "Collapse group",
     "totalConsolidated": "Total Consolidated"

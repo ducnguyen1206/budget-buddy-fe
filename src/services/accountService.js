@@ -234,7 +234,7 @@ export const createAccount = async (accountData, t = null) => {
     } else if (response.status === HTTP_STATUS.CONFLICT) {
       return {
         success: false,
-        error: handleApiError("ACCOUNT_ALREADY_EXISTS", t),
+        error: handleApiError("CURRENCY_MISMATCH", t),
       };
     } else if (response.status === 401 || response.status === 403) {
       return {
@@ -311,7 +311,7 @@ export const updateAccount = async (id, accountData, t = null) => {
     } else if (response.status === HTTP_STATUS.CONFLICT) {
       return {
         success: false,
-        error: handleApiError("ACCOUNT_ALREADY_EXISTS", t),
+        error: handleApiError("CURRENCY_MISMATCH", t),
       };
     } else if (response.status === 401 || response.status === 403) {
       return {
@@ -331,6 +331,65 @@ export const updateAccount = async (id, accountData, t = null) => {
     }
   } catch (error) {
     console.error("Network error updating account:", error);
+    return {
+      success: false,
+      error: handleApiError("NETWORK_ERROR", t),
+    };
+  }
+};
+
+/**
+ * Delete an account group
+ * @param {string} groupId - Group ID
+ * @param {Function} t - Translation function
+ * @returns {Promise<Object>} - Success/error result
+ */
+export const deleteAccountGroup = async (groupId, t = null) => {
+  try {
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.ACCOUNTS)}/groups/${groupId}`,
+      {
+        method: "DELETE",
+        headers: getApiHeaders(true),
+      },
+      t
+    );
+
+    if (shouldRedirectToLogin(response)) {
+      return response;
+    }
+
+    if (response.status === HTTP_STATUS.NO_CONTENT) {
+      // DELETE /accounts/groups/{groupId} API returns 204 without response body
+      return { success: true, data: null };
+    } else if (response.status === HTTP_STATUS.NOT_FOUND) {
+      return {
+        success: false,
+        error: handleApiError("ACCOUNT_GROUP_NOT_FOUND", t),
+      };
+    } else if (response.status === HTTP_STATUS.CONFLICT) {
+      return {
+        success: false,
+        error: handleApiError("ACCOUNT_GROUP_IN_USE", t),
+      };
+    } else if (response.status === 401 || response.status === 403) {
+      return {
+        success: false,
+        error: handleApiError("UNAUTHORIZED", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("DELETE_ACCOUNT_GROUP_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Network error deleting account group:", error);
     return {
       success: false,
       error: handleApiError("NETWORK_ERROR", t),

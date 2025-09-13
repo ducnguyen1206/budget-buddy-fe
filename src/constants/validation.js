@@ -67,6 +67,10 @@ export const API_ERROR_MESSAGES = {
   ACCOUNT_ALREADY_EXISTS: "errors.accountAlreadyExists",
   ACCOUNT_NOT_FOUND: "errors.accountNotFound",
   ACCOUNT_IN_USE: "errors.accountInUse",
+  ACCOUNT_GROUP_NOT_FOUND: "errors.accountGroupNotFound",
+  ACCOUNT_GROUP_IN_USE: "errors.accountGroupInUse",
+  DELETE_ACCOUNT_GROUP_FAILED: "errors.deleteAccountGroupFailed",
+  CURRENCY_MISMATCH: "errors.currencyMismatch",
 };
 
 // HTTP status codes
