@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -6,6 +6,7 @@ import {
   createCategory,
   updateCategory,
   fetchCategoryById,
+  fetchCategories,
 } from "../../services/categoryService";
 import { ArrowLeft } from "lucide-react";
 
@@ -29,12 +30,40 @@ export default function CategoryForm() {
   const [submitError, setSubmitError] = useState("");
   const [loadError, setLoadError] = useState("");
 
+  // Category names dropdown state
+  const [categoryNames, setCategoryNames] = useState([]);
+  const [nameSearch, setNameSearch] = useState("");
+  const [showNameDropdown, setShowNameDropdown] = useState(false);
+  const [loadingNames, setLoadingNames] = useState(true);
+
+  // Refs
+  const nameRef = useRef(null);
+
   // Load category data when in edit mode
   useEffect(() => {
     if (isEditMode && id) {
       loadCategoryData();
     }
   }, [isEditMode, id]);
+
+  // Load category names on component mount
+  useEffect(() => {
+    loadCategoryNames();
+  }, []);
+
+  // Handle click outside for name dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (nameRef.current && !nameRef.current.contains(event.target)) {
+        setShowNameDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Load category data from API
   const loadCategoryData = async () => {
@@ -50,6 +79,7 @@ export default function CategoryForm() {
           name: category.name || "",
           type: category.type || "",
         });
+        setNameSearch(category.name || "");
       } else {
         setLoadError(result.error);
       }
@@ -60,6 +90,61 @@ export default function CategoryForm() {
       setIsLoading(false);
     }
   };
+
+  // Load category names from API
+  const loadCategoryNames = async () => {
+    try {
+      setLoadingNames(true);
+      const result = await fetchCategories(t);
+
+      if (result.success) {
+        // Extract unique category names
+        const uniqueNames = [
+          ...new Set(result.data.map((category) => category.name)),
+        ];
+        setCategoryNames(uniqueNames);
+      }
+    } catch (error) {
+      console.error("Error loading category names:", error);
+    } finally {
+      setLoadingNames(false);
+    }
+  };
+
+  // Handle name input changes
+  const handleNameInputChange = (e) => {
+    const value = e.target.value;
+    setNameSearch(value);
+    setFormData((prev) => ({ ...prev, name: value }));
+    setShowNameDropdown(true);
+
+    // Clear validation error
+    if (validationErrors.name) {
+      setValidationErrors((prev) => ({ ...prev, name: "" }));
+    }
+
+    // Clear submit error
+    if (submitError) {
+      setSubmitError("");
+    }
+  };
+
+  // Handle name selection from dropdown
+  const handleNameSelect = (name) => {
+    setFormData((prev) => ({ ...prev, name }));
+    setNameSearch(name);
+    setShowNameDropdown(false);
+
+    // Clear validation error
+    if (validationErrors.name) {
+      setValidationErrors((prev) => ({ ...prev, name: "" }));
+    }
+  };
+
+  // Filter category names based on search
+  const filteredCategoryNames = categoryNames.filter((name) =>
+    name.toLowerCase().includes(nameSearch.toLowerCase())
+  );
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -288,7 +373,62 @@ export default function CategoryForm() {
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
-            {renderFormField("name", t("categories.name"))}
+            <div ref={nameRef} className="relative">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("categories.name")}
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={nameSearch}
+                onChange={handleNameInputChange}
+                onFocus={() => setShowNameDropdown(true)}
+                placeholder={
+                  loadingNames
+                    ? t("categories.loadingNames")
+                    : t("categories.namePlaceholder")
+                }
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors ${
+                  validationErrors.name
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:border-primary"
+                }`}
+                required
+              />
+
+              {/* Name Dropdown */}
+              {showNameDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  {filteredCategoryNames.length > 0
+                    ? filteredCategoryNames.map((name) => (
+                        <div
+                          key={name}
+                          onClick={() => handleNameSelect(name)}
+                          className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-sm"
+                        >
+                          {name}
+                        </div>
+                      ))
+                    : nameSearch.trim() && (
+                        <div
+                          onClick={() => handleNameSelect(nameSearch.trim())}
+                          className="px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-sm text-blue-600"
+                        >
+                          {nameSearch.trim()}
+                        </div>
+                      )}
+                </div>
+              )}
+
+              {validationErrors.name && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.name}
+                </p>
+              )}
+            </div>
 
             {/* Category Type Field */}
             {renderFormField(

@@ -1,8 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { Search, Plus, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import {
+  Search,
+  Plus,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import {
   fetchCategories,
   deleteCategory,
@@ -23,6 +31,7 @@ export default function CategoriesPage() {
   const [dropdownPositions, setDropdownPositions] = useState({});
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState(new Set());
 
   // Fetch categories from API on component mount
   useEffect(() => {
@@ -35,9 +44,41 @@ export default function CategoriesPage() {
     };
   }, []);
 
+  // Expand all groups by default when categories are loaded
+  useEffect(() => {
+    if (categories.length > 0) {
+      const uniqueNames = [
+        ...new Set(categories.map((category) => category.name)),
+      ];
+      setExpandedGroups(new Set(uniqueNames));
+    }
+  }, [categories]);
+
   // Filter categories based on search input
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Group categories by name
+  const groupedCategories = filteredCategories.reduce((groups, category) => {
+    const name = category.name;
+    if (!groups[name]) {
+      groups[name] = [];
+    }
+    groups[name].push(category);
+    return groups;
+  }, {});
+
+  // Convert grouped object to array for rendering
+  const categoryGroups = Object.entries(groupedCategories).map(
+    ([name, categories]) => ({
+      name,
+      categories: categories.sort((a, b) => {
+        // Sort by type: INCOME, EXPENSE, TRANSFER
+        const typeOrder = { INCOME: 0, EXPENSE: 1, TRANSFER: 2 };
+        return typeOrder[a.type] - typeOrder[b.type];
+      }),
+    })
   );
 
   // Load categories from API
@@ -62,6 +103,19 @@ export default function CategoriesPage() {
     }
 
     setIsLoading(false);
+  };
+
+  // Handle group expansion toggle
+  const toggleGroupExpansion = (groupName) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupName)) {
+        newSet.delete(groupName);
+      } else {
+        newSet.add(groupName);
+      }
+      return newSet;
+    });
   };
 
   // Handle dropdown toggle with smart positioning
@@ -270,6 +324,108 @@ export default function CategoriesPage() {
     </tr>
   );
 
+  // Render category group header
+  const renderCategoryGroup = (group) => {
+    const isExpanded = expandedGroups.has(group.name);
+    const hasMultipleTypes = group.categories.length > 1;
+
+    return (
+      <React.Fragment key={group.name}>
+        {/* Group Header Row */}
+        <tr className="bg-gray-50 border-b border-gray-200">
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <button
+                onClick={() => toggleGroupExpansion(group.name)}
+                className="mr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {isExpanded ? (
+                  <ChevronDown className="w-5 h-5" />
+                ) : (
+                  <ChevronRight className="w-5 h-5" />
+                )}
+              </button>
+              <div className="text-sm font-semibold text-gray-900">
+                {group.name}
+                <span className="ml-2 text-xs text-gray-500">
+                  ({group.categories.length}{" "}
+                  {group.categories.length === 1 ? "type" : "types"})
+                </span>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            {/* Empty for group header */}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            {/* Group actions could be added here if needed */}
+          </td>
+        </tr>
+
+        {/* Category Rows */}
+        {isExpanded &&
+          group.categories.map((category) => (
+            <tr key={category.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap pl-12">
+                <div className="text-sm text-gray-600">
+                  {t(`categories.${category.type}`)}
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    category.type === "INCOME"
+                      ? "bg-green-100 text-green-800"
+                      : category.type === "TRANSFER"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {t(`categories.${category.type}`)}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="relative dropdown-container">
+                  {/* Three dots button */}
+                  <button
+                    onClick={(e) => handleDropdownToggle(category.id, e)}
+                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    <MoreHorizontal className="w-5 h-5" />
+                  </button>
+
+                  {/* Dropdown menu */}
+                  {openDropdown === category.id && (
+                    <div
+                      className="w-48 bg-white rounded-md shadow-xl border border-gray-200"
+                      style={dropdownPositions[category.id]}
+                    >
+                      <div className="py-1">
+                        <button
+                          onClick={() => handleEdit(category.id)}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Edit className="w-4 h-4 mr-3" />
+                          {t("common.edit")}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        >
+                          <Trash2 className="w-4 h-4 mr-3" />
+                          {t("common.delete")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+      </React.Fragment>
+    );
+  };
+
   return (
     <DashboardLayout activePage="categories">
       <div className="max-w-8xl mx-auto">
@@ -334,7 +490,7 @@ export default function CategoriesPage() {
 
                 {/* Table Body */}
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredCategories.map(renderCategoryRow)}
+                  {categoryGroups.map(renderCategoryGroup)}
                 </tbody>
               </table>
             </div>
@@ -342,7 +498,7 @@ export default function CategoriesPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && filteredCategories.length === 0 && renderEmptyState()}
+        {!isLoading && categoryGroups.length === 0 && renderEmptyState()}
 
         {/* Delete Confirmation Dialog */}
         {renderDeleteConfirmation()}

@@ -173,6 +173,7 @@
     "createCategory": "Create Category",
     "updateCategory": "Update Category",
     "namePlaceholder": "Enter category name",
+    "loadingNames": "Loading category names...",
     "confirmDelete": "Confirm Delete",
     "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This action cannot be undone."
   },

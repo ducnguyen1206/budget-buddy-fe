@@ -173,6 +173,7 @@
     "createCategory": "Tạo Danh Mục",
     "updateCategory": "Cập Nhật Danh Mục",
     "namePlaceholder": "Nhập tên danh mục",
+    "loadingNames": "Đang tải tên danh mục...",
     "confirmDelete": "Xác Nhận Xóa",
     "deleteWarning": "Bạn có chắc chắn muốn xóa danh mục \"{name}\"? Hành động này không thể hoàn tác."
   },
