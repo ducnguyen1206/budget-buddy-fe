@@ -40,6 +40,7 @@ export default function AccountForm() {
   const [errors, setErrors] = useState({});
   const [showAccountTypeDropdown, setShowAccountTypeDropdown] = useState(false);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [accountTypeSearch, setAccountTypeSearch] = useState("");
 
   // Refs
   const accountTypeRef = useRef(null);
@@ -109,6 +110,7 @@ export default function AccountForm() {
           currency: account.currency || "SGD",
           type: account.type || "",
         });
+        setAccountTypeSearch(account.type || "");
       } else {
         setError(result.error);
       }
@@ -162,8 +164,17 @@ export default function AccountForm() {
     clearFieldError("balance");
   };
 
+  const handleAccountTypeInputChange = (e) => {
+    const value = e.target.value;
+    setAccountTypeSearch(value);
+    setFormData((prev) => ({ ...prev, type: value }));
+    setShowAccountTypeDropdown(true);
+    clearFieldError("type");
+  };
+
   const handleAccountTypeSelect = (type) => {
     setFormData((prev) => ({ ...prev, type }));
+    setAccountTypeSearch(type);
     setShowAccountTypeDropdown(false);
     clearFieldError("type");
   };
@@ -173,6 +184,11 @@ export default function AccountForm() {
     setShowCurrencyDropdown(false);
     clearFieldError("currency");
   };
+
+  // Filter account types based on search
+  const filteredAccountTypes = accountTypes.filter((type) =>
+    type.toLowerCase().includes(accountTypeSearch.toLowerCase())
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -377,35 +393,45 @@ export default function AccountForm() {
               </label>
               <input
                 type="text"
-                value={formData.type}
-                onChange={() => {}} // Read-only input
+                value={accountTypeSearch}
+                onChange={handleAccountTypeInputChange}
                 onFocus={() => setShowAccountTypeDropdown(true)}
                 placeholder={
                   loadingTypes
                     ? t("accounts.loadingAccountTypes")
                     : t("accounts.selectAccountType")
                 }
-                className={`w-full px-6 py-3 pr-16 border rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-colors bg-white text-lg font-inter cursor-pointer ${
+                className={`w-full px-6 py-3 pr-16 border rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-colors bg-white text-lg font-inter ${
                   errors.type
                     ? "border-error focus:ring-error"
                     : "border-gray-300"
                 }`}
                 required
-                readOnly
               />
 
               {/* Dropdown */}
-              {showAccountTypeDropdown && accountTypes.length > 0 && (
+              {showAccountTypeDropdown && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
-                  {accountTypes.map((type) => (
-                    <div
-                      key={type}
-                      onClick={() => handleAccountTypeSelect(type)}
-                      className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter first:rounded-t-2xl last:rounded-b-2xl"
-                    >
-                      {type}
-                    </div>
-                  ))}
+                  {filteredAccountTypes.length > 0
+                    ? filteredAccountTypes.map((type) => (
+                        <div
+                          key={type}
+                          onClick={() => handleAccountTypeSelect(type)}
+                          className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter first:rounded-t-2xl last:rounded-b-2xl"
+                        >
+                          {type}
+                        </div>
+                      ))
+                    : accountTypeSearch.trim() && (
+                        <div
+                          onClick={() =>
+                            handleAccountTypeSelect(accountTypeSearch.trim())
+                          }
+                          className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter rounded-2xl text-blue-600"
+                        >
+                          {accountTypeSearch.trim()}
+                        </div>
+                      )}
                 </div>
               )}
 
