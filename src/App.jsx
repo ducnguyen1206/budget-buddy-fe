@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import { useEffect } from "react";
 import LoginPage from "./components/login/LoginPage";
 import RegisterPage from "./components/register/RegisterPage";
@@ -10,6 +10,7 @@ import PasswordResetPage from "./components/register/PasswordResetPage";
 import RegistrationSuccessPage from "./components/register/RegistrationSuccessPage";
 import DashboardPage from "./components/dashboard/DashboardPage";
 import AccountsPage from "./components/accounts/AccountsPage";
+import AccountForm from "./components/accounts/AccountForm";
 import TransactionsPage from "./components/transactions/TransactionsPage";
 import BudgetsPage from "./components/budgets/BudgetsPage";
 import CategoriesPage from "./components/categories/CategoriesPage";
@@ -82,6 +83,8 @@ export default function App() {
           {/* Dashboard routes */}
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/accounts/new" element={<AccountForm />} />
+          <Route path="/accounts/edit/:id" element={<AccountForm />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />

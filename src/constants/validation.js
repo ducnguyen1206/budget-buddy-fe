@@ -18,6 +18,15 @@ export const VALIDATION_RULES = {
     NAME_REQUIRED: "validation.nameRequired",
     TYPE_REQUIRED: "validation.categoryTypeRequired",
   },
+  ACCOUNT: {
+    NAME_REQUIRED: "validation.nameRequired",
+    NAME_MIN_LENGTH: "validation.nameMinLength",
+    BALANCE_REQUIRED: "validation.balanceRequired",
+    BALANCE_INVALID: "validation.balanceInvalid",
+    BALANCE_POSITIVE: "validation.balancePositive",
+    CURRENCY_REQUIRED: "validation.currencyRequired",
+    TYPE_REQUIRED: "validation.accountTypeRequired",
+  },
 };
 
 // API error messages - These will be replaced by translation keys

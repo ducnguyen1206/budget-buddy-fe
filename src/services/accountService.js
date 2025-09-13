@@ -4,6 +4,63 @@ import { handleApiError } from "../utils/errorHandler";
 import { HTTP_STATUS } from "../constants/validation";
 
 /**
+ * Fetch available account types
+ * @param {Function} t - Translation function
+ * @returns {Promise<Object>} - Success/error result
+ */
+export const fetchAccountTypes = async (t = null) => {
+  try {
+    const response = await fetchWithAuth(
+      getApiUrl("/api/v1/accounts/types"),
+      {
+        method: "GET",
+        headers: getApiHeaders(true),
+      },
+      t
+    );
+
+    // Check if we should redirect to login
+    if (shouldRedirectToLogin(response)) {
+      return response;
+    }
+
+    if (response.status === 200) {
+      try {
+        const accountTypesData = await response.json();
+        return { success: true, data: accountTypesData };
+      } catch (jsonError) {
+        console.error("Error parsing account types JSON:", jsonError);
+        return {
+          success: false,
+          error: handleApiError("FETCH_ACCOUNT_TYPES_FAILED", t),
+        };
+      }
+    } else if (response.status === 401 || response.status === 403) {
+      return {
+        success: false,
+        error: handleApiError("UNAUTHORIZED", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("FETCH_ACCOUNT_TYPES_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Network error fetching account types:", error);
+    return {
+      success: false,
+      error: handleApiError("NETWORK_ERROR", t),
+    };
+  }
+};
+
+/**
  * Fetch all accounts grouped by account type
  * @param {Function} t - Translation function
  * @returns {Promise<Object>} - Success/error result
@@ -60,6 +117,90 @@ export const fetchAccounts = async (t = null) => {
   }
 };
 
+export const fetchAccount = async (id, t = null) => {
+  try {
+    console.log("🔍 Fetching account with ID:", id);
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.ACCOUNTS)}/${id}`,
+      { method: "GET", headers: getApiHeaders(true) },
+      t
+    );
+
+    console.log("🔍 Response status:", response.status);
+    console.log("🔍 Response:", response);
+
+    if (shouldRedirectToLogin(response)) {
+      console.log("🔍 Should redirect to login");
+      return response;
+    }
+
+    if (response.status === 200) {
+      try {
+        const responseData = await response.json();
+        console.log("🔍 Response data:", responseData);
+
+        // The API returns { accountType: "...", accounts: [...] }
+        // We need to extract the first account from the accounts array
+        const account =
+          responseData.accounts && responseData.accounts.length > 0
+            ? responseData.accounts[0]
+            : null;
+
+        console.log("🔍 Extracted account:", account);
+
+        if (!account) {
+          console.log("🔍 No account found in response");
+          return {
+            success: false,
+            error: handleApiError("ACCOUNT_NOT_FOUND", t),
+          };
+        }
+
+        // Add the accountType to the account object for the form
+        const accountWithType = {
+          ...account,
+          type: responseData.accountType,
+        };
+
+        console.log("🔍 Account with type:", accountWithType);
+        return { success: true, data: accountWithType };
+      } catch (jsonError) {
+        console.error("Error parsing account JSON:", jsonError);
+        return {
+          success: false,
+          error: handleApiError("FETCH_ACCOUNT_FAILED", t),
+        };
+      }
+    } else if (response.status === 404) {
+      return {
+        success: false,
+        error: handleApiError("ACCOUNT_NOT_FOUND", t),
+      };
+    } else if (response.status === 401 || response.status === 403) {
+      return {
+        success: false,
+        error: handleApiError("UNAUTHORIZED", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("FETCH_ACCOUNT_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Network error fetching account:", error);
+    return {
+      success: false,
+      error: handleApiError("NETWORK_ERROR", t),
+    };
+  }
+};
+
 /**
  * Create a new account
  * @param {Object} accountData - Account data
@@ -83,16 +224,8 @@ export const createAccount = async (accountData, t = null) => {
     }
 
     if (response.status === HTTP_STATUS.CREATED) {
-      try {
-        const newAccount = await response.json();
-        return { success: true, data: newAccount };
-      } catch (jsonError) {
-        console.error("Error parsing create account JSON:", jsonError);
-        return {
-          success: false,
-          error: handleApiError("CREATE_ACCOUNT_FAILED", t),
-        };
-      }
+      // POST /accounts API returns 201 without response body
+      return { success: true, data: null };
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       return {
         success: false,
@@ -162,6 +295,9 @@ export const updateAccount = async (id, accountData, t = null) => {
           error: handleApiError("UPDATE_ACCOUNT_FAILED", t),
         };
       }
+    } else if (response.status === HTTP_STATUS.NO_CONTENT) {
+      // PUT /accounts/{id} API returns 204 without response body
+      return { success: true, data: null };
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       return {
         success: false,

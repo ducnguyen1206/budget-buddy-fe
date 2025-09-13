@@ -14,15 +14,17 @@ import {
 import { fetchAccounts, deleteAccount } from "../../services/accountService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
-// Currency formatting utility (moved inside component to avoid context issues)
+// Constants
+const DROPDOWN_WIDTH = 192;
+const DROPDOWN_HEIGHT = 88;
+const MARGIN = 8;
 
 export default function AccountsPage() {
-  // Hooks
   const { t } = useLanguage();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  // State management
+  // State
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,6 +50,43 @@ export default function AccountsPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Utility functions
+  const formatCurrency = (amount, currency = "SGD") => {
+    const getCurrencySymbol = (currency) => {
+      const symbols = {
+        USD: "$",
+        SGD: "$",
+        EUR: "€",
+        VND: "₫",
+        GBP: "£",
+        JPY: "¥",
+        CNY: "¥",
+      };
+      return symbols[currency.toUpperCase()] || `${currency} `;
+    };
+
+    const decimalPlaces = ["VND", "JPY"].includes(currency.toUpperCase())
+      ? 0
+      : 2;
+    const formattedNumber = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(amount);
+
+    return `${getCurrencySymbol(currency)}${formattedNumber}`;
+  };
+
+  const calculateGroupBalance = (accounts) => {
+    return accounts.reduce(
+      (total, account) => total + (account.balance || 0),
+      0
+    );
+  };
+
+  const getGroupCurrency = (accounts) => {
+    return accounts.length > 0 ? accounts[0].currency || "SGD" : "SGD";
+  };
 
   // API functions
   const loadAccounts = async () => {
@@ -97,6 +136,26 @@ export default function AccountsPage() {
   // Event handlers
   const handleSearch = (e) => setSearchTerm(e.target.value);
 
+  const calculateDropdownPosition = (buttonRect) => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let top = buttonRect.bottom + 4;
+    let left = buttonRect.left;
+
+    // Check boundaries and adjust position
+    if (left + DROPDOWN_WIDTH > viewportWidth) {
+      left = viewportWidth - DROPDOWN_WIDTH - MARGIN;
+    }
+    if (top + DROPDOWN_HEIGHT > viewportHeight) {
+      top = buttonRect.top - DROPDOWN_HEIGHT - 4;
+    }
+    if (left < MARGIN) left = MARGIN;
+    if (top < MARGIN) top = MARGIN;
+
+    return { top: `${top}px`, left: `${left}px` };
+  };
+
   const handleDropdownToggle = (accountId, event) => {
     event.stopPropagation();
 
@@ -106,44 +165,14 @@ export default function AccountsPage() {
     }
 
     setOpenDropdown(accountId);
-
-    // Calculate dropdown position with viewport bounds checking
-    const button = event.currentTarget;
-    const rect = button.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const dropdownWidth = 192; // w-48 = 192px
-    const dropdownHeight = 88; // Approximate height of dropdown with 2 items
-
-    let top = rect.bottom + 4;
-    let left = rect.left;
-
-    // Check if dropdown would go off the right edge
-    if (left + dropdownWidth > viewportWidth) {
-      left = viewportWidth - dropdownWidth - 8; // 8px margin from edge
-    }
-
-    // Check if dropdown would go off the bottom edge
-    if (top + dropdownHeight > viewportHeight) {
-      top = rect.top - dropdownHeight - 4; // Position above the button
-    }
-
-    // Ensure dropdown doesn't go off the left edge
-    if (left < 8) {
-      left = 8;
-    }
-
-    // Ensure dropdown doesn't go off the top edge
-    if (top < 8) {
-      top = 8;
-    }
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    const position = calculateDropdownPosition(buttonRect);
 
     setDropdownPositions((prev) => ({
       ...prev,
       [accountId]: {
         position: "fixed",
-        top: `${top}px`,
-        left: `${left}px`,
+        ...position,
         zIndex: 50,
       },
     }));
@@ -173,61 +202,16 @@ export default function AccountsPage() {
     });
   };
 
-  // Utility functions
-  const calculateGroupBalance = (accounts) => {
-    return accounts.reduce(
-      (total, account) => total + (account.balance || 0),
-      0
-    );
-  };
-
-  const getGroupCurrency = (accounts) => {
-    return accounts.length > 0 ? accounts[0].currency || "SGD" : "SGD";
-  };
-
-  const formatCurrency = (amount, currency = "SGD") => {
-    const getCurrencySymbol = (currency) => {
-      switch (currency.toUpperCase()) {
-        case "USD":
-        case "SGD":
-          return "$";
-        case "EUR":
-          return "€";
-        case "VND":
-          return "₫";
-        case "GBP":
-          return "£";
-        case "JPY":
-        case "CNY":
-          return "¥";
-        default:
-          return `${currency} `;
-      }
-    };
-
-    const decimalPlaces =
-      currency.toUpperCase() === "VND" || currency.toUpperCase() === "JPY"
-        ? 0
-        : 2;
-
-    const formattedNumber = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: decimalPlaces,
-      maximumFractionDigits: decimalPlaces,
-    }).format(amount);
-
-    return `${getCurrencySymbol(currency)}${formattedNumber}`;
-  };
-
   // Computed values
-  const filteredAccounts = accounts.filter(
-    (accountGroup) =>
-      accountGroup.accountType
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
+  const filteredAccounts = accounts.filter((accountGroup) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      accountGroup.accountType.toLowerCase().includes(searchLower) ||
       accountGroup.accounts.some((account) =>
-        account.name.toLowerCase().includes(searchTerm.toLowerCase())
+        account.name.toLowerCase().includes(searchLower)
       )
-  );
+    );
+  });
 
   // Render functions
   const renderExpandButton = (accountType, isExpanded, hasAccounts) => {
@@ -252,7 +236,7 @@ export default function AccountsPage() {
     );
   };
 
-  const renderActionsDropdown = (itemId, isOpen) => (
+  const renderActionsDropdown = (itemId, isOpen, isGroup = false) => (
     <div className="relative dropdown-container">
       <button
         onClick={(e) => handleDropdownToggle(itemId, e)}
@@ -266,13 +250,15 @@ export default function AccountsPage() {
           className="w-48 bg-white rounded-md shadow-xl border border-gray-200"
           style={dropdownPositions[itemId]}
         >
-          <button
-            onClick={() => handleEdit(itemId)}
-            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-          >
-            <Edit className="w-4 h-4 text-gray-600" />
-            <span className="text-gray-700">{t("common.edit")}</span>
-          </button>
+          {!isGroup && (
+            <button
+              onClick={() => handleEdit(itemId)}
+              className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+            >
+              <Edit className="w-4 h-4 text-gray-600" />
+              <span className="text-gray-700">{t("common.edit")}</span>
+            </button>
+          )}
           <button
             onClick={() => handleDelete(itemId)}
             className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors text-red-600"
@@ -299,7 +285,7 @@ export default function AccountsPage() {
         </span>
       </div>
       <div className="w-16 flex justify-center">
-        {renderActionsDropdown(account.id, openDropdown === account.id)}
+        {renderActionsDropdown(account.id, openDropdown === account.id, false)}
       </div>
     </div>
   );
@@ -338,7 +324,8 @@ export default function AccountsPage() {
           <div className="w-16 flex justify-center">
             {renderActionsDropdown(
               accountGroup.accountType,
-              openDropdown === accountGroup.accountType
+              openDropdown === accountGroup.accountType,
+              true // isGroup = true
             )}
           </div>
         </div>
