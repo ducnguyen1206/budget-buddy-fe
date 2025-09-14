@@ -307,7 +307,9 @@ export default function AccountsPage() {
         <span className="text-gray-700">{account.name}</span>
       </div>
       <div className="flex-1 px-4 text-right">
-        <span className="text-gray-700">
+        <span
+          className={account.balance < 0 ? "text-red-500" : "text-gray-700"}
+        >
           {formatCurrency(account.balance, account.currency)}
         </span>
       </div>
@@ -340,7 +342,11 @@ export default function AccountsPage() {
           </div>
 
           <div className="flex-1 px-4 text-right">
-            <span className="text-lg font-semibold text-gray-900">
+            <span
+              className={`text-lg font-semibold ${
+                groupBalance < 0 ? "text-red-500" : "text-gray-900"
+              }`}
+            >
               {formatCurrency(
                 groupBalance,
                 getGroupCurrency(accountGroup.accounts)

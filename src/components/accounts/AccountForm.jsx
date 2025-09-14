@@ -20,7 +20,7 @@ const CURRENCY_OPTIONS = [
 
 const INITIAL_FORM_DATA = {
   name: "",
-  balance: "",
+  balance: "0",
   currency: "SGD",
   type: "",
 };
@@ -48,10 +48,10 @@ export default function AccountForm() {
 
   // Utility functions
   const formatBalanceForDisplay = (value) => {
-    if (!value) return "";
+    if (!value) return "0";
     if (value.startsWith(".")) return value;
 
-    const parts = value.split(".");
+    const parts = value.toString().split(".");
     const integerPart = parts[0];
     const decimalPart = parts[1];
 
@@ -100,13 +100,10 @@ export default function AccountForm() {
 
       if (result.success) {
         const account = result.data;
-        const formattedBalance = account.balance
-          ? formatBalanceForDisplay(account.balance.toString())
-          : "";
 
         setFormData({
           name: account.name || "",
-          balance: formattedBalance,
+          balance: account.balance ? account.balance.toString() : "0",
           currency: account.currency || "SGD",
           type: account.type || "",
         });
@@ -152,18 +149,6 @@ export default function AccountForm() {
     clearFieldError(field);
   };
 
-  const handleBalanceChange = (value) => {
-    const cleanValue = value.replace(/[^0-9.]/g, "");
-    const parts = cleanValue.split(".");
-
-    if (parts.length > 2 || (parts[1] && parts[1].length > 2)) {
-      return;
-    }
-
-    setFormData((prev) => ({ ...prev, balance: cleanValue }));
-    clearFieldError("balance");
-  };
-
   const handleAccountTypeInputChange = (e) => {
     const value = e.target.value;
     setAccountTypeSearch(value);
@@ -199,18 +184,6 @@ export default function AccountForm() {
       newErrors.name = t("validation.nameMinLength");
     }
 
-    if (!formData.balance) {
-      newErrors.balance = t("validation.balanceRequired");
-    } else {
-      const cleanBalance = formData.balance.replace(/,/g, "");
-      const balance = parseFloat(cleanBalance);
-      if (isNaN(balance)) {
-        newErrors.balance = t("validation.balanceInvalid");
-      } else if (balance < 0) {
-        newErrors.balance = t("validation.balancePositive");
-      }
-    }
-
     if (!formData.currency) {
       newErrors.currency = t("validation.currencyRequired");
     }
@@ -233,7 +206,9 @@ export default function AccountForm() {
 
       const accountData = {
         name: formData.name.trim(),
-        balance: parseFloat(formData.balance.replace(/,/g, "")),
+        balance: isEditMode
+          ? parseFloat(formData.balance.replace(/,/g, ""))
+          : 0,
         currency: formData.currency,
         type: formData.type,
       };
@@ -301,41 +276,17 @@ export default function AccountForm() {
               </label>
               <input
                 type="text"
-                value={formData.balance}
-                onChange={(e) => handleBalanceChange(e.target.value)}
-                onBlur={() => {
-                  // Apply formatting when user finishes typing
-                  if (formData.balance && !formData.balance.startsWith(".")) {
-                    const formatted = formatBalanceForDisplay(formData.balance);
-                    setFormData((prev) => ({
-                      ...prev,
-                      balance: formatted,
-                    }));
-                  }
-                }}
-                onFocus={() => {
-                  // Remove formatting when user starts typing
-                  if (formData.balance) {
-                    const unformatted = formData.balance.replace(/,/g, "");
-                    setFormData((prev) => ({
-                      ...prev,
-                      balance: unformatted,
-                    }));
-                  }
-                }}
-                placeholder={t("accounts.balancePlaceholder")}
-                className={`w-full px-6 py-3 pr-16 border rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-colors bg-white text-lg font-inter ${
-                  errors.balance
-                    ? "border-error focus:ring-error"
-                    : "border-gray-300"
+                value={formatBalanceForDisplay(formData.balance)}
+                disabled
+                className={`w-full px-6 py-3 pr-16 border rounded-2xl bg-gray-100 text-lg font-inter cursor-not-allowed ${
+                  parseFloat(formData.balance.replace(/,/g, "")) < 0
+                    ? "text-red-500"
+                    : "text-gray-500"
                 }`}
-                required
               />
-              {errors.balance && (
-                <p className="mt-2 text-error text-sm font-inter">
-                  {errors.balance}
-                </p>
-              )}
+              <p className="mt-2 text-gray-500 text-sm font-inter">
+                {t("accounts.balanceDisabledNote")}
+              </p>
             </div>
 
             {/* Currency */}

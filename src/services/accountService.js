@@ -368,6 +368,16 @@ export const deleteAccountGroup = async (groupId, t = null) => {
         error: handleApiError("ACCOUNT_GROUP_NOT_FOUND", t),
       };
     } else if (response.status === HTTP_STATUS.CONFLICT) {
+      // Check if it's the specific CONFLICT_005 error for transactions
+      const responseData = await response.json().catch(() => ({}));
+      if (responseData.errorCode === "CONFLICT_005") {
+        return {
+          success: false,
+          error:
+            responseData.message ||
+            handleApiError("ACCOUNT_HAS_TRANSACTIONS", t),
+        };
+      }
       return {
         success: false,
         error: handleApiError("ACCOUNT_GROUP_IN_USE", t),
@@ -426,6 +436,16 @@ export const deleteAccount = async (id, t = null) => {
         error: handleApiError("ACCOUNT_NOT_FOUND", t),
       };
     } else if (response.status === HTTP_STATUS.CONFLICT) {
+      // Check if it's the specific CONFLICT_005 error for transactions
+      const responseData = await response.json().catch(() => ({}));
+      if (responseData.errorCode === "CONFLICT_005") {
+        return {
+          success: false,
+          error:
+            responseData.message ||
+            handleApiError("ACCOUNT_HAS_TRANSACTIONS", t),
+        };
+      }
       return {
         success: false,
         error: handleApiError("ACCOUNT_IN_USE", t),
