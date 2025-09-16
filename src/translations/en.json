@@ -200,8 +200,8 @@
     "selectCurrency": "Select currency",
     "loadingAccountTypes": "Loading account types...",
     "confirmDelete": "Confirm Delete",
-    "deleteWarning": "Are you sure you want to delete the account \"{name}\"? This action cannot be undone.",
-    "deleteGroupWarning": "Are you sure you want to delete the account group \"{name}\"? This will delete all accounts in this group. This action cannot be undone.",
+    "deleteWarning": "Are you sure you want to delete the account \"{name}\"? This will also delete all related transactions in this account. This action cannot be undone.",
+    "deleteGroupWarning": "Are you sure you want to delete the account group \"{name}\"? This will delete all accounts in this group and all related transactions in those accounts. This action cannot be undone.",
     "expandGroup": "Expand group",
     "collapseGroup": "Collapse group",
     "totalConsolidated": "Total Consolidated"

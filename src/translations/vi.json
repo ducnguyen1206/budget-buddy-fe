@@ -200,8 +200,8 @@
     "selectCurrency": "Chọn tiền tệ",
     "loadingAccountTypes": "Đang tải loại tài khoản...",
     "confirmDelete": "Xác Nhận Xóa",
-    "deleteWarning": "Bạn có chắc chắn muốn xóa tài khoản \"{name}\"? Hành động này không thể hoàn tác.",
-    "deleteGroupWarning": "Bạn có chắc chắn muốn xóa nhóm tài khoản \"{name}\"? Điều này sẽ xóa tất cả tài khoản trong nhóm này. Hành động này không thể hoàn tác.",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa tài khoản \"{name}\"? Điều này cũng sẽ xóa tất cả giao dịch liên quan trong tài khoản này. Hành động này không thể hoàn tác.",
+    "deleteGroupWarning": "Bạn có chắc chắn muốn xóa nhóm tài khoản \"{name}\"? Điều này sẽ xóa tất cả tài khoản trong nhóm này và tất cả giao dịch liên quan trong những tài khoản đó. Hành động này không thể hoàn tác.",
     "expandGroup": "Mở rộng nhóm",
     "collapseGroup": "Thu gọn nhóm",
     "totalConsolidated": "Tổng Cộng"
