@@ -14,13 +14,14 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
+    "of": "of",
+    "retry": "Retry",
     "close": "Close",
     "open": "Open",
     "search": "Search",
     "filter": "Filter",
     "sort": "Sort",
     "refresh": "Refresh",
-    "retry": "Retry",
     "tryAgain": "Try Again"
   },
   "auth": {
@@ -129,7 +130,8 @@
     "accountGroupNotFound": "Account group not found. Please check the group ID and try again.",
     "accountGroupInUse": "This account group is currently in use and cannot be deleted. Please remove all accounts from this group first.",
     "deleteAccountGroupFailed": "Failed to delete account group. Please try again.",
-    "currencyMismatch": "Currency must match the group accounts. Please select a different currency."
+    "currencyMismatch": "Currency must match the group accounts. Please select a different currency.",
+    "fetchTransactionsFailed": "Failed to fetch transactions. Please try again."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -205,5 +207,29 @@
     "expandGroup": "Expand group",
     "collapseGroup": "Collapse group",
     "totalConsolidated": "Total Consolidated"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "description": "View and manage all your financial transactions.",
+    "searchPlaceholder": "Search transactions...",
+    "new": "New",
+    "name": "Name",
+    "amount": "Amount",
+    "currency": "Currency",
+    "date": "Date",
+    "category": "Category",
+    "account": "Account",
+    "type": "Type",
+    "transferInfo": "Transfer Info",
+    "income": "Income",
+    "expense": "Expense",
+    "noTransactionsFound": "No transactions found.",
+    "noTransactionsMatching": "No transactions found matching your search.",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "results": "results",
+    "page": "Page",
+    "goToPage": "Go to page"
   }
 }
