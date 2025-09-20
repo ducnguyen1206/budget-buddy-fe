@@ -6,27 +6,44 @@ import { Search, Plus } from "lucide-react";
 import { fetchTransactions } from "../../services/transactionService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
+// Constants
+const PAGE_SIZE = 10;
+const INITIAL_PAGINATION = {
+  page: 0,
+  size: PAGE_SIZE,
+  totalElements: 0,
+  totalPages: 0,
+};
+
 const TransactionsPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  // State management
+  // State
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pagination, setPagination] = useState({
-    page: 0,
-    size: 10,
-    totalElements: 0,
-    totalPages: 0,
-  });
+  const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
-  // Constants
-  const PAGE_SIZE = 10;
+  // Utility Functions
+  const formatAmount = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Math.abs(amount));
+  };
 
-  // Load transactions
+  const getTransactionType = (amount) => {
+    return amount > 0 ? t("transactions.income") : t("transactions.expense");
+  };
+
+  const getAmountColor = (amount) => {
+    return amount > 0 ? "text-green-600" : "text-gray-700";
+  };
+
+  // Data Loading
   const loadTransactions = async (page = 0) => {
     try {
       setLoading(true);
@@ -34,20 +51,16 @@ const TransactionsPage = () => {
 
       const data = await fetchTransactions(page, PAGE_SIZE);
 
-      // Check if the result indicates a redirect should happen
       if (shouldRedirectToLogin(data)) {
         console.log(
           "Transactions API returned redirect response - user will be redirected to login"
         );
-        return; // The redirect will be handled by the API interceptor
+        return;
       }
 
-      // Update transactions and pagination from API response
       setTransactions(data.transactions || []);
 
-      // Update pagination with API response data
       if (data.pagination) {
-        console.log("📄 Pagination data from API:", data.pagination);
         setPagination({
           page: data.pagination.page,
           size: data.pagination.size,
@@ -55,14 +68,7 @@ const TransactionsPage = () => {
           totalPages: data.pagination.totalPages,
         });
       } else {
-        console.log("⚠️ No pagination data in API response");
-        // Fallback if pagination data is missing
-        setPagination({
-          page: 0,
-          size: PAGE_SIZE,
-          totalElements: 0,
-          totalPages: 0,
-        });
+        setPagination(INITIAL_PAGINATION);
       }
     } catch (err) {
       console.error("Error loading transactions:", err);
@@ -72,12 +78,7 @@ const TransactionsPage = () => {
     }
   };
 
-  // Effects
-  useEffect(() => {
-    loadTransactions(currentPage);
-  }, [currentPage]);
-
-  // Event handlers
+  // Event Handlers
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -93,11 +94,10 @@ const TransactionsPage = () => {
       newPage !== currentPage
     ) {
       setCurrentPage(newPage);
-      // The useEffect will automatically trigger loadTransactions when currentPage changes
     }
   };
 
-  // Filter transactions based on search term
+  // Data Processing
   const filteredTransactions = transactions.filter(
     (transaction) =>
       transaction.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,36 +107,23 @@ const TransactionsPage = () => {
       transaction.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Format amount without currency
-  const formatAmount = (amount) => {
-    const formattedAmount = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Math.abs(amount));
+  // Effects
+  useEffect(() => {
+    loadTransactions(currentPage);
+  }, [currentPage]);
 
-    return formattedAmount;
-  };
-
-  // Render pagination
-  const renderPagination = () => {
-    // Always show pagination info, even for single pages
+  // Pagination Component
+  const Pagination = () => {
     if (pagination.totalPages === 0) return null;
 
-    // Generate page numbers to show
     const getPageNumbers = () => {
       const pages = [];
       const totalPages = pagination.totalPages;
       const current = currentPage;
 
-      // For single page, just show that page
-      if (totalPages === 1) {
-        return [0];
-      }
-
-      // Always show first page
+      if (totalPages === 1) return [0];
       if (totalPages > 0) pages.push(0);
 
-      // Show pages around current page
       const start = Math.max(1, current - 1);
       const end = Math.min(totalPages - 1, current + 1);
 
@@ -146,20 +133,12 @@ const TransactionsPage = () => {
         }
       }
 
-      // Always show last page if different from first
       if (totalPages > 1) pages.push(totalPages - 1);
 
       return [...new Set(pages)].sort((a, b) => a - b);
     };
 
     const pageNumbers = getPageNumbers();
-
-    console.log("🔍 Pagination Debug:", {
-      totalPages: pagination.totalPages,
-      currentPage,
-      pageNumbers,
-      totalElements: pagination.totalElements,
-    });
 
     return (
       <div className="flex items-center justify-between mt-6">
@@ -172,7 +151,6 @@ const TransactionsPage = () => {
         </div>
 
         <div className="flex items-center space-x-2">
-          {/* Previous button */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 0 || pagination.totalPages <= 1}
@@ -181,7 +159,6 @@ const TransactionsPage = () => {
             {t("common.previous")}
           </button>
 
-          {/* Page numbers */}
           <div className="flex space-x-1">
             {pageNumbers.map((pageNum, index) => {
               const isCurrentPage = pageNum === currentPage;
@@ -208,7 +185,6 @@ const TransactionsPage = () => {
             })}
           </div>
 
-          {/* Next button */}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={
@@ -224,7 +200,98 @@ const TransactionsPage = () => {
     );
   };
 
-  // Render loading state
+  // Table Header Component
+  const TableHeader = () => (
+    <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.name")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.amount")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.currency")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.date")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.category")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.account")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.type")}
+        </h3>
+      </div>
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+          {t("transactions.remarks")}
+        </h3>
+      </div>
+    </div>
+  );
+
+  // Table Row Component
+  const TransactionRow = ({ transaction }) => (
+    <div className="flex items-center py-4 px-6 hover:bg-gray-50">
+      <div className="flex-1 px-4">
+        <span className="text-gray-700">{transaction.name}</span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className={`font-medium ${getAmountColor(transaction.amount)}`}>
+          {formatAmount(transaction.amount)}
+        </span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">{transaction.currency}</span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">{transaction.date}</span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">{transaction.categoryName}</span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">{transaction.sourceAccountName}</span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">
+          {getTransactionType(transaction.amount)}
+        </span>
+      </div>
+      <div className="flex-1 px-4">
+        <span className="text-gray-500">{transaction.remarks}</span>
+      </div>
+    </div>
+  );
+
+  // Empty State Component
+  const EmptyState = () => (
+    <div className="py-12 text-center">
+      <p className="text-gray-500 text-lg">
+        {searchTerm
+          ? t("transactions.noTransactionsMatching")
+          : t("transactions.noTransactionsFound")}
+      </p>
+    </div>
+  );
+
+  // Loading State
   if (loading) {
     return (
       <DashboardLayout activePage="transactions">
@@ -238,7 +305,7 @@ const TransactionsPage = () => {
     );
   }
 
-  // Render error state
+  // Error State
   if (error) {
     return (
       <DashboardLayout activePage="transactions">
@@ -262,6 +329,7 @@ const TransactionsPage = () => {
     );
   }
 
+  // Main Render
   return (
     <DashboardLayout activePage="transactions">
       <div className="max-w-8xl mx-auto">
@@ -297,116 +365,23 @@ const TransactionsPage = () => {
 
         {/* Transactions Table */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Table Header */}
-          <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.name")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.amount")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.currency")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.date")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.category")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.account")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.type")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.remarks")}
-              </h3>
-            </div>
-          </div>
-
-          {/* Table Body */}
+          <TableHeader />
           <div className="divide-y divide-gray-200">
             {filteredTransactions.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-gray-500 text-lg">
-                  {searchTerm
-                    ? t("transactions.noTransactionsMatching")
-                    : t("transactions.noTransactionsFound")}
-                </p>
-              </div>
+              <EmptyState />
             ) : (
               filteredTransactions.map((transaction) => (
-                <div
+                <TransactionRow
                   key={transaction.id}
-                  className="flex items-center py-4 px-6 hover:bg-gray-50"
-                >
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-700">{transaction.name}</span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span
-                      className={`font-medium ${
-                        transaction.amount > 0
-                          ? "text-green-600"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {formatAmount(transaction.amount)}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.currency}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">{transaction.date}</span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.categoryName}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.sourceAccountName}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.amount > 0
-                        ? t("transactions.income")
-                        : t("transactions.expense")}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">{transaction.remarks}</span>
-                  </div>
-                </div>
+                  transaction={transaction}
+                />
               ))
             )}
           </div>
         </div>
 
         {/* Pagination */}
-        {renderPagination()}
+        <Pagination />
       </div>
     </DashboardLayout>
   );
