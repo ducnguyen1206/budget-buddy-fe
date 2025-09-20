@@ -39,8 +39,12 @@ const TransactionsPage = () => {
     return amount < 0 ? `-${formattedAmount}` : formattedAmount;
   };
 
-  const getTransactionType = (amount) => {
-    return amount > 0 ? t("transactions.income") : t("transactions.expense");
+  const getTransactionType = (categoryType) => {
+    return categoryType === "INCOME"
+      ? t("transactions.income")
+      : categoryType == "TRANSFER"
+      ? t("transactions.transfer")
+      : t("transactions.expense");
   };
 
   const getAmountColor = (amount) => {
@@ -269,7 +273,7 @@ const TransactionsPage = () => {
         <span className="text-gray-500">{transaction.currency}</span>
       </div>
       <div className="flex-1 px-4">
-        <span className="text-gray-500">{transaction.date}</span>
+        <span className="text-gray-500">{transaction.formattedDate}</span>
       </div>
       <div className="flex-1 px-4">
         <span className="text-gray-500">{transaction.categoryName}</span>
@@ -279,7 +283,7 @@ const TransactionsPage = () => {
       </div>
       <div className="flex-1 px-4">
         <span className="text-gray-500">
-          {getTransactionType(transaction.amount)}
+          {getTransactionType(transaction.categoryType)}
         </span>
       </div>
       <div className="flex-1 px-4">
