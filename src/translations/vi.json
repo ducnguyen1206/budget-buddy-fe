@@ -220,7 +220,7 @@
     "category": "Danh mục",
     "account": "Tài khoản",
     "type": "Loại",
-    "transferInfo": "Thông tin chuyển khoản",
+    "remarks": "Ghi chú",
     "income": "Thu nhập",
     "expense": "Chi tiêu",
     "noTransactionsFound": "Không tìm thấy giao dịch nào.",

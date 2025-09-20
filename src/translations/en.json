@@ -220,7 +220,7 @@
     "category": "Category",
     "account": "Account",
     "type": "Type",
-    "transferInfo": "Transfer Info",
+    "remarks": "Remarks",
     "income": "Income",
     "expense": "Expense",
     "noTransactionsFound": "No transactions found.",

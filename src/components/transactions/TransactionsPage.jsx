@@ -300,43 +300,43 @@ const TransactionsPage = () => {
           {/* Table Header */}
           <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.name")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.amount")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.currency")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.date")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.category")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.account")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
                 {t("transactions.type")}
               </h3>
             </div>
             <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                {t("transactions.transferInfo")}
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
+                {t("transactions.remarks")}
               </h3>
             </div>
           </div>
@@ -397,9 +397,7 @@ const TransactionsPage = () => {
                     </span>
                   </div>
                   <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.transferInfo}
-                    </span>
+                    <span className="text-gray-500">{transaction.remarks}</span>
                   </div>
                 </div>
               ))
