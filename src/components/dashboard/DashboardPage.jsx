@@ -6,7 +6,6 @@ export default function DashboardPage() {
   const { t } = useLanguage();
 
   const handleTestRefresh = () => {
-    console.log("🧪 Manual refresh token test triggered");
     tokenRefreshManager.manualRefresh();
   };
 

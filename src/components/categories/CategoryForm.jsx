@@ -208,7 +208,6 @@ export default function CategoryForm() {
         const result = await updateCategory(id, formData, t);
 
         if (result.success) {
-          console.log("Category updated successfully:", result.data);
           navigate("/categories");
         } else {
           setSubmitError(result.error);
@@ -218,7 +217,6 @@ export default function CategoryForm() {
         const result = await createCategory(formData, t);
 
         if (result.success) {
-          console.log("Category created successfully:", result.data);
           navigate("/categories");
         } else {
           setSubmitError(result.error);

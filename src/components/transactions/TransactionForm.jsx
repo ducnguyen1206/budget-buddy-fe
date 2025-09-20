@@ -301,13 +301,9 @@ const TransactionForm = () => {
         transactionData.accountId = formData.accountId;
       }
 
-      console.log("Creating transaction with data:", transactionData);
-
       const result = await createTransaction(transactionData);
-      console.log("Transaction creation result:", result);
 
       if (result.success) {
-        console.log("Transaction created successfully");
         navigate("/transactions");
       } else {
         console.error("Transaction creation failed:", result.message);

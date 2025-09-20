@@ -129,7 +129,7 @@ export default function RegisterPage() {
             <SocialButton
               key={provider.id}
               {...provider}
-              onClick={() => console.log("Register with", provider.id)}
+              onClick={() => {}}
               disabled={isLoading}
             />
           ))}

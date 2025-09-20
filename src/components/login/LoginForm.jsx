@@ -70,7 +70,6 @@ export default function LoginForm() {
     const result = await loginUser(formData.email, formData.password, t);
 
     if (result.success) {
-      console.log("Login success:", result.data);
       // Redirect to dashboard or main application page
       navigate("/dashboard");
     } else {
@@ -169,7 +168,7 @@ export default function LoginForm() {
           <SocialButton
             key={provider.id}
             {...provider}
-            onClick={() => console.log("Social:", provider.id)}
+            onClick={() => {}}
             disabled={isLoading}
           />
         ))}

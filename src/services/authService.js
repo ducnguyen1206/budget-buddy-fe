@@ -27,7 +27,6 @@ export const loginUser = async (email, password, t = null) => {
         if (token || refreshToken) {
           storeTokens(token, refreshToken);
           // TODO: Uncomment when backend refresh token API is ready
-          console.log("🔑 Tokens stored, refresh token manager disabled");
           // tokenRefreshManager.start();
 
           // Dispatch custom event to notify other components
@@ -134,7 +133,6 @@ export const verifyToken = async (token, t = null) => {
     if (response.status === HTTP_STATUS.CREATED || response.status === 200) {
       try {
         const responseText = await response.text();
-        console.log("Token verification response:", responseText);
 
         // Check if response contains "verified" to confirm success
         if (responseText.includes("verified")) {
@@ -269,15 +267,6 @@ export const refreshToken = async (t = null) => {
       };
     }
 
-    console.log(
-      "🔄 Making refresh token API call to:",
-      getApiUrl(API_ENDPOINTS.REFRESH_TOKEN)
-    );
-    console.log("🔄 Refresh token payload:", {
-      refreshToken: refreshTokenValue,
-    });
-    console.log("🔄 Request headers:", getApiHeaders(true));
-
     const response = await fetchWithAuth(
       getApiUrl(API_ENDPOINTS.REFRESH_TOKEN),
       {
@@ -287,8 +276,6 @@ export const refreshToken = async (t = null) => {
       },
       t
     );
-
-    console.log("🔄 Refresh token response status:", response.status);
 
     // Check if response indicates a redirect should happen
     if (shouldRedirectToLogin(response)) {
@@ -305,7 +292,6 @@ export const refreshToken = async (t = null) => {
           storeTokens(token, newRefreshToken);
         }
 
-        console.log("Token refreshed successfully");
         return {
           success: true,
           data: {

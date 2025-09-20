@@ -4,8 +4,6 @@ import tokenRefreshManager from "./tokenRefreshManager";
 // Global API interceptor to handle 401 errors
 export const handleApiResponse = async (response, t = null) => {
   if (response.status === 401 || response.status === 403) {
-    console.log("API returned 401 - User unauthorized, redirecting to login");
-
     // Stop token refresh manager
     tokenRefreshManager.stop();
 

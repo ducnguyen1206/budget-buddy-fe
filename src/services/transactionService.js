@@ -86,8 +86,6 @@ export const createTransaction = async (transactionData) => {
 // Test API connectivity
 export const testTransactionsAPI = async () => {
   try {
-    console.log("🧪 Testing transactions API connectivity...");
-
     // Build query parameters
     const queryParams = new URLSearchParams({
       page: "0",
@@ -104,10 +102,9 @@ export const testTransactionsAPI = async () => {
       method: "POST",
       headers: getApiHeaders(true),
     });
-    console.log("🧪 Test response status:", response.status);
     return response.status;
   } catch (error) {
-    console.error("🧪 Test API error:", error);
+    console.error("Test API error:", error);
     throw error;
   }
 };
@@ -115,8 +112,6 @@ export const testTransactionsAPI = async () => {
 // Fetch transactions
 export const fetchTransactions = async (page = 0, size = 10) => {
   try {
-    console.log("🔄 Fetching transactions...", { page, size });
-
     // Build query parameters
     const queryParams = new URLSearchParams({
       page: page.toString(),
@@ -128,35 +123,29 @@ export const fetchTransactions = async (page = 0, size = 10) => {
     const apiUrl = `${getApiUrl(
       API_ENDPOINTS.TRANSACTIONS_INQUIRY
     )}?${queryParams}`;
-    console.log("🔄 API URL:", apiUrl);
 
     const headers = getApiHeaders(true);
-    console.log("🔑 Headers with auth:", headers);
 
     const response = await fetchWithAuth(apiUrl, {
       method: "POST",
       headers: headers,
     });
 
-    console.log("📡 Transactions API response status:", response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("❌ Transactions API error:", response.status, errorText);
+      console.error("Transactions API error:", response.status, errorText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("📊 Transactions API data:", data);
 
     if (shouldRedirectToLogin(data)) {
-      console.log("🔄 Redirect to login detected");
       return data;
     }
 
     return data;
   } catch (error) {
-    console.error("❌ Error fetching transactions:", error);
+    console.error("Error fetching transactions:", error);
     throw error;
   }
 };

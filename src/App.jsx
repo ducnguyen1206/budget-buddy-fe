@@ -25,16 +25,10 @@ function TokenRefreshHandler() {
     // Check authentication status and start/stop token refresh manager accordingly
     const checkAuthAndManageRefresh = () => {
       const hasToken = isAuthenticated();
-      console.log("🔍 Auth check - hasToken:", hasToken);
-      console.log("🔍 Current token:", getToken() ? "exists" : "missing");
 
       if (hasToken) {
-        console.log("✅ User is authenticated, starting token refresh manager");
         tokenRefreshManager.start();
       } else {
-        console.log(
-          "❌ User is not authenticated, stopping token refresh manager"
-        );
         tokenRefreshManager.stop();
       }
     };
@@ -44,7 +38,6 @@ function TokenRefreshHandler() {
 
     // Listen for token storage events (immediate trigger)
     const handleTokensStored = () => {
-      console.log("🎯 Tokens stored event received, checking auth status");
       checkAuthAndManageRefresh();
     };
 
