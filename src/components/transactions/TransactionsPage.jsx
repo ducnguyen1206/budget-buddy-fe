@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus } from "lucide-react";
-import { fetchTransactions } from "../../services/transactionService";
+import {
+  fetchTransactions,
+  testTransactionsAPI,
+} from "../../services/transactionService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 // Constants
@@ -29,10 +32,11 @@ const TransactionsPage = () => {
 
   // Utility Functions
   const formatAmount = (amount) => {
-    return new Intl.NumberFormat("en-US", {
+    const formattedAmount = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(Math.abs(amount));
+    return amount < 0 ? `-${formattedAmount}` : formattedAmount;
   };
 
   const getTransactionType = (amount) => {
@@ -40,27 +44,39 @@ const TransactionsPage = () => {
   };
 
   const getAmountColor = (amount) => {
-    return amount > 0 ? "text-green-600" : "text-gray-700";
+    return amount > 0 ? "text-green-600" : "text-red-600";
   };
 
   // Data Loading
   const loadTransactions = async (page = 0) => {
     try {
+      console.log("🔄 TransactionsPage: Loading transactions for page", page);
       setLoading(true);
       setError(null);
 
+      // Test API connectivity first
+      try {
+        await testTransactionsAPI();
+      } catch (testError) {
+        console.error("🧪 API connectivity test failed:", testError);
+      }
+
       const data = await fetchTransactions(page, PAGE_SIZE);
+      console.log("📊 TransactionsPage: Received data", data);
 
       if (shouldRedirectToLogin(data)) {
-        console.log(
-          "Transactions API returned redirect response - user will be redirected to login"
-        );
+        console.log("🔄 TransactionsPage: Redirect to login detected");
         return;
       }
 
+      console.log(
+        "✅ TransactionsPage: Setting transactions",
+        data.transactions
+      );
       setTransactions(data.transactions || []);
 
       if (data.pagination) {
+        console.log("📄 TransactionsPage: Setting pagination", data.pagination);
         setPagination({
           page: data.pagination.page,
           size: data.pagination.size,
@@ -68,10 +84,11 @@ const TransactionsPage = () => {
           totalPages: data.pagination.totalPages,
         });
       } else {
+        console.log("📄 TransactionsPage: Using initial pagination");
         setPagination(INITIAL_PAGINATION);
       }
     } catch (err) {
-      console.error("Error loading transactions:", err);
+      console.error("❌ TransactionsPage: Error loading transactions:", err);
       setError(err.message || t("errors.fetchTransactionsFailed"));
     } finally {
       setLoading(false);

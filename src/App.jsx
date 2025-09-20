@@ -12,6 +12,7 @@ import DashboardPage from "./components/dashboard/DashboardPage";
 import AccountsPage from "./components/accounts/AccountsPage";
 import AccountForm from "./components/accounts/AccountForm";
 import TransactionsPage from "./components/transactions/TransactionsPage";
+import TransactionForm from "./components/transactions/TransactionForm";
 import BudgetsPage from "./components/budgets/BudgetsPage";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
@@ -86,6 +87,7 @@ export default function App() {
           <Route path="/accounts/new" element={<AccountForm />} />
           <Route path="/accounts/edit/:id" element={<AccountForm />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/new" element={<TransactionForm />} />
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/categories/new" element={<CategoryForm />} />

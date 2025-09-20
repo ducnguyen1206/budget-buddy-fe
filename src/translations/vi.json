@@ -86,7 +86,13 @@
     "balanceInvalid": "Vui lòng nhập số dư hợp lệ",
     "balancePositive": "Số dư phải là số dương",
     "currencyRequired": "Tiền tệ là bắt buộc",
-    "accountTypeRequired": "Loại tài khoản là bắt buộc"
+    "accountTypeRequired": "Loại tài khoản là bắt buộc",
+    "amountRequired": "Vui lòng nhập số tiền",
+    "categoryRequired": "Vui lòng chọn danh mục",
+    "accountRequired": "Vui lòng chọn tài khoản",
+    "fromAccountRequired": "Vui lòng chọn tài khoản nguồn",
+    "toAccountRequired": "Vui lòng chọn tài khoản đích",
+    "differentAccountsRequired": "Tài khoản nguồn và đích phải khác nhau"
   },
   "errors": {
     "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
@@ -223,6 +229,7 @@
     "remarks": "Ghi chú",
     "income": "Thu nhập",
     "expense": "Chi tiêu",
+    "transfer": "Chuyển khoản",
     "noTransactionsFound": "Không tìm thấy giao dịch nào.",
     "noTransactionsMatching": "Không tìm thấy giao dịch nào phù hợp với tìm kiếm của bạn.",
     "showing": "Hiển thị",
@@ -230,6 +237,17 @@
     "of": "của",
     "results": "kết quả",
     "page": "Trang",
-    "goToPage": "Đi đến trang"
+    "goToPage": "Đi đến trang",
+    "createTransaction": "Tạo Giao Dịch",
+    "namePlaceholder": "Nhập tên giao dịch",
+    "categoryPlaceholder": "Chọn danh mục",
+    "accountPlaceholder": "Chọn tài khoản",
+    "fromAccount": "Từ Tài Khoản",
+    "toAccount": "Đến Tài Khoản",
+    "fromAccountPlaceholder": "Chọn tài khoản nguồn",
+    "toAccountPlaceholder": "Chọn tài khoản đích",
+    "currencyNote": "Tiền tệ sẽ được đặt dựa trên tài khoản đã chọn",
+    "typePlaceholder": "Chọn loại giao dịch",
+    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)"
   }
 }

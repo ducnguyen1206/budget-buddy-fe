@@ -86,7 +86,13 @@
     "balanceInvalid": "Please enter a valid balance amount",
     "balancePositive": "Balance must be a positive number",
     "currencyRequired": "Currency is required",
-    "accountTypeRequired": "Account type is required"
+    "accountTypeRequired": "Account type is required",
+    "amountRequired": "Please enter an amount",
+    "categoryRequired": "Please select a category",
+    "accountRequired": "Please select an account",
+    "fromAccountRequired": "Please select a source account",
+    "toAccountRequired": "Please select a destination account",
+    "differentAccountsRequired": "Source and destination accounts must be different"
   },
   "errors": {
     "networkError": "Connection issue detected. Please check your internet connection and try again.",
@@ -223,6 +229,7 @@
     "remarks": "Remarks",
     "income": "Income",
     "expense": "Expense",
+    "transfer": "Transfer",
     "noTransactionsFound": "No transactions found.",
     "noTransactionsMatching": "No transactions found matching your search.",
     "showing": "Showing",
@@ -230,6 +237,17 @@
     "of": "of",
     "results": "results",
     "page": "Page",
-    "goToPage": "Go to page"
+    "goToPage": "Go to page",
+    "createTransaction": "Create Transaction",
+    "namePlaceholder": "Enter transaction name",
+    "categoryPlaceholder": "Select category",
+    "accountPlaceholder": "Select account",
+    "fromAccount": "From Account",
+    "toAccount": "To Account",
+    "fromAccountPlaceholder": "Select source account",
+    "toAccountPlaceholder": "Select destination account",
+    "currencyNote": "Currency will be set based on selected account",
+    "typePlaceholder": "Select transaction type",
+    "remarksPlaceholder": "Enter remarks (optional)"
   }
 }
