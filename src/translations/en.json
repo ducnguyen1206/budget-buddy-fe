@@ -248,6 +248,8 @@
     "selectedAccounts": "Selected accounts",
     "noCategoriesFound": "No categories found",
     "selectedCategories": "Selected categories",
+    "nameFilterPlaceholder": "Enter name value...",
+    "selectCategory": "Select category",
     "filters": {
       "name": "Name",
       "amount": "Amount",

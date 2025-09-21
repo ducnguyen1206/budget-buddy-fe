@@ -248,6 +248,8 @@
     "selectedAccounts": "Tài khoản đã chọn",
     "noCategoriesFound": "Không tìm thấy danh mục",
     "selectedCategories": "Danh mục đã chọn",
+    "nameFilterPlaceholder": "Nhập giá trị tên...",
+    "selectCategory": "Chọn danh mục",
     "filters": {
       "name": "Tên",
       "amount": "Số tiền",

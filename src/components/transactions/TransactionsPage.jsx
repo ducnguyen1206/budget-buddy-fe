@@ -4,11 +4,13 @@ import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
-import NameFilter from "./NameFilter";
-import AmountFilter from "./AmountFilter";
-import DateFilter from "./DateFilter";
-import AccountFilter from "./AccountFilter";
-import CategoryFilter from "./CategoryFilter";
+import {
+  NameFilter,
+  AmountFilter,
+  DateFilter,
+  AccountFilter,
+  CategoryFilter,
+} from "./filters";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
 
