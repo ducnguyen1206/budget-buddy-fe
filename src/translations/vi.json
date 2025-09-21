@@ -240,7 +240,7 @@
     "to": "đến",
     "of": "của",
     "results": "kết quả",
-    "amountFilterPlaceholder": "Nhập giá trị số tiền...",
+    "amountFilterPlaceholder": "Nhập giá trị số tiền (vd: 100, -50, 25.99)...",
     "dateFilterPlaceholder": "Chọn ngày...",
     "dateFromLabel": "Từ:",
     "dateToLabel": "Đến:",

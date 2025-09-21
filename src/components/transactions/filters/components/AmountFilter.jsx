@@ -39,8 +39,8 @@ const AmountFilter = ({
   }, 300);
 
   const handleLocalValueChange = (value) => {
-    // Only allow numbers and decimal point
-    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+    // Allow numbers, decimal point, and negative sign
+    if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
       setLocalValue(value);
       debouncedValidation(value);
     }
@@ -77,19 +77,16 @@ const AmountFilter = ({
       />
 
       {showFilter && (
-        <FilterBox title={t("transactions.amount")}>
-          {/* Header with Amount and Operator */}
-          <div className="flex items-center space-x-2 mb-3">
-            <span className="text-gray-700 font-medium">
-              {t("transactions.amount")}
-            </span>
+        <FilterBox
+          title={t("transactions.amount")}
+          operatorDropdown={
             <OperatorDropdown
               operators={FILTER_OPERATORS.AMOUNT}
               selectedOperator={amountFilter.operator}
               onOperatorChange={handleOperatorChange}
             />
-          </div>
-
+          }
+        >
           {/* Value Input */}
           <div className="mb-3">
             <input

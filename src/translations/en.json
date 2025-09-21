@@ -240,7 +240,7 @@
     "to": "to",
     "of": "of",
     "results": "results",
-    "amountFilterPlaceholder": "Enter amount value...",
+    "amountFilterPlaceholder": "Enter amount value (e.g., 100, -50, 25.99)...",
     "dateFilterPlaceholder": "Select date...",
     "dateFromLabel": "From:",
     "dateToLabel": "To:",

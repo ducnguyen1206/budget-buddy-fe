@@ -1,12 +1,21 @@
 import React from "react";
 import { FILTER_STYLES } from "../utils/filterConstants";
 
-const FilterBox = ({ children, title, className = "", onClose }) => {
+const FilterBox = ({
+  children,
+  title,
+  className = "",
+  onClose,
+  operatorDropdown,
+}) => {
   return (
     <div className={`${FILTER_STYLES.FILTER_BOX} ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-gray-700 font-medium">{title}</span>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-700 font-medium">{title}</span>
+          {operatorDropdown}
+        </div>
         {onClose && (
           <button
             onClick={onClose}

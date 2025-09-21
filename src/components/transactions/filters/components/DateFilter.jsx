@@ -99,19 +99,16 @@ const DateFilter = ({
       />
 
       {showFilter && (
-        <FilterBox title={t("transactions.date")}>
-          {/* Header with Date and Operator */}
-          <div className="flex items-center space-x-2 mb-3">
-            <span className="text-gray-700 font-medium">
-              {t("transactions.date")}
-            </span>
+        <FilterBox
+          title={t("transactions.date")}
+          operatorDropdown={
             <OperatorDropdown
               operators={FILTER_OPERATORS.DATE}
               selectedOperator={dateFilter.operator}
               onOperatorChange={handleOperatorChange}
             />
-          </div>
-
+          }
+        >
           {/* Value Input(s) */}
           <div className="mb-3">
             {dateFilter.operator === "is" ? (

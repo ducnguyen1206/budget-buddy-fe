@@ -67,19 +67,16 @@ const NameFilter = ({
       />
 
       {showFilter && (
-        <FilterBox title={t("transactions.name")}>
-          {/* Header with Name and Operator */}
-          <div className="flex items-center space-x-2 mb-3">
-            <span className="text-gray-700 font-medium">
-              {t("transactions.name")}
-            </span>
+        <FilterBox
+          title={t("transactions.name")}
+          operatorDropdown={
             <OperatorDropdown
               operators={FILTER_OPERATORS.NAME}
               selectedOperator={nameFilter.operator}
               onOperatorChange={handleOperatorChange}
             />
-          </div>
-
+          }
+        >
           {/* Value Input */}
           <div className="mb-3">
             <input

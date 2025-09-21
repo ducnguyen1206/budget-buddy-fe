@@ -57,8 +57,8 @@ export const FILTER_VALIDATION = {
   },
   AMOUNT: {
     required: true,
-    pattern: /^\d*\.?\d*$/,
-    min: 0,
+    pattern: /^-?\d*\.?\d*$/,
+    min: undefined, // Allow negative numbers
   },
   DATE: {
     required: true,
