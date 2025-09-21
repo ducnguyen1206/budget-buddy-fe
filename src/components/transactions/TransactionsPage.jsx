@@ -6,6 +6,7 @@ import { Search, Plus } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import NameFilter from "./NameFilter";
 import AmountFilter from "./AmountFilter";
+import DateFilter from "./DateFilter";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
 
@@ -22,10 +23,13 @@ const TransactionsPage = () => {
     pagination,
     nameFilter,
     amountFilter,
+    dateFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
     clearAmountFilter,
+    applyDateFilter,
+    clearDateFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -34,6 +38,7 @@ const TransactionsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showNameFilter, setShowNameFilter] = useState(false);
   const [showAmountFilter, setShowAmountFilter] = useState(false);
+  const [showDateFilter, setShowDateFilter] = useState(false);
 
   // Filter transactions based on search term
   const filteredTransactions = transactions.filter((transaction) => {
@@ -92,6 +97,24 @@ const TransactionsPage = () => {
     setShowAmountFilter(!showAmountFilter);
   };
 
+  const handleDateFilterChange = (newFilter) => {
+    applyDateFilter(newFilter);
+  };
+
+  const handleDateFilterApply = (newFilter) => {
+    applyDateFilter(newFilter);
+    setShowDateFilter(false);
+  };
+
+  const handleDateFilterClear = () => {
+    clearDateFilter();
+    setShowDateFilter(false);
+  };
+
+  const handleToggleDateFilter = () => {
+    setShowDateFilter(!showDateFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -146,6 +169,14 @@ const TransactionsPage = () => {
             onClear={handleAmountFilterClear}
             showFilter={showAmountFilter}
             onToggleFilter={handleToggleAmountFilter}
+          />
+          <DateFilter
+            dateFilter={dateFilter}
+            onFilterChange={handleDateFilterChange}
+            onApply={handleDateFilterApply}
+            onClear={handleDateFilterClear}
+            showFilter={showDateFilter}
+            onToggleFilter={handleToggleDateFilter}
           />
         </div>
 

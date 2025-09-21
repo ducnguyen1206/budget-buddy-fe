@@ -241,6 +241,9 @@
     "of": "of",
     "results": "results",
     "amountFilterPlaceholder": "Enter amount value...",
+    "dateFilterPlaceholder": "Select date...",
+    "dateFromLabel": "From:",
+    "dateToLabel": "To:",
     "filters": {
       "name": "Name",
       "amount": "Amount",

@@ -22,6 +22,10 @@ export const useTransactions = () => {
     operator: "=",
     value: "",
   });
+  const [dateFilter, setDateFilter] = useState({
+    operator: "is",
+    value: "",
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -97,6 +101,49 @@ export const useTransactions = () => {
     }
   };
 
+  const applyDateFilter = (filter) => {
+    setDateFilter(filter);
+    // Only trigger API call if there's a value
+    if (
+      filter.value !== "" &&
+      filter.value !== null &&
+      filter.value !== undefined
+    ) {
+      let filterPayload;
+      if (filter.operator === "is") {
+        filterPayload = {
+          date: {
+            operator: filter.operator,
+            startDate: filter.value,
+          },
+        };
+      } else if (filter.operator === "is between") {
+        filterPayload = {
+          date: {
+            operator: filter.operator,
+            startDate: filter.value.startDate,
+            endDate: filter.value.endDate,
+          },
+        };
+      }
+      console.log("Date filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearDateFilter = () => {
+    // Only reload if there was actually a filter value to clear
+    const hadValue =
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined;
+    setDateFilter({ operator: "is", value: "" });
+
+    if (hadValue) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
 
@@ -117,6 +164,24 @@ export const useTransactions = () => {
         operator: amountFilter.operator,
         value: amountFilter.value,
       };
+    }
+    if (
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined
+    ) {
+      if (dateFilter.operator === "is") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value,
+        };
+      } else if (dateFilter.operator === "is between") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value.startDate,
+          endDate: dateFilter.value.endDate,
+        };
+      }
     }
 
     loadTransactions(page, filterPayload);
@@ -147,10 +212,30 @@ export const useTransactions = () => {
       hasFilters = true;
     }
 
+    if (
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined
+    ) {
+      if (dateFilter.operator === "is") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value,
+        };
+      } else if (dateFilter.operator === "is between") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value.startDate,
+          endDate: dateFilter.value.endDate,
+        };
+      }
+      hasFilters = true;
+    }
+
     if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
-  }, [nameFilter.value, amountFilter.value]); // Watch both filter values
+  }, [nameFilter.value, amountFilter.value, dateFilter.value]); // Watch all filter values
 
   // Pagination effect - only when no filter
   useEffect(() => {
@@ -159,11 +244,15 @@ export const useTransactions = () => {
       amountFilter.value !== "" &&
       amountFilter.value !== null &&
       amountFilter.value !== undefined;
+    const hasDateFilter =
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined;
 
-    if (!hasNameFilter && !hasAmountFilter) {
+    if (!hasNameFilter && !hasAmountFilter && !hasDateFilter) {
       loadTransactions(currentPage);
     }
-  }, [currentPage, nameFilter.value, amountFilter.value]);
+  }, [currentPage, nameFilter.value, amountFilter.value, dateFilter.value]);
 
   return {
     transactions,
@@ -173,10 +262,13 @@ export const useTransactions = () => {
     pagination,
     nameFilter,
     amountFilter,
+    dateFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
     clearAmountFilter,
+    applyDateFilter,
+    clearDateFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

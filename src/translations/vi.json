@@ -241,6 +241,9 @@
     "of": "của",
     "results": "kết quả",
     "amountFilterPlaceholder": "Nhập giá trị số tiền...",
+    "dateFilterPlaceholder": "Chọn ngày...",
+    "dateFromLabel": "Từ:",
+    "dateToLabel": "Đến:",
     "filters": {
       "name": "Tên",
       "amount": "Số tiền",
