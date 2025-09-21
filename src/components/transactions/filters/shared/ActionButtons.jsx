@@ -16,7 +16,9 @@ const ActionButtons = ({
       <button
         onClick={onApply}
         disabled={isApplyDisabled}
-        className={`${FILTER_STYLES.ACTION_BUTTON} ${FILTER_STYLES.ACTION_PRIMARY} ${FILTER_STYLES.ACTION_DISABLED}`}
+        className={`${FILTER_STYLES.ACTION_BUTTON} ${
+          FILTER_STYLES.ACTION_PRIMARY
+        } ${isApplyDisabled ? FILTER_STYLES.ACTION_DISABLED : ""}`}
         aria-label={applyText}
       >
         {applyText}
@@ -25,7 +27,9 @@ const ActionButtons = ({
       <button
         onClick={onClear}
         disabled={isClearDisabled}
-        className={`${FILTER_STYLES.ACTION_BUTTON} ${FILTER_STYLES.ACTION_SECONDARY} ${FILTER_STYLES.ACTION_DISABLED}`}
+        className={`${FILTER_STYLES.ACTION_BUTTON} ${
+          FILTER_STYLES.ACTION_SECONDARY
+        } ${isClearDisabled ? FILTER_STYLES.ACTION_DISABLED : ""}`}
         aria-label={clearText}
       >
         {clearText}

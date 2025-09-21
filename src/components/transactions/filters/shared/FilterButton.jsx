@@ -11,7 +11,7 @@ const FilterButton = ({
   className = "",
 }) => {
   const isActive = isFilterActive(filter);
-  const displayValue = formatDisplayValue(filter, items);
+  const displayValue = filter.displayValue || formatDisplayValue(filter, items);
 
   return (
     <button

@@ -34,6 +34,10 @@ export const useTransactions = () => {
     operator: "is",
     ids: [],
   });
+  const [typeFilter, setTypeFilter] = useState({
+    operator: "is",
+    types: [],
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -196,6 +200,27 @@ export const useTransactions = () => {
     }
   };
 
+  // Type filter functions
+  const applyTypeFilter = (filter) => {
+    setTypeFilter(filter);
+    if (filter.types && filter.types.length > 0) {
+      const filterPayload = {
+        types: { operator: filter.operator, types: filter.types },
+      };
+      console.log("Type filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearTypeFilter = () => {
+    const hadTypes = typeFilter.types && typeFilter.types.length > 0;
+    setTypeFilter({ operator: "is", types: [] });
+
+    if (hadTypes) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
 
@@ -247,6 +272,13 @@ export const useTransactions = () => {
       filterPayload.categories = {
         operator: categoryFilter.operator,
         ids: categoryFilter.ids,
+      };
+    }
+
+    if (typeFilter.types && typeFilter.types.length > 0) {
+      filterPayload.types = {
+        operator: typeFilter.operator,
+        types: typeFilter.types,
       };
     }
 
@@ -314,6 +346,14 @@ export const useTransactions = () => {
       hasFilters = true;
     }
 
+    if (typeFilter.types && typeFilter.types.length > 0) {
+      filterPayload.types = {
+        operator: typeFilter.operator,
+        types: typeFilter.types,
+      };
+      hasFilters = true;
+    }
+
     if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
@@ -323,6 +363,7 @@ export const useTransactions = () => {
     dateFilter.value,
     accountFilter.ids,
     categoryFilter.ids,
+    typeFilter.types,
   ]); // Watch all filter values
 
   // Pagination effect - only when no filter
@@ -339,13 +380,15 @@ export const useTransactions = () => {
     const hasAccountFilter = accountFilter.ids && accountFilter.ids.length > 0;
     const hasCategoryFilter =
       categoryFilter.ids && categoryFilter.ids.length > 0;
+    const hasTypeFilter = typeFilter.types && typeFilter.types.length > 0;
 
     if (
       !hasNameFilter &&
       !hasAmountFilter &&
       !hasDateFilter &&
       !hasAccountFilter &&
-      !hasCategoryFilter
+      !hasCategoryFilter &&
+      !hasTypeFilter
     ) {
       loadTransactions(currentPage);
     }
@@ -356,6 +399,7 @@ export const useTransactions = () => {
     dateFilter.value,
     accountFilter.ids,
     categoryFilter.ids,
+    typeFilter.types,
   ]);
 
   return {
@@ -369,6 +413,7 @@ export const useTransactions = () => {
     dateFilter,
     accountFilter,
     categoryFilter,
+    typeFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -379,6 +424,8 @@ export const useTransactions = () => {
     clearAccountFilter,
     applyCategoryFilter,
     clearCategoryFilter,
+    applyTypeFilter,
+    clearTypeFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

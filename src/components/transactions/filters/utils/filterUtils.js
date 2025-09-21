@@ -43,9 +43,9 @@ export const validateArrayFilter = (ids, minSelections = 1) => {
  * Formats display value for different filter types
  */
 export const formatDisplayValue = (filter, items = []) => {
-  if (!filter || (!filter.value && !filter.ids)) return "";
+  if (!filter || (!filter.value && !filter.ids && !filter.types)) return "";
 
-  // For array-based filters (account, category)
+  // For array-based filters (account, category, type)
   if (filter.ids && Array.isArray(filter.ids)) {
     const selectedItems = items.filter((item) => filter.ids.includes(item.id));
     if (selectedItems.length === 1) {
@@ -56,6 +56,19 @@ export const formatDisplayValue = (filter, items = []) => {
       return `${selectedItems.length} ${
         items[0]?.categoryName ? "categories" : "accounts"
       }`;
+    }
+    return "";
+  }
+
+  // For type-based filters
+  if (filter.types && Array.isArray(filter.types)) {
+    const selectedItems = items.filter((item) =>
+      filter.types.includes(item.id)
+    );
+    if (selectedItems.length === 1) {
+      return selectedItems[0].name || "Unknown";
+    } else if (selectedItems.length > 1) {
+      return `${selectedItems.length} types`;
     }
     return "";
   }
@@ -83,6 +96,10 @@ export const isFilterActive = (filter) => {
 
   if (filter.ids && Array.isArray(filter.ids)) {
     return filter.ids.length > 0;
+  }
+
+  if (filter.types && Array.isArray(filter.types)) {
+    return filter.types.length > 0;
   }
 
   return (

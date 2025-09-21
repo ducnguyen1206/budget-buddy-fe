@@ -21,6 +21,10 @@ export const FILTER_OPERATORS = {
     { value: "is", label: "Is" },
     { value: "is between", label: "Is between" },
   ],
+  TYPE: [
+    { value: "is", label: "Is" },
+    { value: "is not", label: "Is not" },
+  ],
 };
 
 export const FILTER_STYLES = {

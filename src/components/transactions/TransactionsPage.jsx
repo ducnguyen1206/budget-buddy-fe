@@ -10,6 +10,7 @@ import {
   DateFilter,
   AccountFilter,
   CategoryFilter,
+  TypeFilter,
 } from "./filters";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
@@ -30,6 +31,7 @@ const TransactionsPage = () => {
     dateFilter,
     accountFilter,
     categoryFilter,
+    typeFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -40,6 +42,8 @@ const TransactionsPage = () => {
     clearAccountFilter,
     applyCategoryFilter,
     clearCategoryFilter,
+    applyTypeFilter,
+    clearTypeFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -51,6 +55,7 @@ const TransactionsPage = () => {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAccountFilter, setShowAccountFilter] = useState(false);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [showTypeFilter, setShowTypeFilter] = useState(false);
 
   // Extract unique accounts from transactions
   const getUniqueAccounts = () => {
@@ -200,6 +205,25 @@ const TransactionsPage = () => {
     setShowCategoryFilter(!showCategoryFilter);
   };
 
+  // Type filter handlers
+  const handleTypeFilterChange = (newFilter) => {
+    applyTypeFilter(newFilter);
+  };
+
+  const handleTypeFilterApply = (newFilter) => {
+    applyTypeFilter(newFilter);
+    setShowTypeFilter(false);
+  };
+
+  const handleTypeFilterClear = () => {
+    clearTypeFilter();
+    setShowTypeFilter(false);
+  };
+
+  const handleToggleTypeFilter = () => {
+    setShowTypeFilter(!showTypeFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -280,6 +304,14 @@ const TransactionsPage = () => {
             showFilter={showCategoryFilter}
             onToggleFilter={handleToggleCategoryFilter}
             categories={uniqueCategories}
+          />
+          <TypeFilter
+            typeFilter={typeFilter}
+            onFilterChange={handleTypeFilterChange}
+            onApply={handleTypeFilterApply}
+            onClear={handleTypeFilterClear}
+            showFilter={showTypeFilter}
+            onToggleFilter={handleToggleTypeFilter}
           />
         </div>
 
