@@ -246,6 +246,8 @@
     "dateToLabel": "Đến:",
     "noAccountsFound": "Không tìm thấy tài khoản",
     "selectedAccounts": "Tài khoản đã chọn",
+    "noCategoriesFound": "Không tìm thấy danh mục",
+    "selectedCategories": "Danh mục đã chọn",
     "filters": {
       "name": "Tên",
       "amount": "Số tiền",

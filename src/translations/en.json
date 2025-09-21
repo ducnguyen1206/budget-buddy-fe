@@ -246,6 +246,8 @@
     "dateToLabel": "To:",
     "noAccountsFound": "No accounts found",
     "selectedAccounts": "Selected accounts",
+    "noCategoriesFound": "No categories found",
+    "selectedCategories": "Selected categories",
     "filters": {
       "name": "Name",
       "amount": "Amount",

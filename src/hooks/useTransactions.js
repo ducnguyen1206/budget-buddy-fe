@@ -30,6 +30,10 @@ export const useTransactions = () => {
     operator: "is",
     ids: [],
   });
+  const [categoryFilter, setCategoryFilter] = useState({
+    operator: "is",
+    ids: [],
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -170,10 +174,32 @@ export const useTransactions = () => {
     }
   };
 
+  const applyCategoryFilter = (filter) => {
+    setCategoryFilter(filter);
+    // Only trigger API call if there are selected categories
+    if (filter.ids && filter.ids.length > 0) {
+      const filterPayload = {
+        categories: { operator: filter.operator, ids: filter.ids },
+      };
+      console.log("Category filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearCategoryFilter = () => {
+    // Only reload if there were actually selected categories to clear
+    const hadCategories = categoryFilter.ids && categoryFilter.ids.length > 0;
+    setCategoryFilter({ operator: "is", ids: [] });
+
+    if (hadCategories) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
 
-    // Build filter payload with name, amount, date, and account filters
+    // Build filter payload with name, amount, date, account, and category filters
     const filterPayload = {};
     if (nameFilter.value && nameFilter.value.trim() !== "") {
       filterPayload.name = {
@@ -214,6 +240,13 @@ export const useTransactions = () => {
       filterPayload.accounts = {
         operator: accountFilter.operator,
         ids: accountFilter.ids,
+      };
+    }
+
+    if (categoryFilter.ids && categoryFilter.ids.length > 0) {
+      filterPayload.categories = {
+        operator: categoryFilter.operator,
+        ids: categoryFilter.ids,
       };
     }
 
@@ -273,6 +306,14 @@ export const useTransactions = () => {
       hasFilters = true;
     }
 
+    if (categoryFilter.ids && categoryFilter.ids.length > 0) {
+      filterPayload.categories = {
+        operator: categoryFilter.operator,
+        ids: categoryFilter.ids,
+      };
+      hasFilters = true;
+    }
+
     if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
@@ -281,6 +322,7 @@ export const useTransactions = () => {
     amountFilter.value,
     dateFilter.value,
     accountFilter.ids,
+    categoryFilter.ids,
   ]); // Watch all filter values
 
   // Pagination effect - only when no filter
@@ -295,12 +337,15 @@ export const useTransactions = () => {
       dateFilter.value !== null &&
       dateFilter.value !== undefined;
     const hasAccountFilter = accountFilter.ids && accountFilter.ids.length > 0;
+    const hasCategoryFilter =
+      categoryFilter.ids && categoryFilter.ids.length > 0;
 
     if (
       !hasNameFilter &&
       !hasAmountFilter &&
       !hasDateFilter &&
-      !hasAccountFilter
+      !hasAccountFilter &&
+      !hasCategoryFilter
     ) {
       loadTransactions(currentPage);
     }
@@ -310,6 +355,7 @@ export const useTransactions = () => {
     amountFilter.value,
     dateFilter.value,
     accountFilter.ids,
+    categoryFilter.ids,
   ]);
 
   return {
@@ -322,6 +368,7 @@ export const useTransactions = () => {
     amountFilter,
     dateFilter,
     accountFilter,
+    categoryFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -330,6 +377,8 @@ export const useTransactions = () => {
     clearDateFilter,
     applyAccountFilter,
     clearAccountFilter,
+    applyCategoryFilter,
+    clearCategoryFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

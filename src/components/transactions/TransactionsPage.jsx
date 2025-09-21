@@ -8,6 +8,7 @@ import NameFilter from "./NameFilter";
 import AmountFilter from "./AmountFilter";
 import DateFilter from "./DateFilter";
 import AccountFilter from "./AccountFilter";
+import CategoryFilter from "./CategoryFilter";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
 
@@ -26,6 +27,7 @@ const TransactionsPage = () => {
     amountFilter,
     dateFilter,
     accountFilter,
+    categoryFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -34,6 +36,8 @@ const TransactionsPage = () => {
     clearDateFilter,
     applyAccountFilter,
     clearAccountFilter,
+    applyCategoryFilter,
+    clearCategoryFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -44,6 +48,7 @@ const TransactionsPage = () => {
   const [showAmountFilter, setShowAmountFilter] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAccountFilter, setShowAccountFilter] = useState(false);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
   // Extract unique accounts from transactions
   const getUniqueAccounts = () => {
@@ -63,6 +68,24 @@ const TransactionsPage = () => {
   };
 
   const uniqueAccounts = getUniqueAccounts();
+
+  // Extract unique categories from transactions
+  const getUniqueCategories = () => {
+    const categoryMap = new Map();
+    transactions.forEach((transaction) => {
+      if (transaction.categoryId && transaction.categoryName) {
+        categoryMap.set(transaction.categoryId, {
+          id: transaction.categoryId,
+          name: transaction.categoryName,
+          categoryName: transaction.categoryName,
+          categoryType: transaction.categoryType || "Unknown",
+        });
+      }
+    });
+    return Array.from(categoryMap.values());
+  };
+
+  const uniqueCategories = getUniqueCategories();
 
   // Filter transactions based on search term
   const filteredTransactions = transactions.filter((transaction) => {
@@ -157,6 +180,24 @@ const TransactionsPage = () => {
     setShowAccountFilter(!showAccountFilter);
   };
 
+  const handleCategoryFilterChange = (newFilter) => {
+    applyCategoryFilter(newFilter);
+  };
+
+  const handleCategoryFilterApply = (newFilter) => {
+    applyCategoryFilter(newFilter);
+    setShowCategoryFilter(false);
+  };
+
+  const handleCategoryFilterClear = () => {
+    clearCategoryFilter();
+    setShowCategoryFilter(false);
+  };
+
+  const handleToggleCategoryFilter = () => {
+    setShowCategoryFilter(!showCategoryFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -228,6 +269,15 @@ const TransactionsPage = () => {
             showFilter={showAccountFilter}
             onToggleFilter={handleToggleAccountFilter}
             accounts={uniqueAccounts}
+          />
+          <CategoryFilter
+            categoryFilter={categoryFilter}
+            onFilterChange={handleCategoryFilterChange}
+            onApply={handleCategoryFilterApply}
+            onClear={handleCategoryFilterClear}
+            showFilter={showCategoryFilter}
+            onToggleFilter={handleToggleCategoryFilter}
+            categories={uniqueCategories}
           />
         </div>
 
