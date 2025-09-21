@@ -250,6 +250,7 @@
     "selectedCategories": "Selected categories",
     "selectedTypes": "Selected types",
     "nameFilterPlaceholder": "Enter name value...",
+    "remarksPlaceholder": "Enter remarks value...",
     "selectCategory": "Select category",
     "filters": {
       "name": "Name",

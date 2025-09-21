@@ -250,6 +250,7 @@
     "selectedCategories": "Danh mục đã chọn",
     "selectedTypes": "Loại đã chọn",
     "nameFilterPlaceholder": "Nhập giá trị tên...",
+    "remarksPlaceholder": "Nhập giá trị ghi chú...",
     "selectCategory": "Chọn danh mục",
     "filters": {
       "name": "Tên",

@@ -38,6 +38,10 @@ export const useTransactions = () => {
     operator: "is",
     types: [],
   });
+  const [remarksFilter, setRemarksFilter] = useState({
+    operator: "is",
+    value: "",
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -221,6 +225,27 @@ export const useTransactions = () => {
     }
   };
 
+  // Remarks filter functions
+  const applyRemarksFilter = (filter) => {
+    setRemarksFilter(filter);
+    if (filter.value && filter.value.trim() !== "") {
+      const filterPayload = {
+        remarks: { operator: filter.operator, value: filter.value.trim() },
+      };
+      console.log("Remarks filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearRemarksFilter = () => {
+    const hadValue = remarksFilter.value && remarksFilter.value.trim() !== "";
+    setRemarksFilter({ operator: "is", value: "" });
+
+    if (hadValue) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
 
@@ -279,6 +304,13 @@ export const useTransactions = () => {
       filterPayload.types = {
         operator: typeFilter.operator,
         types: typeFilter.types,
+      };
+    }
+
+    if (remarksFilter.value && remarksFilter.value.trim() !== "") {
+      filterPayload.remarks = {
+        operator: remarksFilter.operator,
+        value: remarksFilter.value.trim(),
       };
     }
 
@@ -354,6 +386,14 @@ export const useTransactions = () => {
       hasFilters = true;
     }
 
+    if (remarksFilter.value && remarksFilter.value.trim() !== "") {
+      filterPayload.remarks = {
+        operator: remarksFilter.operator,
+        value: remarksFilter.value.trim(),
+      };
+      hasFilters = true;
+    }
+
     if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
@@ -364,6 +404,7 @@ export const useTransactions = () => {
     accountFilter.ids,
     categoryFilter.ids,
     typeFilter.types,
+    remarksFilter.value,
   ]); // Watch all filter values
 
   // Pagination effect - only when no filter
@@ -381,6 +422,8 @@ export const useTransactions = () => {
     const hasCategoryFilter =
       categoryFilter.ids && categoryFilter.ids.length > 0;
     const hasTypeFilter = typeFilter.types && typeFilter.types.length > 0;
+    const hasRemarksFilter =
+      remarksFilter.value && remarksFilter.value.trim() !== "";
 
     if (
       !hasNameFilter &&
@@ -388,7 +431,8 @@ export const useTransactions = () => {
       !hasDateFilter &&
       !hasAccountFilter &&
       !hasCategoryFilter &&
-      !hasTypeFilter
+      !hasTypeFilter &&
+      !hasRemarksFilter
     ) {
       loadTransactions(currentPage);
     }
@@ -400,6 +444,7 @@ export const useTransactions = () => {
     accountFilter.ids,
     categoryFilter.ids,
     typeFilter.types,
+    remarksFilter.value,
   ]);
 
   return {
@@ -414,6 +459,7 @@ export const useTransactions = () => {
     accountFilter,
     categoryFilter,
     typeFilter,
+    remarksFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -426,6 +472,8 @@ export const useTransactions = () => {
     clearCategoryFilter,
     applyTypeFilter,
     clearTypeFilter,
+    applyRemarksFilter,
+    clearRemarksFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

@@ -5,3 +5,4 @@ export { default as DateFilter } from "./DateFilter";
 export { default as AccountFilter } from "./AccountFilter";
 export { default as CategoryFilter } from "./CategoryFilter";
 export { default as TypeFilter } from "./TypeFilter";
+export { default as RemarksFilter } from "./RemarksFilter";

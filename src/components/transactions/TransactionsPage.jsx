@@ -11,6 +11,7 @@ import {
   AccountFilter,
   CategoryFilter,
   TypeFilter,
+  RemarksFilter,
 } from "./filters";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
@@ -32,6 +33,7 @@ const TransactionsPage = () => {
     accountFilter,
     categoryFilter,
     typeFilter,
+    remarksFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -44,6 +46,8 @@ const TransactionsPage = () => {
     clearCategoryFilter,
     applyTypeFilter,
     clearTypeFilter,
+    applyRemarksFilter,
+    clearRemarksFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -56,6 +60,7 @@ const TransactionsPage = () => {
   const [showAccountFilter, setShowAccountFilter] = useState(false);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [showTypeFilter, setShowTypeFilter] = useState(false);
+  const [showRemarksFilter, setShowRemarksFilter] = useState(false);
 
   // Extract unique accounts from transactions
   const getUniqueAccounts = () => {
@@ -224,6 +229,25 @@ const TransactionsPage = () => {
     setShowTypeFilter(!showTypeFilter);
   };
 
+  // Remarks filter handlers
+  const handleRemarksFilterChange = (newFilter) => {
+    applyRemarksFilter(newFilter);
+  };
+
+  const handleRemarksFilterApply = (newFilter) => {
+    applyRemarksFilter(newFilter);
+    setShowRemarksFilter(false);
+  };
+
+  const handleRemarksFilterClear = () => {
+    clearRemarksFilter();
+    setShowRemarksFilter(false);
+  };
+
+  const handleToggleRemarksFilter = () => {
+    setShowRemarksFilter(!showRemarksFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -312,6 +336,14 @@ const TransactionsPage = () => {
             onClear={handleTypeFilterClear}
             showFilter={showTypeFilter}
             onToggleFilter={handleToggleTypeFilter}
+          />
+          <RemarksFilter
+            remarksFilter={remarksFilter}
+            onFilterChange={handleRemarksFilterChange}
+            onApply={handleRemarksFilterApply}
+            onClear={handleRemarksFilterClear}
+            showFilter={showRemarksFilter}
+            onToggleFilter={handleToggleRemarksFilter}
           />
         </div>
 
