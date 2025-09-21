@@ -22,7 +22,11 @@
     "filter": "Lọc",
     "sort": "Sắp xếp",
     "refresh": "Làm mới",
-    "tryAgain": "Thử lại"
+    "tryAgain": "Thử lại",
+    "addFilter": "Thêm bộ lọc",
+    "removeFilter": "Xóa bộ lọc",
+    "clearFilters": "Xóa tất cả bộ lọc",
+    "applyFilters": "Áp dụng bộ lọc"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -235,6 +239,38 @@
     "showing": "Hiển thị",
     "to": "đến",
     "of": "của",
+    "filters": {
+      "name": "Tên",
+      "amount": "Số tiền",
+      "type": "Loại",
+      "account": "Tài khoản",
+      "operators": {
+        "is": "Là",
+        "isNot": "Không là",
+        "contains": "Chứa",
+        "doesNotContain": "Không chứa",
+        "startsWith": "Bắt đầu bằng",
+        "endsWith": "Kết thúc bằng",
+        "equals": "=",
+        "notEquals": "!=",
+        "greaterThan": ">",
+        "lessThan": "<",
+        "greaterThanOrEqual": ">=",
+        "lessThanOrEqual": "<="
+      },
+      "placeholders": {
+        "name": "Nhập tên...",
+        "amount": "Nhập số tiền...",
+        "date": "Chọn ngày...",
+        "selectAccount": "Chọn tài khoản...",
+        "selectType": "Chọn loại..."
+      },
+      "types": {
+        "expense": "Chi tiêu",
+        "income": "Thu nhập",
+        "transfer": "Chuyển khoản"
+      }
+    },
     "results": "kết quả",
     "page": "Trang",
     "goToPage": "Đi đến trang",

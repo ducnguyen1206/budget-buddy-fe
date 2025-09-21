@@ -110,7 +110,7 @@ export const testTransactionsAPI = async () => {
 };
 
 // Fetch transactions
-export const fetchTransactions = async (page = 0, size = 10) => {
+export const fetchTransactions = async (page = 0, size = 10, filters = {}) => {
   try {
     // Build query parameters
     const queryParams = new URLSearchParams({
@@ -129,6 +129,7 @@ export const fetchTransactions = async (page = 0, size = 10) => {
     const response = await fetchWithAuth(apiUrl, {
       method: "POST",
       headers: headers,
+      body: JSON.stringify(filters),
     });
 
     if (!response.ok) {

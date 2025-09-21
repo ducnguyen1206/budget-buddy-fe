@@ -22,7 +22,11 @@
     "filter": "Filter",
     "sort": "Sort",
     "refresh": "Refresh",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "addFilter": "Add filter",
+    "removeFilter": "Remove filter",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -235,6 +239,38 @@
     "showing": "Showing",
     "to": "to",
     "of": "of",
+    "filters": {
+      "name": "Name",
+      "amount": "Amount",
+      "type": "Type",
+      "account": "Account",
+      "operators": {
+        "is": "Is",
+        "isNot": "Is not",
+        "contains": "Contains",
+        "doesNotContain": "Does not contain",
+        "startsWith": "Starts with",
+        "endsWith": "Ends with",
+        "equals": "=",
+        "notEquals": "!=",
+        "greaterThan": ">",
+        "lessThan": "<",
+        "greaterThanOrEqual": ">=",
+        "lessThanOrEqual": "<="
+      },
+      "placeholders": {
+        "name": "Type a name...",
+        "amount": "Type an amount...",
+        "date": "Select date...",
+        "selectAccount": "Select account...",
+        "selectType": "Select type..."
+      },
+      "types": {
+        "expense": "Expense",
+        "income": "Income",
+        "transfer": "Transfer"
+      }
+    },
     "results": "results",
     "page": "Page",
     "goToPage": "Go to page",
