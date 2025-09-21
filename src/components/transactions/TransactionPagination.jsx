@@ -64,7 +64,8 @@ const TransactionPagination = ({
             {t("transactions.to")}{" "}
             <span className="font-medium">{endItem}</span>{" "}
             {t("transactions.of")}{" "}
-            <span className="font-medium">{totalElements}</span> results
+            <span className="font-medium">{totalElements}</span>{" "}
+            {t("transactions.results")}
           </p>
         </div>
         <div>

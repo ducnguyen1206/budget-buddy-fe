@@ -1,44 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, X } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
-// Name filter operators
-const NAME_OPERATORS = [
-  { value: "is", label: "Is" },
-  { value: "is not", label: "Is not" },
-  { value: "contains", label: "Contains" },
-  { value: "does not contain", label: "Does not contain" },
-  { value: "starts with", label: "Starts with" },
-  { value: "ends with", label: "Ends with" },
+// Amount filter operators
+const AMOUNT_OPERATORS = [
+  { value: "=", label: "=" },
+  { value: "!=", label: "!=" },
+  { value: ">", label: ">" },
+  { value: "<", label: "<" },
+  { value: ">=", label: ">=" },
+  { value: "<=", label: "<=" },
 ];
 
-const NameFilter = ({
-  nameFilter,
+const AmountFilter = ({
+  amountFilter,
   onFilterChange,
   onApply,
   onClear,
   showFilter,
   onToggleFilter,
 }) => {
+  const { t } = useLanguage();
   const [showOperatorDropdown, setShowOperatorDropdown] = useState(false);
   const [localValue, setLocalValue] = useState("");
 
-  // Sync localValue with nameFilter.value when filter is applied
+  // Sync localValue with amountFilter.value when filter is applied
   useEffect(() => {
-    if (nameFilter.value) {
-      setLocalValue(nameFilter.value);
+    if (
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined
+    ) {
+      setLocalValue(amountFilter.value.toString());
     }
-  }, [nameFilter.value]);
+  }, [amountFilter.value]);
 
   const handleLocalValueChange = (value) => {
-    setLocalValue(value);
+    // Only allow numbers and decimal point
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setLocalValue(value);
+    }
   };
 
   const handleOperatorChange = (operator) => {
-    onFilterChange({ ...nameFilter, operator });
+    onFilterChange({ ...amountFilter, operator });
   };
 
   const handleApply = () => {
-    onApply({ ...nameFilter, value: localValue });
+    const numericValue = parseFloat(localValue);
+    if (!isNaN(numericValue)) {
+      onApply({ ...amountFilter, value: numericValue });
+    }
   };
 
   const handleClear = () => {
@@ -52,26 +64,32 @@ const NameFilter = ({
       <button
         onClick={onToggleFilter}
         className={`flex items-center space-x-2 px-3 py-2 border rounded-xl hover:bg-gray-50 transition-colors ${
-          nameFilter.value
+          amountFilter.value !== "" &&
+          amountFilter.value !== null &&
+          amountFilter.value !== undefined
             ? "bg-blue-50 border-blue-300 text-blue-700"
             : "bg-white border-gray-300 text-gray-700"
         }`}
       >
-        <span>Name</span>
-        {nameFilter.value && (
-          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-            {nameFilter.value}
-          </span>
-        )}
+        <span>{t("transactions.amount")}</span>
+        {amountFilter.value !== "" &&
+          amountFilter.value !== null &&
+          amountFilter.value !== undefined && (
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+              {amountFilter.operator} {amountFilter.value}
+            </span>
+          )}
         <ChevronDown className="w-4 h-4 text-gray-400" />
       </button>
 
       {/* Filter Box */}
       {showFilter && (
         <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-xl shadow-lg z-30 w-80 p-4">
-          {/* Header with Name and Operator */}
+          {/* Header with Amount and Operator */}
           <div className="flex items-center space-x-2 mb-3">
-            <span className="text-gray-700 font-medium">Name</span>
+            <span className="text-gray-700 font-medium">
+              {t("transactions.amount")}
+            </span>
             <div className="relative">
               <button
                 onClick={() => setShowOperatorDropdown(!showOperatorDropdown)}
@@ -79,8 +97,8 @@ const NameFilter = ({
               >
                 <span className="text-sm">
                   {
-                    NAME_OPERATORS.find(
-                      (op) => op.value === nameFilter.operator
+                    AMOUNT_OPERATORS.find(
+                      (op) => op.value === amountFilter.operator
                     )?.label
                   }
                 </span>
@@ -90,7 +108,7 @@ const NameFilter = ({
               {/* Operator Dropdown */}
               {showOperatorDropdown && (
                 <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-40 w-40">
-                  {NAME_OPERATORS.map((operator) => (
+                  {AMOUNT_OPERATORS.map((operator) => (
                     <button
                       key={operator.value}
                       onClick={() => {
@@ -111,7 +129,7 @@ const NameFilter = ({
           <div className="mb-3">
             <input
               type="text"
-              placeholder="Enter name value..."
+              placeholder={t("transactions.amountFilterPlaceholder")}
               value={localValue}
               onChange={(e) => handleLocalValueChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -122,7 +140,7 @@ const NameFilter = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={handleApply}
-              disabled={!localValue || localValue.trim() === ""}
+              disabled={!localValue || isNaN(parseFloat(localValue))}
               className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Apply
@@ -149,4 +167,4 @@ const NameFilter = ({
   );
 };
 
-export default NameFilter;
+export default AmountFilter;

@@ -18,6 +18,10 @@ export const useTransactions = () => {
     operator: "is",
     value: "",
   });
+  const [amountFilter, setAmountFilter] = useState({
+    operator: "=",
+    value: "",
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -64,39 +68,102 @@ export const useTransactions = () => {
     }
   };
 
+  const applyAmountFilter = (filter) => {
+    setAmountFilter(filter);
+    // Only trigger API call if there's a value (handle both string and numeric values)
+    if (
+      filter.value !== "" &&
+      filter.value !== null &&
+      filter.value !== undefined
+    ) {
+      const filterPayload = {
+        amount: { operator: filter.operator, value: filter.value },
+      };
+      console.log("Amount filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearAmountFilter = () => {
+    // Only reload if there was actually a filter value to clear
+    const hadValue =
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined;
+    setAmountFilter({ operator: "=", value: "" });
+
+    if (hadValue) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
-    const filterPayload =
-      nameFilter.value && nameFilter.value.trim() !== ""
-        ? {
-            name: {
-              operator: nameFilter.operator,
-              value: nameFilter.value.trim(),
-            },
-          }
-        : {};
+
+    // Build filter payload with both name and amount filters
+    const filterPayload = {};
+    if (nameFilter.value && nameFilter.value.trim() !== "") {
+      filterPayload.name = {
+        operator: nameFilter.operator,
+        value: nameFilter.value.trim(),
+      };
+    }
+    if (
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined
+    ) {
+      filterPayload.amount = {
+        operator: amountFilter.operator,
+        value: amountFilter.value,
+      };
+    }
+
     loadTransactions(page, filterPayload);
   };
 
   // Filter effect - only when there's a value
   useEffect(() => {
+    const filterPayload = {};
+    let hasFilters = false;
+
     if (nameFilter.value && nameFilter.value.trim() !== "") {
-      const filterPayload = {
-        name: {
-          operator: nameFilter.operator,
-          value: nameFilter.value.trim(),
-        },
+      filterPayload.name = {
+        operator: nameFilter.operator,
+        value: nameFilter.value.trim(),
       };
+      hasFilters = true;
+    }
+
+    if (
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined
+    ) {
+      filterPayload.amount = {
+        operator: amountFilter.operator,
+        value: amountFilter.value,
+      };
+      hasFilters = true;
+    }
+
+    if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
-  }, [nameFilter.value]); // Only watch value, not operator
+  }, [nameFilter.value, amountFilter.value]); // Watch both filter values
 
   // Pagination effect - only when no filter
   useEffect(() => {
-    if (!nameFilter.value || nameFilter.value.trim() === "") {
+    const hasNameFilter = nameFilter.value && nameFilter.value.trim() !== "";
+    const hasAmountFilter =
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined;
+
+    if (!hasNameFilter && !hasAmountFilter) {
       loadTransactions(currentPage);
     }
-  }, [currentPage, nameFilter.value]);
+  }, [currentPage, nameFilter.value, amountFilter.value]);
 
   return {
     transactions,
@@ -105,8 +172,11 @@ export const useTransactions = () => {
     currentPage,
     pagination,
     nameFilter,
+    amountFilter,
     applyNameFilter,
     clearNameFilter,
+    applyAmountFilter,
+    clearAmountFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

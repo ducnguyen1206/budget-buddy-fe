@@ -239,6 +239,8 @@
     "showing": "Hiển thị",
     "to": "đến",
     "of": "của",
+    "results": "kết quả",
+    "amountFilterPlaceholder": "Nhập giá trị số tiền...",
     "filters": {
       "name": "Tên",
       "amount": "Số tiền",

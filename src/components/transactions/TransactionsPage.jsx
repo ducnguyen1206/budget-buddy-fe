@@ -5,6 +5,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import NameFilter from "./NameFilter";
+import AmountFilter from "./AmountFilter";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
 
@@ -20,8 +21,11 @@ const TransactionsPage = () => {
     currentPage,
     pagination,
     nameFilter,
+    amountFilter,
     applyNameFilter,
     clearNameFilter,
+    applyAmountFilter,
+    clearAmountFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -29,6 +33,7 @@ const TransactionsPage = () => {
   // Local state
   const [searchTerm, setSearchTerm] = useState("");
   const [showNameFilter, setShowNameFilter] = useState(false);
+  const [showAmountFilter, setShowAmountFilter] = useState(false);
 
   // Filter transactions based on search term
   const filteredTransactions = transactions.filter((transaction) => {
@@ -69,6 +74,24 @@ const TransactionsPage = () => {
     setShowNameFilter(!showNameFilter);
   };
 
+  const handleAmountFilterChange = (newFilter) => {
+    applyAmountFilter(newFilter);
+  };
+
+  const handleAmountFilterApply = (newFilter) => {
+    applyAmountFilter(newFilter);
+    setShowAmountFilter(false);
+  };
+
+  const handleAmountFilterClear = () => {
+    clearAmountFilter();
+    setShowAmountFilter(false);
+  };
+
+  const handleToggleAmountFilter = () => {
+    setShowAmountFilter(!showAmountFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -106,8 +129,8 @@ const TransactionsPage = () => {
           </button>
         </div>
 
-        {/* Name Filter */}
-        <div className="mb-4 relative z-10">
+        {/* Filters */}
+        <div className="mb-4 flex flex-wrap gap-4 relative z-10">
           <NameFilter
             nameFilter={nameFilter}
             onFilterChange={handleFilterChange}
@@ -115,6 +138,14 @@ const TransactionsPage = () => {
             onClear={handleFilterClear}
             showFilter={showNameFilter}
             onToggleFilter={handleToggleFilter}
+          />
+          <AmountFilter
+            amountFilter={amountFilter}
+            onFilterChange={handleAmountFilterChange}
+            onApply={handleAmountFilterApply}
+            onClear={handleAmountFilterClear}
+            showFilter={showAmountFilter}
+            onToggleFilter={handleToggleAmountFilter}
           />
         </div>
 
