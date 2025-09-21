@@ -244,6 +244,8 @@
     "dateFilterPlaceholder": "Select date...",
     "dateFromLabel": "From:",
     "dateToLabel": "To:",
+    "noAccountsFound": "No accounts found",
+    "selectedAccounts": "Selected accounts",
     "filters": {
       "name": "Name",
       "amount": "Amount",

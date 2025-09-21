@@ -7,6 +7,7 @@ import { useTransactions } from "../../hooks/useTransactions";
 import NameFilter from "./NameFilter";
 import AmountFilter from "./AmountFilter";
 import DateFilter from "./DateFilter";
+import AccountFilter from "./AccountFilter";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
 
@@ -24,12 +25,15 @@ const TransactionsPage = () => {
     nameFilter,
     amountFilter,
     dateFilter,
+    accountFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
     clearAmountFilter,
     applyDateFilter,
     clearDateFilter,
+    applyAccountFilter,
+    clearAccountFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -39,6 +43,26 @@ const TransactionsPage = () => {
   const [showNameFilter, setShowNameFilter] = useState(false);
   const [showAmountFilter, setShowAmountFilter] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
+  const [showAccountFilter, setShowAccountFilter] = useState(false);
+
+  // Extract unique accounts from transactions
+  const getUniqueAccounts = () => {
+    const accountMap = new Map();
+    transactions.forEach((transaction) => {
+      if (transaction.accountId && transaction.sourceAccountName) {
+        accountMap.set(transaction.accountId, {
+          id: transaction.accountId,
+          name: transaction.sourceAccountName,
+          sourceAccountName: transaction.sourceAccountName,
+          currency: transaction.currency,
+          accountType: transaction.sourceAccountType || "Unknown",
+        });
+      }
+    });
+    return Array.from(accountMap.values());
+  };
+
+  const uniqueAccounts = getUniqueAccounts();
 
   // Filter transactions based on search term
   const filteredTransactions = transactions.filter((transaction) => {
@@ -115,6 +139,24 @@ const TransactionsPage = () => {
     setShowDateFilter(!showDateFilter);
   };
 
+  const handleAccountFilterChange = (newFilter) => {
+    applyAccountFilter(newFilter);
+  };
+
+  const handleAccountFilterApply = (newFilter) => {
+    applyAccountFilter(newFilter);
+    setShowAccountFilter(false);
+  };
+
+  const handleAccountFilterClear = () => {
+    clearAccountFilter();
+    setShowAccountFilter(false);
+  };
+
+  const handleToggleAccountFilter = () => {
+    setShowAccountFilter(!showAccountFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -177,6 +219,15 @@ const TransactionsPage = () => {
             onClear={handleDateFilterClear}
             showFilter={showDateFilter}
             onToggleFilter={handleToggleDateFilter}
+          />
+          <AccountFilter
+            accountFilter={accountFilter}
+            onFilterChange={handleAccountFilterChange}
+            onApply={handleAccountFilterApply}
+            onClear={handleAccountFilterClear}
+            showFilter={showAccountFilter}
+            onToggleFilter={handleToggleAccountFilter}
+            accounts={uniqueAccounts}
           />
         </div>
 

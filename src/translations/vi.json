@@ -244,6 +244,8 @@
     "dateFilterPlaceholder": "Chọn ngày...",
     "dateFromLabel": "Từ:",
     "dateToLabel": "Đến:",
+    "noAccountsFound": "Không tìm thấy tài khoản",
+    "selectedAccounts": "Tài khoản đã chọn",
     "filters": {
       "name": "Tên",
       "amount": "Số tiền",
