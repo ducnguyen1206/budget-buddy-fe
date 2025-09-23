@@ -12,6 +12,7 @@ import {
   CategoryFilter,
   TypeFilter,
   RemarksFilter,
+  CurrencyFilter,
 } from "./filters";
 import TransactionTable from "./TransactionTable";
 import TransactionPagination from "./TransactionPagination";
@@ -34,6 +35,7 @@ const TransactionsPage = () => {
     categoryFilter,
     typeFilter,
     remarksFilter,
+    currencyFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -48,6 +50,8 @@ const TransactionsPage = () => {
     clearTypeFilter,
     applyRemarksFilter,
     clearRemarksFilter,
+    applyCurrencyFilter,
+    clearCurrencyFilter,
     changePage,
     retry,
   } = useTransactions();
@@ -61,6 +65,7 @@ const TransactionsPage = () => {
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showRemarksFilter, setShowRemarksFilter] = useState(false);
+  const [showCurrencyFilter, setShowCurrencyFilter] = useState(false);
 
   // Extract unique accounts from transactions
   const getUniqueAccounts = () => {
@@ -248,6 +253,25 @@ const TransactionsPage = () => {
     setShowRemarksFilter(!showRemarksFilter);
   };
 
+  // Currency filter handlers
+  const handleCurrencyFilterChange = (newFilter) => {
+    applyCurrencyFilter(newFilter);
+  };
+
+  const handleCurrencyFilterApply = (newFilter) => {
+    applyCurrencyFilter(newFilter);
+    setShowCurrencyFilter(false);
+  };
+
+  const handleCurrencyFilterClear = () => {
+    clearCurrencyFilter();
+    setShowCurrencyFilter(false);
+  };
+
+  const handleToggleCurrencyFilter = () => {
+    setShowCurrencyFilter(!showCurrencyFilter);
+  };
+
   const handlePageChange = (page) => {
     changePage(page);
   };
@@ -344,6 +368,14 @@ const TransactionsPage = () => {
             onClear={handleRemarksFilterClear}
             showFilter={showRemarksFilter}
             onToggleFilter={handleToggleRemarksFilter}
+          />
+          <CurrencyFilter
+            currencyFilter={currencyFilter}
+            onFilterChange={handleCurrencyFilterChange}
+            onApply={handleCurrencyFilterApply}
+            onClear={handleCurrencyFilterClear}
+            showFilter={showCurrencyFilter}
+            onToggleFilter={handleToggleCurrencyFilter}
           />
         </div>
 

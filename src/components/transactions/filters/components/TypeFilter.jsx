@@ -77,7 +77,7 @@ const TypeFilter = ({
         })
         .join(", ");
 
-      return selectedTypeNames;
+      return `${typeFilter.operator}: ${selectedTypeNames}`;
     }
     return null;
   };

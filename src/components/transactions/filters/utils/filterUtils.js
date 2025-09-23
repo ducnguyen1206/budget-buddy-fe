@@ -102,6 +102,10 @@ export const isFilterActive = (filter) => {
     return filter.types.length > 0;
   }
 
+  if (filter.currencies && Array.isArray(filter.currencies)) {
+    return filter.currencies.length > 0;
+  }
+
   return (
     filter.value !== "" && filter.value !== null && filter.value !== undefined
   );

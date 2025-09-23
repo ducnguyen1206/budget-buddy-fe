@@ -42,6 +42,10 @@ export const useTransactions = () => {
     operator: "is",
     value: "",
   });
+  const [currencyFilter, setCurrencyFilter] = useState({
+    operator: "is",
+    currencies: [],
+  });
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
@@ -246,6 +250,31 @@ export const useTransactions = () => {
     }
   };
 
+  // Currency filter functions
+  const applyCurrencyFilter = (filter) => {
+    setCurrencyFilter(filter);
+    if (filter.currencies && filter.currencies.length > 0) {
+      const filterPayload = {
+        currencies: {
+          operator: filter.operator,
+          currencies: filter.currencies,
+        },
+      };
+      console.log("Currency filter applied:", filterPayload);
+      loadTransactions(0, filterPayload);
+    }
+  };
+
+  const clearCurrencyFilter = () => {
+    const hadCurrencies =
+      currencyFilter.currencies && currencyFilter.currencies.length > 0;
+    setCurrencyFilter({ operator: "is", currencies: [] });
+
+    if (hadCurrencies) {
+      loadTransactions(currentPage);
+    }
+  };
+
   const changePage = (page) => {
     setCurrentPage(page);
 
@@ -311,6 +340,13 @@ export const useTransactions = () => {
       filterPayload.remarks = {
         operator: remarksFilter.operator,
         value: remarksFilter.value.trim(),
+      };
+    }
+
+    if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
+      filterPayload.currencies = {
+        operator: currencyFilter.operator,
+        currencies: currencyFilter.currencies,
       };
     }
 
@@ -394,6 +430,14 @@ export const useTransactions = () => {
       hasFilters = true;
     }
 
+    if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
+      filterPayload.currencies = {
+        operator: currencyFilter.operator,
+        currencies: currencyFilter.currencies,
+      };
+      hasFilters = true;
+    }
+
     if (hasFilters) {
       loadTransactions(0, filterPayload);
     }
@@ -405,6 +449,7 @@ export const useTransactions = () => {
     categoryFilter.ids,
     typeFilter.types,
     remarksFilter.value,
+    currencyFilter.currencies,
   ]); // Watch all filter values
 
   // Pagination effect - only when no filter
@@ -424,6 +469,8 @@ export const useTransactions = () => {
     const hasTypeFilter = typeFilter.types && typeFilter.types.length > 0;
     const hasRemarksFilter =
       remarksFilter.value && remarksFilter.value.trim() !== "";
+    const hasCurrencyFilter =
+      currencyFilter.currencies && currencyFilter.currencies.length > 0;
 
     if (
       !hasNameFilter &&
@@ -432,7 +479,8 @@ export const useTransactions = () => {
       !hasAccountFilter &&
       !hasCategoryFilter &&
       !hasTypeFilter &&
-      !hasRemarksFilter
+      !hasRemarksFilter &&
+      !hasCurrencyFilter
     ) {
       loadTransactions(currentPage);
     }
@@ -445,6 +493,7 @@ export const useTransactions = () => {
     categoryFilter.ids,
     typeFilter.types,
     remarksFilter.value,
+    currencyFilter.currencies,
   ]);
 
   return {
@@ -460,6 +509,7 @@ export const useTransactions = () => {
     categoryFilter,
     typeFilter,
     remarksFilter,
+    currencyFilter,
     applyNameFilter,
     clearNameFilter,
     applyAmountFilter,
@@ -474,6 +524,8 @@ export const useTransactions = () => {
     clearTypeFilter,
     applyRemarksFilter,
     clearRemarksFilter,
+    applyCurrencyFilter,
+    clearCurrencyFilter,
     changePage,
     retry: () => loadTransactions(currentPage),
   };
