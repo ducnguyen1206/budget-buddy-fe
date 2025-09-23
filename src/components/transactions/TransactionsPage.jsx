@@ -52,6 +52,9 @@ const TransactionsPage = () => {
     clearRemarksFilter,
     applyCurrencyFilter,
     clearCurrencyFilter,
+    sorting,
+    handleSort,
+    clearSorting,
     changePage,
     retry,
   } = useTransactions();
@@ -386,6 +389,8 @@ const TransactionsPage = () => {
             loading={loading}
             error={error}
             onRetry={retry}
+            sorting={sorting}
+            onSort={handleSort}
           />
 
           {/* Pagination */}

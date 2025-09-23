@@ -46,13 +46,41 @@ export const useTransactions = () => {
     operator: "is",
     currencies: [],
   });
+  const [sorting, setSorting] = useState({
+    date: null, // null, 'asc', 'desc'
+    amount: null, // null, 'asc', 'desc'
+  });
+
+  // Build sort string from sorting state
+  const buildSortString = () => {
+    const sortParts = [];
+
+    if (sorting.date) {
+      sortParts.push(`date,${sorting.date}`);
+    }
+
+    if (sorting.amount) {
+      sortParts.push(`amount,${sorting.amount}`);
+    }
+
+    const result = sortParts.length > 0 ? sortParts.join(";") : null;
+    console.log("Build sort string:", result);
+    return result;
+  };
 
   const loadTransactions = async (page = 0, filterPayload = {}) => {
     try {
       setLoading(true);
       setError(null);
 
-      const data = await fetchTransactions(page, PAGE_SIZE, filterPayload);
+      const sortString = buildSortString();
+      const requestPayload = {
+        ...filterPayload,
+        ...(sortString && { sort: sortString }),
+      };
+
+      console.log("API Request Payload:", requestPayload);
+      const data = await fetchTransactions(page, PAGE_SIZE, requestPayload);
       setTransactions(data.transactions || []);
 
       if (data.pagination) {
@@ -273,6 +301,38 @@ export const useTransactions = () => {
     if (hadCurrencies) {
       loadTransactions(currentPage);
     }
+  };
+
+  // Sorting functions
+  const handleSort = (column) => {
+    setSorting((prev) => {
+      const newSorting = { ...prev };
+
+      if (column === "date") {
+        if (prev.date === null) {
+          newSorting.date = "desc"; // Default to descending for date
+        } else if (prev.date === "desc") {
+          newSorting.date = "asc";
+        } else {
+          newSorting.date = null; // Clear sorting (3rd click)
+        }
+      } else if (column === "amount") {
+        if (prev.amount === null) {
+          newSorting.amount = "desc"; // Default to descending for amount
+        } else if (prev.amount === "desc") {
+          newSorting.amount = "asc";
+        } else {
+          newSorting.amount = null; // Clear sorting (3rd click)
+        }
+      }
+
+      console.log(`Sorting ${column}:`, newSorting);
+      return newSorting;
+    });
+  };
+
+  const clearSorting = () => {
+    setSorting({ date: null, amount: null });
   };
 
   const changePage = (page) => {
@@ -496,6 +556,12 @@ export const useTransactions = () => {
     currencyFilter.currencies,
   ]);
 
+  // Sorting effect - reload when sorting changes
+  useEffect(() => {
+    // Always reload when sorting changes, even when clearing sort
+    loadTransactions(currentPage);
+  }, [sorting.date, sorting.amount]);
+
   return {
     transactions,
     loading,
@@ -526,6 +592,9 @@ export const useTransactions = () => {
     clearRemarksFilter,
     applyCurrencyFilter,
     clearCurrencyFilter,
+    sorting,
+    handleSort,
+    clearSorting,
     changePage,
     retry: () => loadTransactions(currentPage),
   };

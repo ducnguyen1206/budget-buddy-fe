@@ -1,7 +1,15 @@
 import React from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
+import SortableHeader from "./SortableHeader";
 
-const TransactionTable = ({ transactions, loading, error, onRetry }) => {
+const TransactionTable = ({
+  transactions,
+  loading,
+  error,
+  onRetry,
+  sorting,
+  onSort,
+}) => {
   const { t } = useLanguage();
   const formatAmount = (amount) => {
     const formattedAmount = new Intl.NumberFormat("en-US", {
@@ -62,15 +70,23 @@ const TransactionTable = ({ transactions, loading, error, onRetry }) => {
             <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.name")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <SortableHeader
+              column="amount"
+              sorting={sorting?.amount}
+              onSort={onSort}
+            >
               {t("transactions.amount")}
-            </th>
+            </SortableHeader>
             <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.currency")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <SortableHeader
+              column="date"
+              sorting={sorting?.date}
+              onSort={onSort}
+            >
               {t("transactions.date")}
-            </th>
+            </SortableHeader>
             <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.category")}
             </th>
