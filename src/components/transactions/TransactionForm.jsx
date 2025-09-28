@@ -22,7 +22,7 @@ const TransactionForm = () => {
     accountId: "",
     fromAccountId: "",
     toAccountId: "",
-    type: "EXPENSE",
+    type: "",
     remarks: "",
   });
 
@@ -215,9 +215,15 @@ const TransactionForm = () => {
   };
 
   const handleTypeSelect = (type) => {
+    // Find the category with the same name and selected type
+    const matchingCategory = categories.find(
+      (cat) => cat.name === formData.categoryName && cat.type === type
+    );
+
     setFormData((prev) => ({
       ...prev,
       type,
+      categoryId: matchingCategory ? matchingCategory.id : prev.categoryId,
     }));
     setShowTypeDropdown(false);
   };
