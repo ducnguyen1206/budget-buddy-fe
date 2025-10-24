@@ -26,8 +26,8 @@ export const loginUser = async (email, password, t = null) => {
         // Store tokens in sessionStorage
         if (token || refreshToken) {
           storeTokens(token, refreshToken);
-          // TODO: Uncomment when backend refresh token API is ready
-          // tokenRefreshManager.start();
+          // Start token refresh manager
+          tokenRefreshManager.start();
 
           // Dispatch custom event to notify other components
           window.dispatchEvent(
@@ -322,6 +322,51 @@ export const refreshToken = async (t = null) => {
     }
   } catch (error) {
     console.error("Token refresh error:", error);
+    return {
+      success: false,
+      error: handleNetworkError(error, t),
+    };
+  }
+};
+
+// Logout service
+export const logoutUser = async (t = null) => {
+  try {
+    console.log("Calling logout API...");
+
+    const response = await fetchWithAuth(
+      getApiUrl(API_ENDPOINTS.LOGOUT),
+      {
+        method: "POST",
+        headers: getApiHeaders(true), // Include auth token for logout API
+      },
+      t
+    );
+
+    // Check if response indicates a redirect should happen
+    if (shouldRedirectToLogin(response)) {
+      return response; // Return the redirect response
+    }
+
+    if (response.status === 200 || response.status === 204) {
+      console.log("Logout API call successful");
+      return {
+        success: true,
+        data: { message: "Logged out successfully" },
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("LOGOUT_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
     return {
       success: false,
       error: handleNetworkError(error, t),
