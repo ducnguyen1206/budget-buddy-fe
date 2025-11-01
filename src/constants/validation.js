@@ -72,6 +72,12 @@ export const API_ERROR_MESSAGES = {
   ACCOUNT_GROUP_IN_USE: "errors.accountGroupInUse",
   DELETE_ACCOUNT_GROUP_FAILED: "errors.deleteAccountGroupFailed",
   CURRENCY_MISMATCH: "errors.currencyMismatch",
+  FETCH_BUDGETS_FAILED: "errors.fetchBudgetsFailed",
+  CREATE_BUDGET_FAILED: "errors.createBudgetFailed",
+  INVALID_BUDGET_DATA: "errors.invalidBudgetData",
+  DELETE_BUDGET_FAILED: "errors.deleteBudgetFailed",
+  BUDGET_NOT_FOUND: "errors.budgetNotFound",
+  BUDGET_IN_USE: "errors.budgetInUse",
 };
 
 // HTTP status codes

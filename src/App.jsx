@@ -14,6 +14,7 @@ import AccountForm from "./components/accounts/AccountForm";
 import TransactionsPage from "./components/transactions/TransactionsPage";
 import TransactionForm from "./components/transactions/TransactionForm";
 import BudgetsPage from "./components/budgets/BudgetsPage";
+import BudgetForm from "./components/budgets/BudgetForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/transactions/new" element={<TransactionForm />} />
           <Route path="/budgets" element={<BudgetsPage />} />
+          <Route path="/budgets/new" element={<BudgetForm />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/categories/new" element={<CategoryForm />} />
           <Route path="/categories/edit/:id" element={<CategoryForm />} />

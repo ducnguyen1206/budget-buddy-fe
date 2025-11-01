@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   REFRESH_TOKEN: "/api/v1/auth/refresh-token",
   CATEGORIES: "/api/v1/categories",
   ACCOUNTS: "/api/v1/accounts",
+  BUDGETS: "/api/v1/budgets",
   TRANSACTIONS_INQUIRY: "/api/v1/transaction/inquiry",
   TRANSACTION: "/api/v1/transaction",
 };

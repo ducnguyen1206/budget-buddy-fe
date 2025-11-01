@@ -2,10 +2,16 @@ import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
 
-export const fetchCategories = async (t = null) => {
+export const fetchCategories = async (t = null, type = null) => {
   try {
+    // Build URL with optional type query parameter
+    let url = getApiUrl(API_ENDPOINTS.CATEGORIES);
+    if (type) {
+      url += `?type=${encodeURIComponent(type)}`;
+    }
+
     const response = await fetchWithAuth(
-      getApiUrl(API_ENDPOINTS.CATEGORIES),
+      url,
       {
         method: "GET",
         headers: getApiHeaders(true), // Include auth token
