@@ -57,6 +57,143 @@ export const fetchBudgets = async (t = null) => {
   }
 };
 
+// Fetch single budget by ID
+export const fetchBudgetById = async (id, t = null) => {
+  try {
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.BUDGETS)}/${id}`,
+      {
+        method: "GET",
+        headers: getApiHeaders(true),
+      },
+      t
+    );
+
+    // Check if response indicates a redirect should happen
+    if (shouldRedirectToLogin(response)) {
+      return response;
+    }
+
+    if (response.status === 200) {
+      try {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+        };
+      } catch (jsonError) {
+        console.warn("JSON parsing failed for budget response:", jsonError);
+        return {
+          success: false,
+          error: handleApiError("FETCH_BUDGET_FAILED", t),
+        };
+      }
+    } else if (response.status === 404) {
+      return {
+        success: false,
+        error: handleApiError("BUDGET_NOT_FOUND", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("FETCH_BUDGET_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Fetch budget error:", error);
+    return {
+      success: false,
+      error: handleNetworkError(error, t),
+    };
+  }
+};
+
+// Update budget
+export const updateBudget = async (id, budgetData, t = null) => {
+  try {
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.BUDGETS)}/${id}`,
+      {
+        method: "PUT",
+        headers: getApiHeaders(true),
+        body: JSON.stringify(budgetData),
+      },
+      t
+    );
+
+    // Check if response indicates a redirect should happen
+    if (shouldRedirectToLogin(response)) {
+      return response;
+    }
+
+    if (response.status === 200) {
+      try {
+        const responseText = await response.text();
+
+        if (!responseText || responseText.trim() === "") {
+          return {
+            success: true,
+            data: null,
+          };
+        }
+
+        const updatedBudget = JSON.parse(responseText);
+        return {
+          success: true,
+          data: updatedBudget || null,
+        };
+      } catch (error) {
+        console.warn("Failed to parse update budget response:", error);
+        return {
+          success: true,
+          data: null,
+        };
+      }
+    } else if (response.status === 204) {
+      return {
+        success: true,
+        data: null,
+      };
+    } else if (response.status === 400) {
+      return {
+        success: false,
+        error: handleApiError("INVALID_BUDGET_DATA", t),
+      };
+    } else if (response.status === 404) {
+      return {
+        success: false,
+        error: handleApiError("BUDGET_NOT_FOUND", t),
+      };
+    } else if (response.status === 409) {
+      return {
+        success: false,
+        error: handleApiError("BUDGET_IN_USE", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("UPDATE_BUDGET_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Update budget error:", error);
+    return {
+      success: false,
+      error: handleNetworkError(error, t),
+    };
+  }
+};
+
 // Create budget
 export const createBudget = async (budgetData, t = null) => {
   try {

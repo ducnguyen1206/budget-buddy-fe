@@ -170,7 +170,7 @@ export default function BudgetsPage() {
   // Render error message
   const renderErrorMessage = () => (
     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-      <p className="text-red-600 text-sm">{error}</p>
+      <p className="text-red-600 text-base">{error}</p>
     </div>
   );
 
@@ -232,40 +232,44 @@ export default function BudgetsPage() {
   const renderBudgetRow = (budget) => (
     <tr key={budget.id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
+        <div className="text-base font-medium text-gray-900">
           {budget.categoryName}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
+        <div className="text-base font-medium text-gray-900">
           {formatAmount(budget.amount)}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
+        <div
+          className={`text-base font-medium ${
+            budget.spentAmount < 0 ? "text-red-600" : "text-gray-900"
+          }`}
+        >
           {formatAmount(budget.spentAmount)}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div
-          className={`text-sm font-medium ${
-            budget.remainingAmount < 0 ? "text-red-600" : "text-gray-900"
+          className={`text-base font-medium ${
+            budget.remainingAmount < 0 ? "text-red-600" : "text-green-600"
           }`}
         >
           {formatAmount(budget.remainingAmount)}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
+        <div className="text-base font-medium text-gray-900">
           {formatDate(budget.updatedAt)}
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">
+        <div className="text-base font-medium text-gray-900">
           {budget.currency}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
         <div className="relative dropdown-container">
           {/* Three dots button */}
           <button
@@ -284,14 +288,14 @@ export default function BudgetsPage() {
               <div className="py-1">
                 <button
                   onClick={() => handleEdit(budget.id)}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex items-center w-full px-4 py-2 text-base text-gray-700 hover:bg-gray-100"
                 >
                   <Edit className="w-4 h-4 mr-3" />
                   {t("common.edit")}
                 </button>
                 <button
                   onClick={() => handleDelete(budget.id)}
-                  className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  className="flex items-center w-full px-4 py-2 text-base text-red-600 hover:bg-gray-100"
                 >
                   <Trash2 className="w-4 h-4 mr-3" />
                   {t("common.delete")}

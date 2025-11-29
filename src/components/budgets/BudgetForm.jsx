@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { createBudget } from "../../services/budgetService";
+import {
+  createBudget,
+  updateBudget,
+  fetchBudgetById,
+} from "../../services/budgetService";
 import { fetchCategories } from "../../services/categoryService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
@@ -10,6 +14,8 @@ export default function BudgetForm() {
   // Hooks
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -20,15 +26,24 @@ export default function BudgetForm() {
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [loadError, setLoadError] = useState("");
 
   // Categories state
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [isLoadingBudget, setIsLoadingBudget] = useState(false);
 
   // Load categories on component mount
   useEffect(() => {
     loadCategories();
   }, []);
+
+  // Load budget data when in edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      loadBudget();
+    }
+  }, [isEditMode, id]);
 
   // Load categories from API (filtered by EXPENSE type)
   const loadCategories = async () => {
@@ -48,6 +63,43 @@ export default function BudgetForm() {
       console.error("Error loading categories:", error);
     } finally {
       setLoadingCategories(false);
+    }
+  };
+
+  // Load existing budget data in edit mode
+  const loadBudget = async () => {
+    setIsLoadingBudget(true);
+    setLoadError("");
+
+    try {
+      const result = await fetchBudgetById(id, t);
+
+      // Check if the result indicates a redirect should happen
+      if (shouldRedirectToLogin(result)) {
+        return; // The redirect will be handled by the API interceptor
+      }
+
+      if (result.success && result.data) {
+        const budget = result.data;
+        setFormData({
+          categoryId:
+            budget.categoryId !== undefined && budget.categoryId !== null
+              ? String(budget.categoryId)
+              : "",
+          amount:
+            budget.amount !== undefined && budget.amount !== null
+              ? String(budget.amount)
+              : "",
+          currency: budget.currency || "SGD",
+        });
+      } else {
+        setLoadError(result.error || t("errors.fetchBudgetFailed"));
+      }
+    } catch (error) {
+      console.error("Error loading budget:", error);
+      setLoadError(t("errors.fetchBudgetFailed"));
+    } finally {
+      setIsLoadingBudget(false);
     }
   };
 
@@ -110,6 +162,10 @@ export default function BudgetForm() {
     // Clear previous errors
     setSubmitError("");
 
+    if (isLoadingBudget) {
+      return;
+    }
+
     // Validate form before submission
     if (!validateForm()) {
       return;
@@ -125,7 +181,9 @@ export default function BudgetForm() {
         currency: formData.currency,
       };
 
-      const result = await createBudget(budgetData, t);
+      const result = isEditMode
+        ? await updateBudget(id, budgetData, t)
+        : await createBudget(budgetData, t);
 
       // Check if the result indicates a redirect should happen
       if (shouldRedirectToLogin(result)) {
@@ -135,11 +193,20 @@ export default function BudgetForm() {
       if (result.success) {
         navigate("/budgets");
       } else {
-        setSubmitError(result.error);
+        setSubmitError(
+          result.error ||
+            (isEditMode
+              ? t("errors.updateBudgetFailed")
+              : t("errors.createBudgetFailed"))
+        );
       }
     } catch (error) {
       console.error("Form submission error:", error);
-      setSubmitError(t("errors.createBudgetFailed"));
+      setSubmitError(
+        isEditMode
+          ? t("errors.updateBudgetFailed")
+          : t("errors.createBudgetFailed")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -166,7 +233,9 @@ export default function BudgetForm() {
           name={fieldName}
           value={formData[fieldName]}
           onChange={handleChange}
-          disabled={loadingCategories && fieldName === "categoryId"}
+          disabled={
+            (loadingCategories && fieldName === "categoryId") || isLoadingBudget
+          }
           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out appearance-none bg-white ${
             validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
           } ${
@@ -201,6 +270,7 @@ export default function BudgetForm() {
           value={formData[fieldName]}
           onChange={handleChange}
           step={type === "number" ? "0.01" : undefined}
+          disabled={isLoadingBudget}
           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
             validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
           }`}
@@ -231,19 +301,41 @@ export default function BudgetForm() {
     { value: "VND", label: "VND" },
   ];
 
+  const pageTitle = isEditMode
+    ? t("budgets.editBudget")
+    : t("budgets.createBudget");
+
+  const submitButtonLabel = isSubmitting
+    ? t("common.saving")
+    : isEditMode
+    ? t("common.update")
+    : t("common.save");
+
   return (
     <DashboardLayout activePage="budgets">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {t("budgets.createBudget")}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">{pageTitle}</h1>
         </div>
 
         {/* Form Container */}
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Load Error */}
+            {loadError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{loadError}</p>
+              </div>
+            )}
+
+            {/* Loading Indicator for Edit Mode */}
+            {isEditMode && isLoadingBudget && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                {t("common.loading")}
+              </div>
+            )}
+
             {/* Category Field */}
             {renderFormField(
               "categoryId",
@@ -275,17 +367,17 @@ export default function BudgetForm() {
               <button
                 type="button"
                 onClick={handleCancel}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoadingBudget}
                 className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoadingBudget}
                 className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? t("common.saving") : t("common.save")}
+                {submitButtonLabel}
               </button>
             </div>
           </form>
