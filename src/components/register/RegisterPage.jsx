@@ -71,8 +71,8 @@ export default function RegisterPage() {
   const formIsValid = isFormValid(formData, validationErrors);
 
   return (
-    <Layout className="flex items-center justify-center px-3 max-w-xl mx-auto">
-      <div className="w-full max-w-md py-8">
+    <Layout className='w-full lg:max-w-xl mx-auto'>
+      <div>
         {/* Header with Piggy Bank Icon */}
         <div className="text-center mb-8">
           <img
@@ -88,7 +88,7 @@ export default function RegisterPage() {
         <ErrorMessage message={error} />
 
         {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
             label={t("auth.email")}
             name="email"
