@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Production build with nginx
+  budget-buddy-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: budget-buddy-prod
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    networks:
+      - budget-buddy-network
+
+  # Development server
+  budget-buddy-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: budget-buddy-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    networks:
+      - budget-buddy-network
+
+networks:
+  budget-buddy-network:
+    driver: bridge
+
