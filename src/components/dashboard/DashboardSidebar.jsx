@@ -58,12 +58,12 @@ export default function DashboardSidebar({ activePage = "overview" }) {
   };
 
   const navigationItems = [
-    {
-      id: "overview",
-      icon: LayoutDashboard,
-      label: t("dashboard.nav.overview"),
-      path: "/dashboard",
-    },
+    // {
+    //   id: "overview",
+    //   icon: LayoutDashboard,
+    //   label: t("dashboard.nav.overview"),
+    //   path: "/dashboard",
+    // },
     {
       id: "accounts",
       icon: Building2,

@@ -76,7 +76,7 @@ export default function App() {
             element={<RegistrationSuccessPage />}
           />
           {/* Dashboard routes */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
           <Route path="/accounts" element={<AccountsPage />} />
           <Route path="/accounts/new" element={<AccountForm />} />
           <Route path="/accounts/edit/:id" element={<AccountForm />} />
@@ -91,7 +91,7 @@ export default function App() {
           {/* Root path redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           {/* Catch-all redirect for any undefined routes */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/transactions" replace />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
