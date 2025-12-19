@@ -9,11 +9,15 @@ export const API_BASE_URL =
 export const API_ENDPOINTS = {
   REGISTER: "/api/v1/auth/token",
   LOGIN: "/api/v1/auth/login",
+  LOGOUT: "/api/v1/auth/logout",
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",
   REFRESH_TOKEN: "/api/v1/auth/refresh-token",
   CATEGORIES: "/api/v1/categories",
   ACCOUNTS: "/api/v1/accounts",
+  BUDGETS: "/api/v1/budgets",
+  TRANSACTIONS_INQUIRY: "/api/v1/transaction/inquiry",
+  TRANSACTION: "/api/v1/transaction",
 };
 
 // Helper function to get full API URL

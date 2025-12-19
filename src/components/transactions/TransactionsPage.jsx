@@ -1,81 +1,123 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus } from "lucide-react";
-import { fetchTransactions } from "../../services/transactionService";
-import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
+import { useTransactions } from "../../hooks/useTransactions";
+import {
+  NameFilter,
+  AmountFilter,
+  DateFilter,
+  AccountFilter,
+  CategoryFilter,
+  TypeFilter,
+  RemarksFilter,
+  CurrencyFilter,
+} from "./filters";
+import TransactionTable from "./TransactionTable";
+import TransactionPagination from "./TransactionPagination";
 
 const TransactionsPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  // State management
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Custom hook for transaction management
+  const {
+    transactions,
+    loading,
+    error,
+    currentPage,
+    pagination,
+    nameFilter,
+    amountFilter,
+    dateFilter,
+    accountFilter,
+    categoryFilter,
+    typeFilter,
+    remarksFilter,
+    currencyFilter,
+    applyNameFilter,
+    clearNameFilter,
+    applyAmountFilter,
+    clearAmountFilter,
+    applyDateFilter,
+    clearDateFilter,
+    applyAccountFilter,
+    clearAccountFilter,
+    applyCategoryFilter,
+    clearCategoryFilter,
+    applyTypeFilter,
+    clearTypeFilter,
+    applyRemarksFilter,
+    clearRemarksFilter,
+    applyCurrencyFilter,
+    clearCurrencyFilter,
+    sorting,
+    handleSort,
+    clearSorting,
+    changePage,
+    retry,
+  } = useTransactions();
+
+  // Local state
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pagination, setPagination] = useState({
-    page: 0,
-    size: 10,
-    totalElements: 0,
-    totalPages: 0,
-  });
+  const [showNameFilter, setShowNameFilter] = useState(false);
+  const [showAmountFilter, setShowAmountFilter] = useState(false);
+  const [showDateFilter, setShowDateFilter] = useState(false);
+  const [showAccountFilter, setShowAccountFilter] = useState(false);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [showTypeFilter, setShowTypeFilter] = useState(false);
+  const [showRemarksFilter, setShowRemarksFilter] = useState(false);
+  const [showCurrencyFilter, setShowCurrencyFilter] = useState(false);
 
-  // Constants
-  const PAGE_SIZE = 10;
-
-  // Load transactions
-  const loadTransactions = async (page = 0) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await fetchTransactions(page, PAGE_SIZE);
-
-      // Check if the result indicates a redirect should happen
-      if (shouldRedirectToLogin(data)) {
-        console.log(
-          "Transactions API returned redirect response - user will be redirected to login"
-        );
-        return; // The redirect will be handled by the API interceptor
-      }
-
-      // Update transactions and pagination from API response
-      setTransactions(data.transactions || []);
-
-      // Update pagination with API response data
-      if (data.pagination) {
-        console.log("📄 Pagination data from API:", data.pagination);
-        setPagination({
-          page: data.pagination.page,
-          size: data.pagination.size,
-          totalElements: data.pagination.totalElements,
-          totalPages: data.pagination.totalPages,
-        });
-      } else {
-        console.log("⚠️ No pagination data in API response");
-        // Fallback if pagination data is missing
-        setPagination({
-          page: 0,
-          size: PAGE_SIZE,
-          totalElements: 0,
-          totalPages: 0,
+  // Extract unique accounts from transactions
+  const getUniqueAccounts = () => {
+    const accountMap = new Map();
+    transactions.forEach((transaction) => {
+      if (transaction.accountId && transaction.sourceAccountName) {
+        accountMap.set(transaction.accountId, {
+          id: transaction.accountId,
+          name: transaction.sourceAccountName,
+          sourceAccountName: transaction.sourceAccountName,
+          currency: transaction.currency,
+          accountType: transaction.sourceAccountType || "Unknown",
         });
       }
-    } catch (err) {
-      console.error("Error loading transactions:", err);
-      setError(err.message || t("errors.fetchTransactionsFailed"));
-    } finally {
-      setLoading(false);
-    }
+    });
+    return Array.from(accountMap.values());
   };
 
-  // Effects
-  useEffect(() => {
-    loadTransactions(currentPage);
-  }, [currentPage]);
+  const uniqueAccounts = getUniqueAccounts();
+
+  // Extract unique categories from transactions
+  const getUniqueCategories = () => {
+    const categoryMap = new Map();
+    transactions.forEach((transaction) => {
+      if (transaction.categoryId && transaction.categoryName) {
+        categoryMap.set(transaction.categoryId, {
+          id: transaction.categoryId,
+          name: transaction.categoryName,
+          categoryName: transaction.categoryName,
+          categoryType: transaction.categoryType || "Unknown",
+        });
+      }
+    });
+    return Array.from(categoryMap.values());
+  };
+
+  const uniqueCategories = getUniqueCategories();
+
+  // Filter transactions based on search term
+  const filteredTransactions = transactions.filter((transaction) => {
+    return (
+      searchTerm === "" ||
+      transaction.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.sourceAccountName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      transaction.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   // Event handlers
   const handleSearchChange = (e) => {
@@ -86,181 +128,156 @@ const TransactionsPage = () => {
     navigate("/transactions/new");
   };
 
-  const handlePageChange = (newPage) => {
-    if (
-      newPage >= 0 &&
-      newPage < pagination.totalPages &&
-      newPage !== currentPage
-    ) {
-      setCurrentPage(newPage);
-      // The useEffect will automatically trigger loadTransactions when currentPage changes
-    }
+  const handleFilterChange = (newFilter) => {
+    applyNameFilter(newFilter);
   };
 
-  // Filter transactions based on search term
-  const filteredTransactions = transactions.filter(
-    (transaction) =>
-      transaction.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.sourceAccountName
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      transaction.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Format amount without currency
-  const formatAmount = (amount) => {
-    const formattedAmount = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Math.abs(amount));
-
-    return formattedAmount;
+  const handleFilterApply = (newFilter) => {
+    applyNameFilter(newFilter);
+    setShowNameFilter(false);
   };
 
-  // Render pagination
-  const renderPagination = () => {
-    // Always show pagination info, even for single pages
-    if (pagination.totalPages === 0) return null;
-
-    // Generate page numbers to show
-    const getPageNumbers = () => {
-      const pages = [];
-      const totalPages = pagination.totalPages;
-      const current = currentPage;
-
-      // For single page, just show that page
-      if (totalPages === 1) {
-        return [0];
-      }
-
-      // Always show first page
-      if (totalPages > 0) pages.push(0);
-
-      // Show pages around current page
-      const start = Math.max(1, current - 1);
-      const end = Math.min(totalPages - 1, current + 1);
-
-      for (let i = start; i <= end; i++) {
-        if (i !== 0 && i !== totalPages - 1) {
-          pages.push(i);
-        }
-      }
-
-      // Always show last page if different from first
-      if (totalPages > 1) pages.push(totalPages - 1);
-
-      return [...new Set(pages)].sort((a, b) => a - b);
-    };
-
-    const pageNumbers = getPageNumbers();
-
-    console.log("🔍 Pagination Debug:", {
-      totalPages: pagination.totalPages,
-      currentPage,
-      pageNumbers,
-      totalElements: pagination.totalElements,
-    });
-
-    return (
-      <div className="flex items-center justify-between mt-6">
-        <div className="text-sm text-gray-700">
-          {t("transactions.showing")} {currentPage * PAGE_SIZE + 1}{" "}
-          {t("transactions.to")}{" "}
-          {Math.min((currentPage + 1) * PAGE_SIZE, pagination.totalElements)}{" "}
-          {t("transactions.of")} {pagination.totalElements}{" "}
-          {t("transactions.results")}
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* Previous button */}
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 0 || pagination.totalPages <= 1}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.previous")}
-          </button>
-
-          {/* Page numbers */}
-          <div className="flex space-x-1">
-            {pageNumbers.map((pageNum, index) => {
-              const isCurrentPage = pageNum === currentPage;
-              const showEllipsis =
-                index > 0 && pageNumbers[index - 1] !== pageNum - 1;
-
-              return (
-                <React.Fragment key={pageNum}>
-                  {showEllipsis && (
-                    <span className="px-2 py-1 text-gray-500">...</span>
-                  )}
-                  <button
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                      isCurrentPage
-                        ? "bg-blue-600 text-white"
-                        : "border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageNum + 1}
-                  </button>
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          {/* Next button */}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={
-              currentPage >= pagination.totalPages - 1 ||
-              pagination.totalPages <= 1
-            }
-            className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.next")}
-          </button>
-        </div>
-      </div>
-    );
+  const handleFilterClear = () => {
+    clearNameFilter();
+    setShowNameFilter(false);
   };
 
-  // Render loading state
-  if (loading) {
-    return (
-      <DashboardLayout activePage="transactions">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">{t("common.loading")}</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const handleToggleFilter = () => {
+    setShowNameFilter(!showNameFilter);
+  };
 
-  // Render error state
-  if (error) {
-    return (
-      <DashboardLayout activePage="transactions">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {t("dashboard.nav.transactions")}
-            </h1>
-          </div>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">{error}</p>
-            <button
-              onClick={() => loadTransactions(currentPage)}
-              className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              {t("common.retry")}
-            </button>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const handleAmountFilterChange = (newFilter) => {
+    applyAmountFilter(newFilter);
+  };
+
+  const handleAmountFilterApply = (newFilter) => {
+    applyAmountFilter(newFilter);
+    setShowAmountFilter(false);
+  };
+
+  const handleAmountFilterClear = () => {
+    clearAmountFilter();
+    setShowAmountFilter(false);
+  };
+
+  const handleToggleAmountFilter = () => {
+    setShowAmountFilter(!showAmountFilter);
+  };
+
+  const handleDateFilterChange = (newFilter) => {
+    applyDateFilter(newFilter);
+  };
+
+  const handleDateFilterApply = (newFilter) => {
+    applyDateFilter(newFilter);
+    setShowDateFilter(false);
+  };
+
+  const handleDateFilterClear = () => {
+    clearDateFilter();
+    setShowDateFilter(false);
+  };
+
+  const handleToggleDateFilter = () => {
+    setShowDateFilter(!showDateFilter);
+  };
+
+  const handleAccountFilterChange = (newFilter) => {
+    applyAccountFilter(newFilter);
+  };
+
+  const handleAccountFilterApply = (newFilter) => {
+    applyAccountFilter(newFilter);
+    setShowAccountFilter(false);
+  };
+
+  const handleAccountFilterClear = () => {
+    clearAccountFilter();
+    setShowAccountFilter(false);
+  };
+
+  const handleToggleAccountFilter = () => {
+    setShowAccountFilter(!showAccountFilter);
+  };
+
+  const handleCategoryFilterChange = (newFilter) => {
+    applyCategoryFilter(newFilter);
+  };
+
+  const handleCategoryFilterApply = (newFilter) => {
+    applyCategoryFilter(newFilter);
+    setShowCategoryFilter(false);
+  };
+
+  const handleCategoryFilterClear = () => {
+    clearCategoryFilter();
+    setShowCategoryFilter(false);
+  };
+
+  const handleToggleCategoryFilter = () => {
+    setShowCategoryFilter(!showCategoryFilter);
+  };
+
+  // Type filter handlers
+  const handleTypeFilterChange = (newFilter) => {
+    applyTypeFilter(newFilter);
+  };
+
+  const handleTypeFilterApply = (newFilter) => {
+    applyTypeFilter(newFilter);
+    setShowTypeFilter(false);
+  };
+
+  const handleTypeFilterClear = () => {
+    clearTypeFilter();
+    setShowTypeFilter(false);
+  };
+
+  const handleToggleTypeFilter = () => {
+    setShowTypeFilter(!showTypeFilter);
+  };
+
+  // Remarks filter handlers
+  const handleRemarksFilterChange = (newFilter) => {
+    applyRemarksFilter(newFilter);
+  };
+
+  const handleRemarksFilterApply = (newFilter) => {
+    applyRemarksFilter(newFilter);
+    setShowRemarksFilter(false);
+  };
+
+  const handleRemarksFilterClear = () => {
+    clearRemarksFilter();
+    setShowRemarksFilter(false);
+  };
+
+  const handleToggleRemarksFilter = () => {
+    setShowRemarksFilter(!showRemarksFilter);
+  };
+
+  // Currency filter handlers
+  const handleCurrencyFilterChange = (newFilter) => {
+    applyCurrencyFilter(newFilter);
+  };
+
+  const handleCurrencyFilterApply = (newFilter) => {
+    applyCurrencyFilter(newFilter);
+    setShowCurrencyFilter(false);
+  };
+
+  const handleCurrencyFilterClear = () => {
+    clearCurrencyFilter();
+    setShowCurrencyFilter(false);
+  };
+
+  const handleToggleCurrencyFilter = () => {
+    setShowCurrencyFilter(!showCurrencyFilter);
+  };
+
+  const handlePageChange = (page) => {
+    changePage(page);
+  };
 
   return (
     <DashboardLayout activePage="transactions">
@@ -295,118 +312,96 @@ const TransactionsPage = () => {
           </button>
         </div>
 
-        {/* Transactions Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Table Header */}
-          <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.name")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.amount")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.currency")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.date")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.category")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.account")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.type")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">
-                {t("transactions.remarks")}
-              </h3>
-            </div>
-          </div>
-
-          {/* Table Body */}
-          <div className="divide-y divide-gray-200">
-            {filteredTransactions.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-gray-500 text-lg">
-                  {searchTerm
-                    ? t("transactions.noTransactionsMatching")
-                    : t("transactions.noTransactionsFound")}
-                </p>
-              </div>
-            ) : (
-              filteredTransactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center py-4 px-6 hover:bg-gray-50"
-                >
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-700">{transaction.name}</span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span
-                      className={`font-medium ${
-                        transaction.amount > 0
-                          ? "text-green-600"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {formatAmount(transaction.amount)}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.currency}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">{transaction.date}</span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.categoryName}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.sourceAccountName}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">
-                      {transaction.amount > 0
-                        ? t("transactions.income")
-                        : t("transactions.expense")}
-                    </span>
-                  </div>
-                  <div className="flex-1 px-4">
-                    <span className="text-gray-500">{transaction.remarks}</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+        {/* Filters */}
+        <div className="mb-4 flex flex-wrap gap-4 relative z-10">
+          <NameFilter
+            nameFilter={nameFilter}
+            onFilterChange={handleFilterChange}
+            onApply={handleFilterApply}
+            onClear={handleFilterClear}
+            showFilter={showNameFilter}
+            onToggleFilter={handleToggleFilter}
+          />
+          <AmountFilter
+            amountFilter={amountFilter}
+            onFilterChange={handleAmountFilterChange}
+            onApply={handleAmountFilterApply}
+            onClear={handleAmountFilterClear}
+            showFilter={showAmountFilter}
+            onToggleFilter={handleToggleAmountFilter}
+          />
+          <DateFilter
+            dateFilter={dateFilter}
+            onFilterChange={handleDateFilterChange}
+            onApply={handleDateFilterApply}
+            onClear={handleDateFilterClear}
+            showFilter={showDateFilter}
+            onToggleFilter={handleToggleDateFilter}
+          />
+          <AccountFilter
+            accountFilter={accountFilter}
+            onFilterChange={handleAccountFilterChange}
+            onApply={handleAccountFilterApply}
+            onClear={handleAccountFilterClear}
+            showFilter={showAccountFilter}
+            onToggleFilter={handleToggleAccountFilter}
+            accounts={uniqueAccounts}
+          />
+          <CategoryFilter
+            categoryFilter={categoryFilter}
+            onFilterChange={handleCategoryFilterChange}
+            onApply={handleCategoryFilterApply}
+            onClear={handleCategoryFilterClear}
+            showFilter={showCategoryFilter}
+            onToggleFilter={handleToggleCategoryFilter}
+            categories={uniqueCategories}
+          />
+          <TypeFilter
+            typeFilter={typeFilter}
+            onFilterChange={handleTypeFilterChange}
+            onApply={handleTypeFilterApply}
+            onClear={handleTypeFilterClear}
+            showFilter={showTypeFilter}
+            onToggleFilter={handleToggleTypeFilter}
+          />
+          <RemarksFilter
+            remarksFilter={remarksFilter}
+            onFilterChange={handleRemarksFilterChange}
+            onApply={handleRemarksFilterApply}
+            onClear={handleRemarksFilterClear}
+            showFilter={showRemarksFilter}
+            onToggleFilter={handleToggleRemarksFilter}
+          />
+          <CurrencyFilter
+            currencyFilter={currencyFilter}
+            onFilterChange={handleCurrencyFilterChange}
+            onApply={handleCurrencyFilterApply}
+            onClear={handleCurrencyFilterClear}
+            showFilter={showCurrencyFilter}
+            onToggleFilter={handleToggleCurrencyFilter}
+          />
         </div>
 
-        {/* Pagination */}
-        {renderPagination()}
+        {/* Transactions Table */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+          <TransactionTable
+            transactions={filteredTransactions}
+            loading={loading}
+            error={error}
+            onRetry={retry}
+            sorting={sorting}
+            onSort={handleSort}
+          />
+
+          {/* Pagination */}
+          <TransactionPagination
+            currentPage={currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+            totalElements={pagination.totalElements}
+            pageSize={pagination.size}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

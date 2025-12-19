@@ -26,7 +26,7 @@ export default function FormField({
           onChange={onChange}
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full px-6 py-3 pr-16 border rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-colors bg-white text-lg font-inter ${
+          className={`w-full px-3 py-3 border rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-colors bg-white text-lg font-inter ${
             error ? "border-error focus:ring-error" : "border-gray-300"
           }`}
         />

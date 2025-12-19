@@ -119,25 +119,19 @@ export const fetchAccounts = async (t = null) => {
 
 export const fetchAccount = async (id, t = null) => {
   try {
-    console.log("🔍 Fetching account with ID:", id);
     const response = await fetchWithAuth(
       `${getApiUrl(API_ENDPOINTS.ACCOUNTS)}/${id}`,
       { method: "GET", headers: getApiHeaders(true) },
       t
     );
 
-    console.log("🔍 Response status:", response.status);
-    console.log("🔍 Response:", response);
-
     if (shouldRedirectToLogin(response)) {
-      console.log("🔍 Should redirect to login");
       return response;
     }
 
     if (response.status === 200) {
       try {
         const responseData = await response.json();
-        console.log("🔍 Response data:", responseData);
 
         // The API returns { accountType: "...", accounts: [...] }
         // We need to extract the first account from the accounts array
@@ -146,10 +140,7 @@ export const fetchAccount = async (id, t = null) => {
             ? responseData.accounts[0]
             : null;
 
-        console.log("🔍 Extracted account:", account);
-
         if (!account) {
-          console.log("🔍 No account found in response");
           return {
             success: false,
             error: handleApiError("ACCOUNT_NOT_FOUND", t),
@@ -162,7 +153,6 @@ export const fetchAccount = async (id, t = null) => {
           type: responseData.accountType,
         };
 
-        console.log("🔍 Account with type:", accountWithType);
         return { success: true, data: accountWithType };
       } catch (jsonError) {
         console.error("Error parsing account JSON:", jsonError);

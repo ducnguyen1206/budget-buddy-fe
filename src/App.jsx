@@ -12,7 +12,9 @@ import DashboardPage from "./components/dashboard/DashboardPage";
 import AccountsPage from "./components/accounts/AccountsPage";
 import AccountForm from "./components/accounts/AccountForm";
 import TransactionsPage from "./components/transactions/TransactionsPage";
+import TransactionForm from "./components/transactions/TransactionForm";
 import BudgetsPage from "./components/budgets/BudgetsPage";
+import BudgetForm from "./components/budgets/BudgetForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
@@ -24,16 +26,10 @@ function TokenRefreshHandler() {
     // Check authentication status and start/stop token refresh manager accordingly
     const checkAuthAndManageRefresh = () => {
       const hasToken = isAuthenticated();
-      console.log("🔍 Auth check - hasToken:", hasToken);
-      console.log("🔍 Current token:", getToken() ? "exists" : "missing");
 
       if (hasToken) {
-        console.log("✅ User is authenticated, starting token refresh manager");
         tokenRefreshManager.start();
       } else {
-        console.log(
-          "❌ User is not authenticated, stopping token refresh manager"
-        );
         tokenRefreshManager.stop();
       }
     };
@@ -43,7 +39,6 @@ function TokenRefreshHandler() {
 
     // Listen for token storage events (immediate trigger)
     const handleTokensStored = () => {
-      console.log("🎯 Tokens stored event received, checking auth status");
       checkAuthAndManageRefresh();
     };
 
@@ -81,19 +76,22 @@ export default function App() {
             element={<RegistrationSuccessPage />}
           />
           {/* Dashboard routes */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
           <Route path="/accounts" element={<AccountsPage />} />
           <Route path="/accounts/new" element={<AccountForm />} />
           <Route path="/accounts/edit/:id" element={<AccountForm />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/new" element={<TransactionForm />} />
           <Route path="/budgets" element={<BudgetsPage />} />
+          <Route path="/budgets/new" element={<BudgetForm />} />
+          <Route path="/budgets/edit/:id" element={<BudgetForm />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/categories/new" element={<CategoryForm />} />
           <Route path="/categories/edit/:id" element={<CategoryForm />} />
           {/* Root path redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           {/* Catch-all redirect for any undefined routes */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/transactions" replace />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

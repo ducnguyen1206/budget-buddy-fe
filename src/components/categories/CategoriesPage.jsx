@@ -90,9 +90,6 @@ export default function CategoriesPage() {
 
     // Check if the result indicates a redirect should happen
     if (shouldRedirectToLogin(result)) {
-      console.log(
-        "Categories API returned redirect response - user will be redirected to login"
-      );
       return; // The redirect will be handled by the API interceptor
     }
 
@@ -146,14 +143,12 @@ export default function CategoriesPage() {
 
   // Handle edit category action
   const handleEdit = (id) => {
-    console.log("Edit category:", id);
     navigate(`/categories/edit/${id}`);
     setOpenDropdown(null);
   };
 
   // Handle delete category action
   const handleDelete = (id) => {
-    console.log("Delete category:", id);
     setDeleteConfirm(id);
     setOpenDropdown(null);
   };
@@ -170,14 +165,10 @@ export default function CategoriesPage() {
 
       // Check if the result indicates a redirect should happen
       if (shouldRedirectToLogin(result)) {
-        console.log(
-          "Delete category API returned redirect response - user will be redirected to login"
-        );
         return; // The redirect will be handled by the API interceptor
       }
 
       if (result.success) {
-        console.log("Category deleted successfully");
         // Remove the deleted category from the list
         setCategories((prev) => prev.filter((cat) => cat.id !== deleteConfirm));
         setDeleteConfirm(null);

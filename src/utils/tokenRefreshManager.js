@@ -6,46 +6,30 @@ class TokenRefreshManager {
   constructor() {
     this.refreshInterval = null;
     this.isRefreshing = false;
-    this.REFRESH_INTERVAL_MS = 30 * 1000; // 30 seconds for testing (normally 5 minutes)
+    this.REFRESH_INTERVAL_MS = 60 * 1000; // 1 minute
   }
 
   // Start the token refresh interval
   start() {
-    // TODO: Uncomment when backend refresh token API is ready
-    console.log("🚫 Token refresh manager disabled - backend API not ready");
-    return;
-
-    /*
     const token = getToken();
-    console.log("🚀 Token refresh manager start() called");
-    console.log("🚀 Token exists:", !!token);
-    console.log("🚀 Current interval:", !!this.refreshInterval);
-    
+
     if (!token) {
-      console.log("❌ Token refresh manager: No token found, cannot start");
+      console.log("No token available, skipping refresh manager start");
       return;
     }
 
     if (this.refreshInterval) {
-      console.log("⚠️ Token refresh manager: Already running, skipping start");
+      console.log("Token refresh manager already running");
       return;
     }
 
     console.log(
-      "🚀 Starting token refresh manager - refreshing every 30 seconds (testing)"
+      "Starting token refresh manager with interval:",
+      this.REFRESH_INTERVAL_MS
     );
-    console.log("🚀 Refresh interval set to:", this.REFRESH_INTERVAL_MS, "ms");
-
     this.refreshInterval = setInterval(async () => {
-      console.log(
-        "⏰ Token refresh interval triggered at:",
-        new Date().toISOString()
-      );
       await this.performRefresh();
     }, this.REFRESH_INTERVAL_MS);
-
-    console.log("✅ Token refresh manager started successfully");
-    */
   }
 
   // Stop the token refresh interval
@@ -53,52 +37,47 @@ class TokenRefreshManager {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
-      console.log("Token refresh manager stopped");
-    } else {
-      console.log("Token refresh manager: Not running, nothing to stop");
     }
   }
 
   // Perform the actual token refresh
   async performRefresh() {
-    // TODO: Uncomment when backend refresh token API is ready
-    console.log("🚫 Token refresh disabled - backend API not ready");
-    return;
-
-    /*
     if (this.isRefreshing) {
-      console.log("Token refresh already in progress, skipping...");
+      console.log("Token refresh already in progress, skipping");
       return;
     }
 
     this.isRefreshing = true;
-    console.log("🔄 Starting token refresh process...");
+    console.log("Performing token refresh...");
 
     try {
-      console.log("🔄 Calling refreshToken service...");
       const result = await refreshToken();
-      console.log("🔄 Refresh token result:", result);
 
       // Check if the result indicates a redirect should happen
       if (shouldRedirectToLogin(result)) {
-        console.log(
-          "Token refresh returned redirect response - user will be redirected to login"
-        );
+        console.log("Token refresh failed, redirecting to login");
         return; // The redirect will be handled by the API interceptor
       }
 
       if (result.success) {
-        console.log("Token refreshed successfully");
+        console.log("Token refresh successful");
+        // Dispatch event to notify components
+        window.dispatchEvent(
+          new CustomEvent("tokenRefreshed", {
+            detail: { success: true, timestamp: new Date().toISOString() },
+          })
+        );
       } else {
         console.error("Token refresh failed:", result.error);
 
         // If refresh token is invalid, stop the manager and clear tokens
         if (
           result.error.includes("Session expired") ||
-          result.error.includes("invalid")
+          result.error.includes("invalid") ||
+          result.error.includes("expired")
         ) {
           console.log(
-            "Invalid refresh token, stopping manager and clearing tokens"
+            "Refresh token invalid, stopping manager and redirecting"
           );
           this.stop();
           removeTokens();
@@ -110,19 +89,12 @@ class TokenRefreshManager {
     } finally {
       this.isRefreshing = false;
     }
-    */
   }
 
   // Manually trigger a token refresh (useful for testing)
   async manualRefresh() {
-    // TODO: Uncomment when backend refresh token API is ready
-    console.log("🚫 Manual token refresh disabled - backend API not ready");
-    return;
-
-    /*
     console.log("Manual token refresh triggered");
     await this.performRefresh();
-    */
   }
 
   // Check if the manager is currently running

@@ -114,7 +114,7 @@ budget-buddy/
 - `DashboardPage.jsx` - Overview dashboard page
 
 #### **Feature Pages**
-
+///
 - `src/components/accounts/AccountsPage.jsx` - Accounts management page
 - `src/components/transactions/TransactionsPage.jsx` - Transactions management page
 - `src/components/budgets/BudgetsPage.jsx` - Budget management page
