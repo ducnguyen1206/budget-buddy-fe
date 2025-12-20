@@ -3,7 +3,6 @@ import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
 import {
   storeTokens,
   getRefreshToken,
-  removeTokens,
 } from "../utils/tokenManager";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import tokenRefreshManager from "../utils/tokenRefreshManager";

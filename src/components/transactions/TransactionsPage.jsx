@@ -54,7 +54,6 @@ const TransactionsPage = () => {
     clearCurrencyFilter,
     sorting,
     handleSort,
-    clearSorting,
     changePage,
     retry,
   } = useTransactions();

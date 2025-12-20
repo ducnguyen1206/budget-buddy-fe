@@ -228,21 +228,6 @@ const TransactionForm = () => {
     setShowTypeDropdown(false);
   };
 
-  const handleTypeChange = (type) => {
-    setFormData((prev) => ({
-      ...prev,
-      type,
-      // Clear account selections when changing type
-      accountId: "",
-      fromAccountId: "",
-      toAccountId: "",
-      currency: "",
-    }));
-    setAccountSearch("");
-    setFromAccountSearch("");
-    setToAccountSearch("");
-  };
-
   const validateForm = () => {
     const errors = {};
 

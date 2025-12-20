@@ -30,7 +30,7 @@ const NameFilter = ({
   }, [nameFilter.value]);
 
   // Debounced validation
-  const debouncedValidation = debounce((value) => {
+  const debouncedValidation = debounce(() => {
     // This could be used for real-time validation feedback
   }, 300);
 

@@ -2,7 +2,7 @@ import { useLanguage, LANGUAGES } from "../../contexts/LanguageContext";
 import { Globe } from "lucide-react";
 
 export default function LanguageSwitcher() {
-  const { currentLanguage, changeLanguage, t } = useLanguage();
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   const handleLanguageChange = (language) => {
     changeLanguage(language);

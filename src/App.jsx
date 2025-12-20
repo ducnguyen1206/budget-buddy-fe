@@ -18,7 +18,7 @@ import BudgetForm from "./components/budgets/BudgetForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
-import { isAuthenticated, getToken } from "./utils/tokenManager";
+import { isAuthenticated} from "./utils/tokenManager";
 
 // Component to handle token refresh
 function TokenRefreshHandler() {
