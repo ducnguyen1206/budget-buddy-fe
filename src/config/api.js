@@ -2,10 +2,10 @@ import { getAuthHeader } from "../utils/tokenManager";
 
 // API Configuration
 // Use environment variable or fallback to localhost for development
-// export const API_BASE_URL =
-//   import.meta.env.VITE_API_BASE_URL || "http:52.77.211.211:8080";
-
-export const API_BASE_URL = "https://18.142.242.248.nip.io";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+//
+// export const API_BASE_URL = "https://18.142.242.248.nip.io";
 
 // API endpoints
 export const API_ENDPOINTS = {

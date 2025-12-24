@@ -6,7 +6,7 @@ class TokenRefreshManager {
   constructor() {
     this.refreshInterval = null;
     this.isRefreshing = false;
-    this.REFRESH_INTERVAL_MS = 60 * 1000; // 1 minute
+    this.REFRESH_INTERVAL_MS = 180 * 1000; // 3 minutes
   }
 
   // Start the token refresh interval
