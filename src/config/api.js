@@ -2,7 +2,7 @@ import { getAuthHeader } from "../utils/tokenManager";
 
 // API Configuration
 // Use environment variable or fallback to localhost for development
-export const API_BASE_URL =  "https://budget-buddy-be-11xo2.sevalla.app/";
+export const API_BASE_URL =  "budget-buddy-be-11xo2-web.budget-buddy-be-11xo2.svc.cluster.local";
 //
 // export const API_BASE_URL = "https://18.142.242.248.nip.io";
 
