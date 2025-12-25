@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   fetchTransactions,
   updateTransaction as updateTransactionService,
+  deleteTransaction as deleteTransactionService,
 } from "../services/transactionService";
 
 const PAGE_SIZE = 5;
@@ -112,12 +113,31 @@ export const useTransactions = () => {
       );
       if (result.success) {
         // Reload transactions to reflect the update
-        await retry();
+        await loadTransactions(currentPage);
       }
       return result;
     } catch (err) {
       console.error("Error updating transaction:", err);
       setError("Failed to update transaction");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTransaction = async (transactionId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await deleteTransactionService(transactionId);
+      if (result.success) {
+        // Reload transactions to reflect the deletion
+        await loadTransactions(currentPage);
+      }
+      return result;
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+      setError("Failed to delete transaction");
       throw err;
     } finally {
       setLoading(false);
@@ -623,5 +643,6 @@ export const useTransactions = () => {
     changePage,
     retry: () => loadTransactions(currentPage),
     updateTransaction,
+    deleteTransaction,
   };
 };

@@ -332,6 +332,10 @@
     "toAccountPlaceholder": "Select destination account",
     "currencyNote": "Currency will be set based on selected account",
     "typePlaceholder": "Select transaction type",
-    "remarksPlaceholder": "Enter remarks (optional)"
+    "remarksPlaceholder": "Enter remarks (optional)",
+    "deleteTransaction": "Delete Transaction",
+    "deleteConfirmation": "Are you sure you want to delete the transaction '{name}'? This action cannot be undone.",
+    "transferCannotBeEdited": "Transfer transactions cannot be edited",
+    "transferCannotBeDeleted": "Transfer transactions cannot be deleted"
   }
 }

@@ -286,7 +286,6 @@
     "selectedTypes": "Loại đã chọn",
     "selectedCurrencies": "Tiền tệ đã chọn",
     "nameFilterPlaceholder": "Nhập giá trị tên...",
-    "remarksPlaceholder": "Nhập giá trị ghi chú...",
     "selectCategory": "Chọn danh mục",
     "filters": {
       "name": "Tên",
@@ -320,7 +319,6 @@
         "transfer": "Chuyển khoản"
       }
     },
-    "results": "kết quả",
     "page": "Trang",
     "goToPage": "Đi đến trang",
     "createTransaction": "Tạo Giao Dịch",
@@ -334,6 +332,10 @@
     "toAccountPlaceholder": "Chọn tài khoản đích",
     "currencyNote": "Tiền tệ sẽ được đặt dựa trên tài khoản đã chọn",
     "typePlaceholder": "Chọn loại giao dịch",
-    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)"
+    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)",
+    "deleteTransaction": "Xóa giao dịch",
+    "deleteConfirmation": "Bạn có chắc chắn muốn xóa giao dịch '{name}'? Hành động này không thể hoàn tác.",
+    "transferCannotBeEdited": "Giao dịch chuyển khoản không thể chỉnh sửa",
+    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa"
   }
 }
