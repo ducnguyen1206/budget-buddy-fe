@@ -201,7 +201,7 @@
     "namePlaceholder": "Enter category name",
     "loadingNames": "Loading category names...",
     "confirmDelete": "Confirm Delete",
-    "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This action cannot be undone."
+    "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This will also delete all related transactions and budgets in this category. This action cannot be undone."
   },
   "budgets": {
     "title": "Budgets",

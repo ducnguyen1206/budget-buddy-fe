@@ -146,10 +146,8 @@ const TransactionForm = () => {
   };
 
   // Get types for selected category
-  const getTypesForCategory = (categoryName) => {
-    return categories
-      .filter((cat) => cat.name === categoryName)
-      .map((cat) => cat.type);
+  const getTypesForCategory = () => {
+    return ['EXPENSE', 'INCOME', 'TRANSFER'];
   };
 
   // Get all accounts from all groups
@@ -215,15 +213,9 @@ const TransactionForm = () => {
   };
 
   const handleTypeSelect = (type) => {
-    // Find the category with the same name and selected type
-    const matchingCategory = categories.find(
-      (cat) => cat.name === formData.categoryName && cat.type === type
-    );
-
     setFormData((prev) => ({
       ...prev,
       type,
-      categoryId: matchingCategory ? matchingCategory.id : prev.categoryId,
     }));
     setShowTypeDropdown(false);
   };
@@ -282,6 +274,7 @@ const TransactionForm = () => {
         categoryId: formData.categoryId,
         date: currentDate,
         remarks: formData.remarks.trim(),
+        categoryType: formData.type,
       };
 
       // Add account fields based on transaction type
@@ -616,7 +609,7 @@ const TransactionForm = () => {
                 />
                 {showTypeDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
-                    {getTypesForCategory(formData.categoryName).map((type) => (
+                    {getTypesForCategory().map((type) => (
                       <div
                         key={type}
                         onClick={() => handleTypeSelect(type)}
