@@ -82,6 +82,7 @@ export default function App() {
           <Route path="/accounts/edit/:id" element={<AccountForm />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/transactions/new" element={<TransactionForm />} />
+          <Route path="/transactions/edit/:id" element={<TransactionForm />} />
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/budgets/new" element={<BudgetForm />} />
           <Route path="/budgets/edit/:id" element={<BudgetForm />} />

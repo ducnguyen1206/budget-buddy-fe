@@ -26,7 +26,8 @@
     "addFilter": "Thêm bộ lọc",
     "removeFilter": "Xóa bộ lọc",
     "clearFilters": "Xóa tất cả bộ lọc",
-    "applyFilters": "Áp dụng bộ lọc"
+    "applyFilters": "Áp dụng bộ lọc",
+    "actions": "Thao tác"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -323,6 +324,7 @@
     "page": "Trang",
     "goToPage": "Đi đến trang",
     "createTransaction": "Tạo Giao Dịch",
+    "updateTransaction": "Cập nhật giao dịch",
     "namePlaceholder": "Nhập tên giao dịch",
     "categoryPlaceholder": "Chọn danh mục",
     "accountPlaceholder": "Chọn tài khoản",

@@ -56,6 +56,7 @@ const TransactionsPage = () => {
     handleSort,
     changePage,
     retry,
+    updateTransaction,
   } = useTransactions();
 
   // Local state
@@ -125,6 +126,13 @@ const TransactionsPage = () => {
 
   const handleNewTransaction = () => {
     navigate("/transactions/new");
+  };
+
+  const handleEdit = (transaction) => {
+    // Navigate to edit page with transaction data
+    navigate(`/transactions/edit/${transaction.id}`, {
+      state: { transaction },
+    });
   };
 
   const handleFilterChange = (newFilter) => {
@@ -390,6 +398,7 @@ const TransactionsPage = () => {
             onRetry={retry}
             sorting={sorting}
             onSort={handleSort}
+            onEdit={handleEdit}
           />
 
           {/* Pagination */}

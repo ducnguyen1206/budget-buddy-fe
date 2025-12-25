@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import SortableHeader from "./SortableHeader";
+import { Edit } from "lucide-react";
 
 const TransactionTable = ({
   transactions,
@@ -9,6 +10,7 @@ const TransactionTable = ({
   onRetry,
   sorting,
   onSort,
+  onEdit,
 }) => {
   const { t } = useLanguage();
   const formatAmount = (amount) => {
@@ -99,6 +101,9 @@ const TransactionTable = ({
             <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.remarks")}
             </th>
+            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+              {t("common.actions")}
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -145,6 +150,17 @@ const TransactionTable = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
                 {transaction.remarks || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-base">
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(transaction)}
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    title={t("common.edit")}
+                  >
+                    <Edit className="h-5 w-5" />
+                  </button>
+                )}
               </td>
             </tr>
           ))}

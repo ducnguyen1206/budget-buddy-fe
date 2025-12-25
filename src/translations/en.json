@@ -26,7 +26,8 @@
     "addFilter": "Add filter",
     "removeFilter": "Remove filter",
     "clearFilters": "Clear filters",
-    "applyFilters": "Apply filters"
+    "applyFilters": "Apply filters",
+    "actions": "Actions"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -285,7 +286,6 @@
     "selectedTypes": "Selected types",
     "selectedCurrencies": "Selected currencies",
     "nameFilterPlaceholder": "Enter name value...",
-    "remarksPlaceholder": "Enter remarks value...",
     "selectCategory": "Select category",
     "filters": {
       "name": "Name",
@@ -319,10 +319,10 @@
         "transfer": "Transfer"
       }
     },
-    "results": "results",
     "page": "Page",
     "goToPage": "Go to page",
     "createTransaction": "Create Transaction",
+    "updateTransaction": "Update Transaction",
     "namePlaceholder": "Enter transaction name",
     "categoryPlaceholder": "Select category",
     "accountPlaceholder": "Select account",

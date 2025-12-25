@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { fetchTransactions } from "../services/transactionService";
+import {
+  fetchTransactions,
+  updateTransaction as updateTransactionService,
+} from "../services/transactionService";
 
 const PAGE_SIZE = 5;
 
@@ -94,6 +97,28 @@ export const useTransactions = () => {
     } catch (err) {
       console.error("Error loading transactions:", err);
       setError("Failed to load transactions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateTransaction = async (transactionId, transactionData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await updateTransactionService(
+        transactionId,
+        transactionData
+      );
+      if (result.success) {
+        // Reload transactions to reflect the update
+        await retry();
+      }
+      return result;
+    } catch (err) {
+      console.error("Error updating transaction:", err);
+      setError("Failed to update transaction");
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -597,5 +622,6 @@ export const useTransactions = () => {
     clearSorting,
     changePage,
     retry: () => loadTransactions(currentPage),
+    updateTransaction,
   };
 };
