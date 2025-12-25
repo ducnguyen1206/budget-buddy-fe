@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { Search, Plus, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2 } from "lucide-react";
 import { fetchBudgets, deleteBudget } from "../../services/budgetService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
@@ -13,23 +13,15 @@ export default function BudgetsPage() {
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [budgets, setBudgets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [dropdownPositions, setDropdownPositions] = useState({});
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch budgets from API on component mount
   useEffect(() => {
     loadBudgets();
-
-    // Cleanup function to reset dropdown state when component unmounts
-    return () => {
-      setDropdownPositions({});
-      setOpenDropdown(null);
-    };
   }, []);
 
   // Filter budgets based on search input
@@ -58,42 +50,14 @@ export default function BudgetsPage() {
     setIsLoading(false);
   };
 
-  // Handle dropdown toggle with smart positioning
-  const handleDropdownToggle = (id, event) => {
-    // Close dropdown if it's already open for this item
-    if (openDropdown === id) {
-      setOpenDropdown(null);
-      return;
-    }
-
-    // Calculate exact position for the dropdown
-    const button = event.currentTarget;
-    const buttonRect = button.getBoundingClientRect();
-
-    // Position dropdown above the button to ensure visibility
-    setDropdownPositions((prev) => ({
-      ...prev,
-      [id]: {
-        position: "fixed",
-        top: `${buttonRect.top - 80}px`, // 80px above the button
-        left: `${buttonRect.right - 192}px`, // Align to right edge (192px = w-48)
-        zIndex: 50,
-      },
-    }));
-
-    setOpenDropdown(id);
-  };
-
   // Handle edit budget action
   const handleEdit = (id) => {
     navigate(`/budgets/edit/${id}`);
-    setOpenDropdown(null);
   };
 
   // Handle delete budget action
   const handleDelete = (id) => {
     setDeleteConfirm(id);
-    setOpenDropdown(null);
   };
 
   // Confirm delete action
@@ -270,39 +234,21 @@ export default function BudgetsPage() {
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
-        <div className="relative dropdown-container">
-          {/* Three dots button */}
+        <div className="flex justify-center items-center gap-3">
           <button
-            onClick={(e) => handleDropdownToggle(budget.id, e)}
-            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+            onClick={() => handleEdit(budget.id)}
+            className="text-blue-600 hover:text-blue-800 transition-colors"
+            title={t("common.edit")}
           >
-            <MoreHorizontal className="w-5 h-5" />
+            <Edit className="h-5 w-5" />
           </button>
-
-          {/* Dropdown menu */}
-          {openDropdown === budget.id && (
-            <div
-              className="w-48 bg-white rounded-md shadow-xl border border-gray-200"
-              style={dropdownPositions[budget.id]}
-            >
-              <div className="py-1">
-                <button
-                  onClick={() => handleEdit(budget.id)}
-                  className="flex items-center w-full px-4 py-2 text-base text-gray-700 hover:bg-gray-100"
-                >
-                  <Edit className="w-4 h-4 mr-3" />
-                  {t("common.edit")}
-                </button>
-                <button
-                  onClick={() => handleDelete(budget.id)}
-                  className="flex items-center w-full px-4 py-2 text-base text-red-600 hover:bg-gray-100"
-                >
-                  <Trash2 className="w-4 h-4 mr-3" />
-                  {t("common.delete")}
-                </button>
-              </div>
-            </div>
-          )}
+          <button
+            onClick={() => handleDelete(budget.id)}
+            className="text-red-600 hover:text-red-800 transition-colors"
+            title={t("common.delete")}
+          >
+            <Trash2 className="h-5 w-5" />
+          </button>
         </div>
       </td>
     </tr>
@@ -376,8 +322,8 @@ export default function BudgetsPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("budgets.currency")}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {/* Actions column header */}
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("common.actions")}
                     </th>
                   </tr>
                 </thead>
