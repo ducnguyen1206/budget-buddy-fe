@@ -11,6 +11,7 @@ export const API_BASE_URL =
 export const API_ENDPOINTS = {
   REGISTER: "/api/v1/auth/token",
   LOGIN: "/api/v1/auth/login",
+  GOOGLE_LOGIN: "/api/v1/auth/google",
   LOGOUT: "/api/v1/auth/logout",
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",

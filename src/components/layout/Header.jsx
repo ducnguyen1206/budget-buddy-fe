@@ -26,18 +26,6 @@ export default function Header() {
 
         {/* Action */}
         <div className="text-base text-gray-600 flex items-center space-x-4">
-          {/* Registration link - Only show on login page */}
-          {isLoginPage && (
-            <div className="flex items-center space-x-2">
-              <span>{t("auth.dontHaveAccount")}</span>
-              <Link
-                to="/register"
-                className="text-color3 hover:text-primary font-medium"
-              >
-                {t("auth.registerNow")}
-              </Link>
-            </div>
-          )}
           {/* Language switcher - Show on all pages */}
           <LanguageSwitcher />
         </div>
