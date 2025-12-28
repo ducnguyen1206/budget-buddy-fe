@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import {
   fetchCategoriesForTransaction,
   fetchAccountsForTransaction,
   createTransaction,
+  updateTransaction,
 } from "../../services/transactionService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 const TransactionForm = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const isEditMode = !!id;
+  const existingTransaction = location.state?.transaction;
 
   // State
   const [formData, setFormData] = useState({
@@ -127,6 +132,21 @@ const TransactionForm = () => {
 
       setCategories(categoriesData || []);
       setAccounts(accountsData || []);
+
+      // Pre-fill form data if editing
+      if (isEditMode && existingTransaction) {
+        setFormData({
+          name: existingTransaction.name || "",
+          amount: Math.abs(existingTransaction.amount).toString() || "",
+          currency: existingTransaction.currency || "",
+          categoryId: existingTransaction.categoryId || "",
+          accountId: existingTransaction.accountId || "",
+          fromAccountId: existingTransaction.categoryType === "TRANSFER" ? existingTransaction.accountId : "",
+          toAccountId: existingTransaction.targetAccountId || "",
+          type: existingTransaction.categoryType || "EXPENSE",
+          remarks: existingTransaction.remarks || "",
+        });
+      }
     } catch (error) {
       console.error("Error loading form data:", error);
     } finally {
@@ -146,10 +166,12 @@ const TransactionForm = () => {
   };
 
   // Get types for selected category
-  const getTypesForCategory = (categoryName) => {
-    return categories
-      .filter((cat) => cat.name === categoryName)
-      .map((cat) => cat.type);
+  const getTypesForCategory = () => {
+    // When editing, only allow EXPENSE and INCOME (no TRANSFER)
+    if (isEditMode) {
+      return ['EXPENSE', 'INCOME'];
+    }
+    return ['EXPENSE', 'INCOME', 'TRANSFER'];
   };
 
   // Get all accounts from all groups
@@ -215,32 +237,11 @@ const TransactionForm = () => {
   };
 
   const handleTypeSelect = (type) => {
-    // Find the category with the same name and selected type
-    const matchingCategory = categories.find(
-      (cat) => cat.name === formData.categoryName && cat.type === type
-    );
-
     setFormData((prev) => ({
       ...prev,
       type,
-      categoryId: matchingCategory ? matchingCategory.id : prev.categoryId,
     }));
     setShowTypeDropdown(false);
-  };
-
-  const handleTypeChange = (type) => {
-    setFormData((prev) => ({
-      ...prev,
-      type,
-      // Clear account selections when changing type
-      accountId: "",
-      fromAccountId: "",
-      toAccountId: "",
-      currency: "",
-    }));
-    setAccountSearch("");
-    setFromAccountSearch("");
-    setToAccountSearch("");
   };
 
   const validateForm = () => {
@@ -288,8 +289,10 @@ const TransactionForm = () => {
     try {
       setLoading(true);
 
-      // Get current date in YYYY-MM-DD format
-      const currentDate = new Date().toISOString().split("T")[0];
+      // Get current date or use existing date in YYYY-MM-DD format
+      const currentDate = isEditMode && existingTransaction?.date
+        ? existingTransaction.date
+        : new Date().toISOString().split("T")[0];
 
       const transactionData = {
         name: formData.name.trim(),
@@ -297,6 +300,7 @@ const TransactionForm = () => {
         categoryId: formData.categoryId,
         date: currentDate,
         remarks: formData.remarks.trim(),
+        categoryType: formData.type,
       };
 
       // Add account fields based on transaction type
@@ -307,17 +311,33 @@ const TransactionForm = () => {
         transactionData.accountId = formData.accountId;
       }
 
-      const result = await createTransaction(transactionData);
+      let result;
+      if (isEditMode) {
+        result = await updateTransaction(id, transactionData);
+      } else {
+        result = await createTransaction(transactionData);
+      }
 
       if (result.success) {
         navigate("/transactions");
       } else {
-        console.error("Transaction creation failed:", result.message);
-        setError(result.message || "Failed to create transaction");
+        console.error(
+          `Transaction ${isEditMode ? "update" : "creation"} failed:`,
+          result.message
+        );
+        setError(
+          result.message ||
+            `Failed to ${isEditMode ? "update" : "create"} transaction`
+        );
       }
     } catch (error) {
-      console.error("Error creating transaction:", error);
-      setError("Failed to create transaction. Please try again.");
+      console.error(
+        `Error ${isEditMode ? "updating" : "creating"} transaction:`,
+        error
+      );
+      setError(
+        `Failed to ${isEditMode ? "update" : "create"} transaction. Please try again.`
+      );
     } finally {
       setLoading(false);
     }
@@ -372,7 +392,9 @@ const TransactionForm = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            {t("transactions.createTransaction")}
+            {isEditMode
+              ? t("transactions.updateTransaction")
+              : t("transactions.createTransaction")}
           </h1>
         </div>
 
@@ -631,7 +653,7 @@ const TransactionForm = () => {
                 />
                 {showTypeDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
-                    {getTypesForCategory(formData.categoryName).map((type) => (
+                    {getTypesForCategory().map((type) => (
                       <div
                         key={type}
                         onClick={() => handleTypeSelect(type)}
@@ -690,7 +712,11 @@ const TransactionForm = () => {
                 disabled={loading}
                 className="px-8 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg font-inter"
               >
-                {loading ? t("common.saving") : t("common.save")}
+                {loading
+                  ? t("common.saving")
+                  : isEditMode
+                  ? t("common.update")
+                  : t("common.save")}
               </button>
             </div>
           </form>

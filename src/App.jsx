@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { useEffect } from "react";
 import LoginPage from "./components/login/LoginPage";
@@ -18,7 +19,8 @@ import BudgetForm from "./components/budgets/BudgetForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
-import { isAuthenticated, getToken } from "./utils/tokenManager";
+import { isAuthenticated} from "./utils/tokenManager";
+import { GOOGLE_CLIENT_ID } from "./constants/socialProviders";
 
 // Component to handle token refresh
 function TokenRefreshHandler() {
@@ -61,39 +63,42 @@ function TokenRefreshHandler() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <BrowserRouter>
-        <TokenRefreshHandler />
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/verify-email" element={<EmailVerificationPage />} />
-          <Route path="/token/:token" element={<TokenVerificationPage />} />
-          <Route path="/reset-password" element={<PasswordResetPage />} />
-          <Route
-            path="/registration-success"
-            element={<RegistrationSuccessPage />}
-          />
-          {/* Dashboard routes */}
-          {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
-          <Route path="/accounts" element={<AccountsPage />} />
-          <Route path="/accounts/new" element={<AccountForm />} />
-          <Route path="/accounts/edit/:id" element={<AccountForm />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/transactions/new" element={<TransactionForm />} />
-          <Route path="/budgets" element={<BudgetsPage />} />
-          <Route path="/budgets/new" element={<BudgetForm />} />
-          <Route path="/budgets/edit/:id" element={<BudgetForm />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/categories/new" element={<CategoryForm />} />
-          <Route path="/categories/edit/:id" element={<CategoryForm />} />
-          {/* Root path redirect */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          {/* Catch-all redirect for any undefined routes */}
-          <Route path="*" element={<Navigate to="/transactions" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </LanguageProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <LanguageProvider>
+        <BrowserRouter>
+          <TokenRefreshHandler />
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/verify-email" element={<EmailVerificationPage />} />
+            <Route path="/token/:token" element={<TokenVerificationPage />} />
+            <Route path="/reset-password" element={<PasswordResetPage />} />
+            <Route
+              path="/registration-success"
+              element={<RegistrationSuccessPage />}
+            />
+            {/* Dashboard routes */}
+            {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
+            <Route path="/accounts" element={<AccountsPage />} />
+            <Route path="/accounts/new" element={<AccountForm />} />
+            <Route path="/accounts/edit/:id" element={<AccountForm />} />
+            <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/transactions/new" element={<TransactionForm />} />
+            <Route path="/transactions/edit/:id" element={<TransactionForm />} />
+            <Route path="/budgets" element={<BudgetsPage />} />
+            <Route path="/budgets/new" element={<BudgetForm />} />
+            <Route path="/budgets/edit/:id" element={<BudgetForm />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/categories/new" element={<CategoryForm />} />
+            <Route path="/categories/edit/:id" element={<CategoryForm />} />
+            {/* Root path redirect */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Catch-all redirect for any undefined routes */}
+            <Route path="*" element={<Navigate to="/transactions" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </LanguageProvider>
+    </GoogleOAuthProvider>
   );
 }

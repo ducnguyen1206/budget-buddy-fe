@@ -4,11 +4,14 @@ import { getAuthHeader } from "../utils/tokenManager";
 // Use environment variable or fallback to localhost for development
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+//
+// export const API_BASE_URL = "https://18.142.242.248.nip.io";
 
 // API endpoints
 export const API_ENDPOINTS = {
   REGISTER: "/api/v1/auth/token",
   LOGIN: "/api/v1/auth/login",
+  GOOGLE_LOGIN: "/api/v1/auth/google",
   LOGOUT: "/api/v1/auth/logout",
   VERIFY: "/api/v1/auth/verify",
   RESET_PASSWORD: "/api/v1/auth/reset-password",

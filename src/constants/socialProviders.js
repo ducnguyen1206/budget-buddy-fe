@@ -1,3 +1,6 @@
+// Google OAuth Client ID
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_DEFAULT_GOOGLE_CLIENT_ID";
+
 // Social provider configurations for registration (with "Continue with..." prefix)
 export const SOCIAL_PROVIDERS = [
   {
@@ -23,15 +26,5 @@ export const LOGIN_SOCIAL_PROVIDERS = [
     id: "google",
     icon: "https://developers.google.com/identity/images/g-logo.png",
     label: "Google",
-  },
-  {
-    id: "facebook",
-    icon: "/facebook.png",
-    label: "Facebook",
-  },
-  {
-    id: "apple",
-    icon: "/apple.png",
-    label: "Apple",
-  },
+  }
 ];

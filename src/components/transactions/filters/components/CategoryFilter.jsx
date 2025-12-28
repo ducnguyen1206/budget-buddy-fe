@@ -9,7 +9,6 @@ import { validateArrayFilter } from "../utils/filterUtils";
 
 const CategoryFilter = ({
   categoryFilter,
-  onFilterChange,
   onApply,
   onClear,
   showFilter,

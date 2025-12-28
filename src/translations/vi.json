@@ -26,11 +26,13 @@
     "addFilter": "Thêm bộ lọc",
     "removeFilter": "Xóa bộ lọc",
     "clearFilters": "Xóa tất cả bộ lọc",
-    "applyFilters": "Áp dụng bộ lọc"
+    "applyFilters": "Áp dụng bộ lọc",
+    "actions": "Thao tác"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
     "enterDetails": "Nhập thông tin của bạn để đăng nhập vào tài khoản.",
+    "signInWithGoogle": "Đăng nhập bằng tài khoản Google của bạn để tiếp tục.",
     "email": "Email",
     "password": "Mật khẩu",
     "confirmPassword": "Nhập lại mật khẩu",
@@ -55,7 +57,8 @@
     "orSignUpWith": "Hoặc đăng ký bằng",
     "haveAccount": "Đã có tài khoản?",
     "dontHaveAccount": "Chưa có tài khoản?",
-    "registerNow": "Đăng ký ngay"
+    "registerNow": "Đăng ký ngay",
+    "googleLoginFailed": "Đăng nhập Google thất bại. Vui lòng thử lại."
   },
   "registration": {
     "title": "Tạo tài khoản của bạn",
@@ -285,7 +288,6 @@
     "selectedTypes": "Loại đã chọn",
     "selectedCurrencies": "Tiền tệ đã chọn",
     "nameFilterPlaceholder": "Nhập giá trị tên...",
-    "remarksPlaceholder": "Nhập giá trị ghi chú...",
     "selectCategory": "Chọn danh mục",
     "filters": {
       "name": "Tên",
@@ -319,10 +321,10 @@
         "transfer": "Chuyển khoản"
       }
     },
-    "results": "kết quả",
     "page": "Trang",
     "goToPage": "Đi đến trang",
     "createTransaction": "Tạo Giao Dịch",
+    "updateTransaction": "Cập nhật giao dịch",
     "namePlaceholder": "Nhập tên giao dịch",
     "categoryPlaceholder": "Chọn danh mục",
     "accountPlaceholder": "Chọn tài khoản",
@@ -332,6 +334,10 @@
     "toAccountPlaceholder": "Chọn tài khoản đích",
     "currencyNote": "Tiền tệ sẽ được đặt dựa trên tài khoản đã chọn",
     "typePlaceholder": "Chọn loại giao dịch",
-    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)"
+    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)",
+    "deleteTransaction": "Xóa giao dịch",
+    "deleteConfirmation": "Bạn có chắc chắn muốn xóa giao dịch '{name}'? Hành động này không thể hoàn tác.",
+    "transferCannotBeEdited": "Giao dịch chuyển khoản không thể chỉnh sửa",
+    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa"
   }
 }

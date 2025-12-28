@@ -8,7 +8,6 @@ import {
   fetchCategoryById,
   fetchCategories,
 } from "../../services/categoryService";
-import { ArrowLeft } from "lucide-react";
 
 export default function CategoryForm() {
   // Hooks
@@ -22,7 +21,6 @@ export default function CategoryForm() {
   // Form state
   const [formData, setFormData] = useState({
     name: "",
-    type: "",
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +75,6 @@ export default function CategoryForm() {
         const category = result.data;
         setFormData({
           name: category.name || "",
-          type: category.type || "",
         });
         setNameSearch(category.name || "");
       } else {
@@ -177,11 +174,6 @@ export default function CategoryForm() {
     // Validate name field
     if (!formData.name.trim()) {
       errors.name = t("validation.nameRequired");
-    }
-
-    // Validate type field
-    if (!formData.type) {
-      errors.type = t("validation.categoryTypeRequired");
     }
 
     setValidationErrors(errors);
@@ -287,74 +279,6 @@ export default function CategoryForm() {
     );
   }
 
-  // Render form field with validation
-  const renderFormField = (fieldName, label, type = "text", options = null) => (
-    <div>
-      <label
-        htmlFor={fieldName}
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
-        {label}
-      </label>
-
-      {type === "select" ? (
-        <select
-          id={fieldName}
-          name={fieldName}
-          value={formData[fieldName]}
-          onChange={handleChange}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out appearance-none bg-white ${
-            validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
-          }`}
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
-            backgroundPosition: "right 0.5rem center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "1.5em 1.5em",
-            paddingRight: "2.5rem",
-          }}
-        >
-          <option value="" className="py-2">
-            {t("categories.selectType")}
-          </option>
-          {options?.map((option) => (
-            <option key={option.value} value={option.value} className="py-2">
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type={type}
-          id={fieldName}
-          name={fieldName}
-          value={formData[fieldName]}
-          onChange={handleChange}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            validationErrors[fieldName] ? "border-red-300" : "border-gray-300"
-          }`}
-          placeholder={
-            fieldName === "name" ? t("categories.namePlaceholder") : ""
-          }
-        />
-      )}
-
-      {/* Show validation error if exists */}
-      {validationErrors[fieldName] && (
-        <p className="mt-1 text-sm text-red-600">
-          {validationErrors[fieldName]}
-        </p>
-      )}
-    </div>
-  );
-
-  // Category type options - could be fetched from API in the future
-  const categoryTypeOptions = [
-    { value: "EXPENSE", label: t("categories.EXPENSE") },
-    { value: "INCOME", label: t("categories.INCOME") },
-    { value: "TRANSFER", label: t("categories.TRANSFER") },
-  ];
-
   return (
     <DashboardLayout activePage="categories">
       <div className="max-w-6xl mx-auto">
@@ -427,14 +351,6 @@ export default function CategoryForm() {
                 </p>
               )}
             </div>
-
-            {/* Category Type Field */}
-            {renderFormField(
-              "type",
-              t("categories.categoryType"),
-              "select",
-              categoryTypeOptions
-            )}
 
             {/* Submit Error */}
             {submitError && (

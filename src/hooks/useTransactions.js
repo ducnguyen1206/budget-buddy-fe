@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { fetchTransactions } from "../services/transactionService";
+import {
+  fetchTransactions,
+  updateTransaction as updateTransactionService,
+  deleteTransaction as deleteTransactionService,
+} from "../services/transactionService";
 
 const PAGE_SIZE = 5;
 
@@ -94,6 +98,47 @@ export const useTransactions = () => {
     } catch (err) {
       console.error("Error loading transactions:", err);
       setError("Failed to load transactions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateTransaction = async (transactionId, transactionData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await updateTransactionService(
+        transactionId,
+        transactionData
+      );
+      if (result.success) {
+        // Reload transactions to reflect the update
+        await loadTransactions(currentPage);
+      }
+      return result;
+    } catch (err) {
+      console.error("Error updating transaction:", err);
+      setError("Failed to update transaction");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTransaction = async (transactionId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await deleteTransactionService(transactionId);
+      if (result.success) {
+        // Reload transactions to reflect the deletion
+        await loadTransactions(currentPage);
+      }
+      return result;
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+      setError("Failed to delete transaction");
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -597,5 +642,7 @@ export const useTransactions = () => {
     clearSorting,
     changePage,
     retry: () => loadTransactions(currentPage),
+    updateTransaction,
+    deleteTransaction,
   };
 };

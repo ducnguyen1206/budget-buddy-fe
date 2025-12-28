@@ -54,13 +54,16 @@ const TransactionsPage = () => {
     clearCurrencyFilter,
     sorting,
     handleSort,
-    clearSorting,
     changePage,
     retry,
+    updateTransaction,
+    deleteTransaction,
   } = useTransactions();
 
   // Local state
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState(null);
   const [showNameFilter, setShowNameFilter] = useState(false);
   const [showAmountFilter, setShowAmountFilter] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
@@ -126,6 +129,35 @@ const TransactionsPage = () => {
 
   const handleNewTransaction = () => {
     navigate("/transactions/new");
+  };
+
+  const handleEdit = (transaction) => {
+    // Navigate to edit page with transaction data
+    navigate(`/transactions/edit/${transaction.id}`, {
+      state: { transaction },
+    });
+  };
+
+  const handleDelete = (transaction) => {
+    setTransactionToDelete(transaction);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (transactionToDelete) {
+      try {
+        await deleteTransaction(transactionToDelete.id);
+        setShowDeleteConfirm(false);
+        setTransactionToDelete(null);
+      } catch (error) {
+        console.error("Error deleting transaction:", error);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setTransactionToDelete(null);
   };
 
   const handleFilterChange = (newFilter) => {
@@ -391,6 +423,8 @@ const TransactionsPage = () => {
             onRetry={retry}
             sorting={sorting}
             onSort={handleSort}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
 
           {/* Pagination */}
@@ -403,6 +437,36 @@ const TransactionsPage = () => {
           />
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              {t("transactions.deleteTransaction")}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t("transactions.deleteConfirmation", {
+                name: transactionToDelete?.name,
+              })}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {t("common.cancel")}
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t("common.delete")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

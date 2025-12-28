@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import SortableHeader from "./SortableHeader";
+import { Edit, Trash2 } from "lucide-react";
 
 const TransactionTable = ({
   transactions,
@@ -9,6 +10,8 @@ const TransactionTable = ({
   onRetry,
   sorting,
   onSort,
+  onEdit,
+  onDelete,
 }) => {
   const { t } = useLanguage();
   const formatAmount = (amount) => {
@@ -99,6 +102,9 @@ const TransactionTable = ({
             <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.remarks")}
             </th>
+            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+              {t("common.actions")}
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -145,6 +151,46 @@ const TransactionTable = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
                 {transaction.remarks || "-"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-base">
+                <div className="flex items-center gap-3">
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(transaction)}
+                      disabled={transaction.categoryType === "TRANSFER"}
+                      className={`transition-colors ${
+                        transaction.categoryType === "TRANSFER"
+                          ? "text-gray-300 cursor-not-allowed"
+                          : "text-blue-600 hover:text-blue-800"
+                      }`}
+                      title={
+                        transaction.categoryType === "TRANSFER"
+                          ? t("transactions.transferCannotBeEdited")
+                          : t("common.edit")
+                      }
+                    >
+                      <Edit className="h-5 w-5" />
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(transaction)}
+                      disabled={transaction.categoryType === "TRANSFER"}
+                      className={`transition-colors ${
+                        transaction.categoryType === "TRANSFER"
+                          ? "text-gray-300 cursor-not-allowed"
+                          : "text-red-600 hover:text-red-800"
+                      }`}
+                      title={
+                        transaction.categoryType === "TRANSFER"
+                          ? t("transactions.transferCannotBeDeleted")
+                          : t("common.delete")
+                      }
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  )}
+                </div>
               </td>
             </tr>
           ))}

@@ -26,11 +26,13 @@
     "addFilter": "Add filter",
     "removeFilter": "Remove filter",
     "clearFilters": "Clear filters",
-    "applyFilters": "Apply filters"
+    "applyFilters": "Apply filters",
+    "actions": "Actions"
   },
   "auth": {
     "welcomeBack": "Welcome back",
     "enterDetails": "Enter your details to get signed in to your account.",
+    "signInWithGoogle": "Sign in with your Google account to continue.",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Re-enter password",
@@ -55,7 +57,8 @@
     "orSignUpWith": "Or sign up with",
     "haveAccount": "Have an account?",
     "dontHaveAccount": "Don't have an account?",
-    "registerNow": "Register Now"
+    "registerNow": "Register Now",
+    "googleLoginFailed": "Google login failed. Please try again."
   },
   "registration": {
     "title": "Create your account",
@@ -201,7 +204,7 @@
     "namePlaceholder": "Enter category name",
     "loadingNames": "Loading category names...",
     "confirmDelete": "Confirm Delete",
-    "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This action cannot be undone."
+    "deleteWarning": "Are you sure you want to delete the category \"{name}\"? This will also delete all related transactions and budgets in this category. This action cannot be undone."
   },
   "budgets": {
     "title": "Budgets",
@@ -285,7 +288,6 @@
     "selectedTypes": "Selected types",
     "selectedCurrencies": "Selected currencies",
     "nameFilterPlaceholder": "Enter name value...",
-    "remarksPlaceholder": "Enter remarks value...",
     "selectCategory": "Select category",
     "filters": {
       "name": "Name",
@@ -319,10 +321,10 @@
         "transfer": "Transfer"
       }
     },
-    "results": "results",
     "page": "Page",
     "goToPage": "Go to page",
     "createTransaction": "Create Transaction",
+    "updateTransaction": "Update Transaction",
     "namePlaceholder": "Enter transaction name",
     "categoryPlaceholder": "Select category",
     "accountPlaceholder": "Select account",
@@ -332,6 +334,10 @@
     "toAccountPlaceholder": "Select destination account",
     "currencyNote": "Currency will be set based on selected account",
     "typePlaceholder": "Select transaction type",
-    "remarksPlaceholder": "Enter remarks (optional)"
+    "remarksPlaceholder": "Enter remarks (optional)",
+    "deleteTransaction": "Delete Transaction",
+    "deleteConfirmation": "Are you sure you want to delete the transaction '{name}'? This action cannot be undone.",
+    "transferCannotBeEdited": "Transfer transactions cannot be edited",
+    "transferCannotBeDeleted": "Transfer transactions cannot be deleted"
   }
 }

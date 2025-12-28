@@ -3,11 +3,71 @@ import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
 import {
   storeTokens,
   getRefreshToken,
-  removeTokens,
 } from "../utils/tokenManager";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import tokenRefreshManager from "../utils/tokenRefreshManager";
 import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
+
+// Google login service
+export const loginWithGoogle = async (code, t = null) => {
+  try {
+    const url = `${getApiUrl(API_ENDPOINTS.GOOGLE_LOGIN)}?code=${encodeURIComponent(code)}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getApiHeaders(false),
+    });
+
+    if (response.status === 200) {
+      try {
+        const responseData = await response.json();
+        const { token, refreshToken } = responseData;
+
+        // Store tokens in sessionStorage
+        if (token || refreshToken) {
+          storeTokens(token, refreshToken);
+          // Start token refresh manager
+          tokenRefreshManager.start();
+
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(
+            new CustomEvent("authTokensStored", {
+              detail: { token, refreshToken },
+            })
+          );
+        }
+
+        return {
+          success: true,
+          data: responseData,
+        };
+      } catch (jsonError) {
+        console.warn("JSON parsing failed for Google login response:", jsonError);
+        return { success: true, data: {} };
+      }
+    } else if (response.status === 401) {
+      return {
+        success: false,
+        error: handleApiError("INVALID_CREDENTIALS", t),
+      };
+    } else if (response.status >= 500) {
+      return {
+        success: false,
+        error: handleApiError("SERVER_ERROR", t),
+      };
+    } else {
+      return {
+        success: false,
+        error: handleApiError("LOGIN_FAILED", t),
+      };
+    }
+  } catch (error) {
+    console.error("Google login error:", error);
+    return {
+      success: false,
+      error: handleNetworkError(error, t),
+    };
+  }
+};
 
 // Login service
 export const loginUser = async (email, password, t = null) => {

@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import {
   Search,
   Plus,
-  MoreHorizontal,
   Edit,
   Trash2,
   ChevronDown,
@@ -18,41 +17,22 @@ import {
 } from "../../services/accountService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
-// Constants
-const DROPDOWN_WIDTH = 192;
-const DROPDOWN_HEIGHT = 88;
-const MARGIN = 8;
-
 export default function AccountsPage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
 
   // State
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedGroups, setExpandedGroups] = useState(new Set());
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [dropdownPositions, setDropdownPositions] = useState({});
 
   // Effects
   useEffect(() => {
     loadAccounts();
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Utility functions
@@ -163,55 +143,11 @@ export default function AccountsPage() {
   // Event handlers
   const handleSearch = (e) => setSearchTerm(e.target.value);
 
-  const calculateDropdownPosition = (buttonRect) => {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    let top = buttonRect.bottom + 4;
-    let left = buttonRect.left;
-
-    // Check boundaries and adjust position
-    if (left + DROPDOWN_WIDTH > viewportWidth) {
-      left = viewportWidth - DROPDOWN_WIDTH - MARGIN;
-    }
-    if (top + DROPDOWN_HEIGHT > viewportHeight) {
-      top = buttonRect.top - DROPDOWN_HEIGHT - 4;
-    }
-    if (left < MARGIN) left = MARGIN;
-    if (top < MARGIN) top = MARGIN;
-
-    return { top: `${top}px`, left: `${left}px` };
-  };
-
-  const handleDropdownToggle = (accountId, event) => {
-    event.stopPropagation();
-
-    if (openDropdown === accountId) {
-      setOpenDropdown(null);
-      return;
-    }
-
-    setOpenDropdown(accountId);
-    const buttonRect = event.currentTarget.getBoundingClientRect();
-    const position = calculateDropdownPosition(buttonRect);
-
-    setDropdownPositions((prev) => ({
-      ...prev,
-      [accountId]: {
-        position: "fixed",
-        ...position,
-        zIndex: 50,
-      },
-    }));
-  };
-
   const handleEdit = (accountId) => {
-    setOpenDropdown(null);
     navigate(`/accounts/edit/${accountId}`);
   };
 
   const handleDelete = (accountId) => {
-    setOpenDropdown(null);
     setDeleteConfirm(accountId);
   };
 
@@ -263,47 +199,34 @@ export default function AccountsPage() {
     );
   };
 
-  const renderActionsDropdown = (itemId, isOpen, isGroup = false) => (
-    <div className="relative dropdown-container">
-      <button
-        onClick={(e) => handleDropdownToggle(itemId, e)}
-        className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-        aria-label="Account actions"
-      >
-        <MoreHorizontal className="w-5 h-5 text-gray-600" />
-      </button>
-      {isOpen && (
-        <div
-          className="w-48 bg-white rounded-md shadow-xl border border-gray-200"
-          style={dropdownPositions[itemId]}
+  const renderActionsButtons = (itemId, isGroup = false) => (
+    <div className="flex items-center gap-3">
+      {!isGroup && (
+        <button
+          onClick={() => handleEdit(itemId)}
+          className="text-blue-600 hover:text-blue-800 transition-colors"
+          title={t("common.edit")}
         >
-          {!isGroup && (
-            <button
-              onClick={() => handleEdit(itemId)}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-            >
-              <Edit className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-700">{t("common.edit")}</span>
-            </button>
-          )}
-          <button
-            onClick={() => handleDelete(itemId)}
-            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors text-red-600"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>{t("common.delete")}</span>
-          </button>
-        </div>
+          <Edit className="h-5 w-5" />
+        </button>
       )}
+      <button
+        onClick={() => handleDelete(itemId)}
+        className="text-red-600 hover:text-red-800 transition-colors"
+        title={t("common.delete")}
+      >
+        <Trash2 className="h-5 w-5" />
+      </button>
     </div>
   );
 
   const renderAccountRow = (account) => (
     <div
       key={account.id}
-      className="flex items-center py-3 px-6 pl-16 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+      className="flex items-center py-3 px-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
     >
-      <div className="flex-1 px-4">
+      <div className="w-8"></div>
+      <div className="flex-1 px-4 ">
         <span className="text-gray-700">{account.name}</span>
       </div>
       <div className="flex-1 px-4 text-right">
@@ -313,8 +236,8 @@ export default function AccountsPage() {
           {formatCurrency(account.balance, account.currency)}
         </span>
       </div>
-      <div className="w-16 flex justify-center">
-        {renderActionsDropdown(account.id, openDropdown === account.id, false)}
+      <div className="w-24 flex justify-center pr-8">
+        {renderActionsButtons(account.id, false)}
       </div>
     </div>
   );
@@ -354,10 +277,9 @@ export default function AccountsPage() {
             </span>
           </div>
 
-          <div className="w-16 flex justify-center">
-            {renderActionsDropdown(
+          <div className="w-24 flex justify-center">
+            {renderActionsButtons(
               accountGroup.accountType,
-              openDropdown === accountGroup.accountType,
               true // isGroup = true
             )}
           </div>
@@ -517,7 +439,11 @@ export default function AccountsPage() {
                 {t("accounts.availableBalance")}
               </h3>
             </div>
-            <div className="w-16"></div>
+            <div className="w-24 text-center">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                {t("common.actions")}
+              </h3>
+            </div>
           </div>
 
           {/* Table Body */}

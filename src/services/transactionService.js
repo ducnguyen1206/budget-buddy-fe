@@ -83,6 +83,81 @@ export const createTransaction = async (transactionData) => {
   }
 };
 
+// Update transaction
+export const updateTransaction = async (transactionId, transactionData) => {
+  try {
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.TRANSACTION)}/${transactionId}`,
+      {
+        method: "PUT",
+        headers: getApiHeaders(true),
+        body: JSON.stringify(transactionData),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    // Handle 200 OK or 204 No Content
+    if (response.status === 204) {
+      return { success: true, message: "Transaction updated successfully" };
+    }
+
+    // Try to parse JSON for other success responses
+    const data = await response.json().catch(() => ({}));
+
+    if (shouldRedirectToLogin(data)) {
+      return data;
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error updating transaction:", error);
+    throw error;
+  }
+};
+
+// Delete transaction
+export const deleteTransaction = async (transactionId) => {
+  try {
+    const response = await fetchWithAuth(
+      `${getApiUrl(API_ENDPOINTS.TRANSACTION)}/${transactionId}`,
+      {
+        method: "DELETE",
+        headers: getApiHeaders(true),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    // Handle 200 OK or 204 No Content
+    if (response.status === 204 || response.status === 200) {
+      return { success: true, message: "Transaction deleted successfully" };
+    }
+
+    // Try to parse JSON for other success responses
+    const data = await response.json().catch(() => ({}));
+
+    if (shouldRedirectToLogin(data)) {
+      return data;
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    throw error;
+  }
+};
+
 // Test API connectivity
 export const testTransactionsAPI = async () => {
   try {

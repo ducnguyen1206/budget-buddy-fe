@@ -6,6 +6,7 @@ import viTranslations from "../translations/vi.json";
 const LanguageContext = createContext();
 
 // Available languages
+// eslint-disable-next-line react-refresh/only-export-components
 export const LANGUAGES = {
   EN: "en",
   VI: "vi",
@@ -77,6 +78,7 @@ export const LanguageProvider = ({ children }) => {
 };
 
 // Custom hook to use language context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
