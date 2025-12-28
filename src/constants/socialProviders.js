@@ -1,5 +1,5 @@
 // Google OAuth Client ID
-export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_DEFAULT_GOOGLE_CLIENT_ID";
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1030623240280-fngn7eqokfl1u6fm65rirmrru2eqp1o7.apps.googleusercontent.com";
 
 // Social provider configurations for registration (with "Continue with..." prefix)
 export const SOCIAL_PROVIDERS = [
