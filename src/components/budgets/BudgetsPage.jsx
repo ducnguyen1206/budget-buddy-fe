@@ -18,11 +18,19 @@ export default function BudgetsPage() {
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("");
 
-  // Fetch budgets from API on component mount
+  // Common currencies list
+  const currencies = [
+    { code: "", label: t("budgets.allCurrencies") },
+    { code: "SGD", label: "SGD" },
+    { code: "VND", label: "VND" },
+  ];
+
+  // Fetch budgets from API on component mount or when currency changes
   useEffect(() => {
     loadBudgets();
-  }, []);
+  }, [selectedCurrency]);
 
   // Filter budgets based on search input
   const filteredBudgets = budgets.filter((budget) =>
@@ -34,7 +42,7 @@ export default function BudgetsPage() {
     setIsLoading(true);
     setError("");
 
-    const result = await fetchBudgets(t);
+    const result = await fetchBudgets(selectedCurrency, t);
 
     // Check if the result indicates a redirect should happen
     if (shouldRedirectToLogin(result)) {
@@ -280,14 +288,29 @@ export default function BudgetsPage() {
             </div>
           </div>
 
-          {/* New Budget Button */}
-          <button
-            onClick={() => navigate("/budgets/new")}
-            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>{t("budgets.new")}</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            {/* Currency Filter */}
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            >
+              {currencies.map((currency) => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.label}
+                </option>
+              ))}
+            </select>
+
+            {/* New Budget Button */}
+            <button
+              onClick={() => navigate("/budgets/new")}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>{t("budgets.new")}</span>
+            </button>
+          </div>
         </div>
 
         {/* Error Message */}

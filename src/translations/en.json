@@ -214,6 +214,7 @@
     "remaining": "Remaining",
     "updatedAt": "Updated At",
     "currency": "Currency",
+    "allCurrencies": "All Currencies",
     "amount": "Amount",
     "createBudget": "Create Budget",
     "editBudget": "Edit Budget",
