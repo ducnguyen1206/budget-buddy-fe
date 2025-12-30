@@ -18,7 +18,7 @@ export default function BudgetsPage() {
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState("SGD");
 
   // Common currencies list
   const currencies = [
@@ -36,6 +36,26 @@ export default function BudgetsPage() {
   const filteredBudgets = budgets.filter((budget) =>
     budget.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Calculate totals when currency is selected
+  const calculateTotals = () => {
+    if (!selectedCurrency || filteredBudgets.length === 0) {
+      return null;
+    }
+
+    const totals = filteredBudgets.reduce(
+      (acc, budget) => ({
+        totalBudget: acc.totalBudget + (budget.amount || 0),
+        totalSpent: acc.totalSpent + (budget.spentAmount || 0),
+        totalRemaining: acc.totalRemaining + (budget.remainingAmount || 0),
+      }),
+      { totalBudget: 0, totalSpent: 0, totalRemaining: 0 }
+    );
+
+    return totals;
+  };
+
+  const totals = calculateTotals();
 
   // Load budgets from API
   const loadBudgets = async () => {
@@ -360,7 +380,56 @@ export default function BudgetsPage() {
                       </td>
                     </tr>
                   ) : (
-                    filteredBudgets.map(renderBudgetRow)
+                    <>
+                      {filteredBudgets.map(renderBudgetRow)}
+
+                      {/* Totals Row - Only show when currency is selected */}
+                      {totals && (
+                        <tr className="bg-gray-50 font-semibold border-t-2 border-gray-300">
+                          <td className="px-6 py-5 whitespace-nowrap text-xl font-bold text-gray-900">
+                            Total
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              {formatAmount(totals.totalBudget)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div
+                              className={`text-xl font-bold ${
+                                totals.totalSpent < 0
+                                  ? "text-red-600"
+                                  : "text-gray-900"
+                              }`}
+                            >
+                              {formatAmount(totals.totalSpent)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div
+                              className={`text-xl font-bold ${
+                                totals.totalRemaining < 0
+                                  ? "text-red-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {formatAmount(totals.totalRemaining)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              -
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              {selectedCurrency}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">-</td>
+                        </tr>
+                      )}
+                    </>
                   )}
                 </tbody>
               </table>
