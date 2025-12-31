@@ -27,7 +27,7 @@ const TransactionForm = () => {
     accountId: "",
     fromAccountId: "",
     toAccountId: "",
-    type: "",
+    type: "EXPENSE",
     remarks: "",
   });
 
@@ -141,7 +141,10 @@ const TransactionForm = () => {
           currency: existingTransaction.currency || "",
           categoryId: existingTransaction.categoryId || "",
           accountId: existingTransaction.accountId || "",
-          fromAccountId: existingTransaction.categoryType === "TRANSFER" ? existingTransaction.accountId : "",
+          fromAccountId:
+            existingTransaction.categoryType === "TRANSFER"
+              ? existingTransaction.accountId
+              : "",
           toAccountId: existingTransaction.targetAccountId || "",
           type: existingTransaction.categoryType || "EXPENSE",
           remarks: existingTransaction.remarks || "",
@@ -169,9 +172,9 @@ const TransactionForm = () => {
   const getTypesForCategory = () => {
     // When editing, only allow EXPENSE and INCOME (no TRANSFER)
     if (isEditMode) {
-      return ['EXPENSE', 'INCOME'];
+      return ["EXPENSE", "INCOME"];
     }
-    return ['EXPENSE', 'INCOME', 'TRANSFER'];
+    return ["EXPENSE", "INCOME", "TRANSFER"];
   };
 
   // Get all accounts from all groups
@@ -290,9 +293,10 @@ const TransactionForm = () => {
       setLoading(true);
 
       // Get current date or use existing date in YYYY-MM-DD format
-      const currentDate = isEditMode && existingTransaction?.date
-        ? existingTransaction.date
-        : new Date().toISOString().split("T")[0];
+      const currentDate =
+        isEditMode && existingTransaction?.date
+          ? existingTransaction.date
+          : new Date().toISOString().split("T")[0];
 
       const transactionData = {
         name: formData.name.trim(),
@@ -336,7 +340,9 @@ const TransactionForm = () => {
         error
       );
       setError(
-        `Failed to ${isEditMode ? "update" : "create"} transaction. Please try again.`
+        `Failed to ${
+          isEditMode ? "update" : "create"
+        } transaction. Please try again.`
       );
     } finally {
       setLoading(false);
@@ -638,34 +644,32 @@ const TransactionForm = () => {
             </div>
 
             {/* Type Selection - Only available after category is selected */}
-            {formData.categoryId && (
-              <div ref={typeRef} className="relative">
-                <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
-                  {t("transactions.type")}
-                </label>
-                <input
-                  type="text"
-                  value={t(`transactions.${formData.type.toLowerCase()}`)}
-                  onChange={() => {}} // Read-only input
-                  onFocus={() => setShowTypeDropdown(true)}
-                  className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  placeholder={t("transactions.typePlaceholder")}
-                />
-                {showTypeDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
-                    {getTypesForCategory().map((type) => (
-                      <div
-                        key={type}
-                        onClick={() => handleTypeSelect(type)}
-                        className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
-                      >
-                        {t(`transactions.${type.toLowerCase()}`)}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            <div ref={typeRef} className="relative">
+              <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                {t("transactions.type")}
+              </label>
+              <input
+                type="text"
+                value={t(`transactions.${formData.type.toLowerCase()}`)}
+                onChange={() => {}} // Read-only input
+                onFocus={() => setShowTypeDropdown(true)}
+                className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                placeholder={t("transactions.typePlaceholder")}
+              />
+              {showTypeDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
+                  {getTypesForCategory().map((type) => (
+                    <div
+                      key={type}
+                      onClick={() => handleTypeSelect(type)}
+                      className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
+                    >
+                      {t(`transactions.${type.toLowerCase()}`)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Remarks Field */}
             <div>
