@@ -5,7 +5,7 @@ import {
   deleteTransaction as deleteTransactionService,
 } from "../services/transactionService";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -458,17 +458,15 @@ export const useTransactions = () => {
     loadTransactions(page, filterPayload);
   };
 
-  // Filter effect - only when there's a value
+  // Consolidated effect - load transactions when dependencies change
   useEffect(() => {
     const filterPayload = {};
-    let hasFilters = false;
 
     if (nameFilter.value && nameFilter.value.trim() !== "") {
       filterPayload.name = {
         operator: nameFilter.operator,
         value: nameFilter.value.trim(),
       };
-      hasFilters = true;
     }
 
     if (
@@ -480,7 +478,6 @@ export const useTransactions = () => {
         operator: amountFilter.operator,
         value: amountFilter.value,
       };
-      hasFilters = true;
     }
 
     if (
@@ -500,7 +497,6 @@ export const useTransactions = () => {
           endDate: dateFilter.value.endDate,
         };
       }
-      hasFilters = true;
     }
 
     if (accountFilter.ids && accountFilter.ids.length > 0) {
@@ -508,7 +504,6 @@ export const useTransactions = () => {
         operator: accountFilter.operator,
         ids: accountFilter.ids,
       };
-      hasFilters = true;
     }
 
     if (categoryFilter.ids && categoryFilter.ids.length > 0) {
@@ -516,7 +511,6 @@ export const useTransactions = () => {
         operator: categoryFilter.operator,
         ids: categoryFilter.ids,
       };
-      hasFilters = true;
     }
 
     if (typeFilter.types && typeFilter.types.length > 0) {
@@ -524,7 +518,6 @@ export const useTransactions = () => {
         operator: typeFilter.operator,
         types: typeFilter.types,
       };
-      hasFilters = true;
     }
 
     if (remarksFilter.value && remarksFilter.value.trim() !== "") {
@@ -532,7 +525,6 @@ export const useTransactions = () => {
         operator: remarksFilter.operator,
         value: remarksFilter.value.trim(),
       };
-      hasFilters = true;
     }
 
     if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
@@ -540,72 +532,30 @@ export const useTransactions = () => {
         operator: currencyFilter.operator,
         currencies: currencyFilter.currencies,
       };
-      hasFilters = true;
     }
 
-    if (hasFilters) {
-      loadTransactions(0, filterPayload);
-    }
-  }, [
-    nameFilter.value,
-    amountFilter.value,
-    dateFilter.value,
-    accountFilter.ids,
-    categoryFilter.ids,
-    typeFilter.types,
-    remarksFilter.value,
-    currencyFilter.currencies,
-  ]); // Watch all filter values
-
-  // Pagination effect - only when no filter
-  useEffect(() => {
-    const hasNameFilter = nameFilter.value && nameFilter.value.trim() !== "";
-    const hasAmountFilter =
-      amountFilter.value !== "" &&
-      amountFilter.value !== null &&
-      amountFilter.value !== undefined;
-    const hasDateFilter =
-      dateFilter.value !== "" &&
-      dateFilter.value !== null &&
-      dateFilter.value !== undefined;
-    const hasAccountFilter = accountFilter.ids && accountFilter.ids.length > 0;
-    const hasCategoryFilter =
-      categoryFilter.ids && categoryFilter.ids.length > 0;
-    const hasTypeFilter = typeFilter.types && typeFilter.types.length > 0;
-    const hasRemarksFilter =
-      remarksFilter.value && remarksFilter.value.trim() !== "";
-    const hasCurrencyFilter =
-      currencyFilter.currencies && currencyFilter.currencies.length > 0;
-
-    if (
-      !hasNameFilter &&
-      !hasAmountFilter &&
-      !hasDateFilter &&
-      !hasAccountFilter &&
-      !hasCategoryFilter &&
-      !hasTypeFilter &&
-      !hasRemarksFilter &&
-      !hasCurrencyFilter
-    ) {
-      loadTransactions(currentPage);
-    }
+    loadTransactions(currentPage, filterPayload);
   }, [
     currentPage,
     nameFilter.value,
+    nameFilter.operator,
     amountFilter.value,
+    amountFilter.operator,
     dateFilter.value,
+    dateFilter.operator,
     accountFilter.ids,
+    accountFilter.operator,
     categoryFilter.ids,
+    categoryFilter.operator,
     typeFilter.types,
+    typeFilter.operator,
     remarksFilter.value,
+    remarksFilter.operator,
     currencyFilter.currencies,
+    currencyFilter.operator,
+    sorting.date,
+    sorting.amount,
   ]);
-
-  // Sorting effect - reload when sorting changes
-  useEffect(() => {
-    // Always reload when sorting changes, even when clearing sort
-    loadTransactions(currentPage);
-  }, [sorting.date, sorting.amount]);
 
   return {
     transactions,

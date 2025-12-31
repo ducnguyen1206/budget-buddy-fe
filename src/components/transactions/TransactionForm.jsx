@@ -29,6 +29,7 @@ const TransactionForm = () => {
     toAccountId: "",
     type: "EXPENSE",
     remarks: "",
+    date: new Date().toISOString().split("T")[0], // YYYY-MM-DD format
   });
 
   const [validationErrors, setValidationErrors] = useState({});
@@ -148,6 +149,7 @@ const TransactionForm = () => {
           toAccountId: existingTransaction.targetAccountId || "",
           type: existingTransaction.categoryType || "EXPENSE",
           remarks: existingTransaction.remarks || "",
+          date: existingTransaction.date || new Date().toISOString().split("T")[0],
         });
       }
     } catch (error) {
@@ -292,11 +294,8 @@ const TransactionForm = () => {
     try {
       setLoading(true);
 
-      // Get current date or use existing date in YYYY-MM-DD format
-      const currentDate =
-        isEditMode && existingTransaction?.date
-          ? existingTransaction.date
-          : new Date().toISOString().split("T")[0];
+      // Use the date from formData
+      const currentDate = formData.date;
 
       const transactionData = {
         name: formData.name.trim(),
@@ -428,6 +427,20 @@ const TransactionForm = () => {
                   {validationErrors.name}
                 </p>
               )}
+            </div>
+
+            {/* Date Field */}
+            <div>
+              <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                {t("transactions.date")}
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleInputChange("date", e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+                className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             {/* Account Selection - Regular */}
