@@ -9,7 +9,8 @@ Help AI coding agents become productive quickly in this repo by highlighting arc
 ## Architecture & data flow (high level)
 - UI components call hooks in `src/hooks/` (e.g. `useTransactions`) which call services in `src/services/` (e.g. `transactionService`, `authService`).
 - Services use `src/config/api.js` helpers (`getApiUrl`, `getApiHeaders`) to construct requests.
-- Tokens are stored in `sessionStorage` via `src/utils/tokenManager.js` and refreshed by `src/utils/tokenRefreshManager.js` (singleton).
+- Access tokens are stored in `sessionStorage` via `src/utils/tokenManager.js`. Refresh tokens are stored in HTTP-only cookies (not accessible to JavaScript).
+- Token refresh happens automatically via `src/utils/tokenRefreshManager.js` (singleton) every 2 minutes.
 - Cross-component auth events use the DOM event bus: `window.dispatchEvent(new CustomEvent(...))` (e.g. `authTokensStored`, `tokenRefreshed`).
 
 ## Key files to inspect for changes
@@ -38,7 +39,7 @@ Help AI coding agents become productive quickly in this repo by highlighting arc
 
 ## Examples (patterns to mimic)
 - Add authenticated GET: use `apiGet(API_ENDPOINTS.CATEGORIES)` (or `apiCall` with `getApiHeaders(true)`). See `src/services/apiService.js`.
-- Update token storage: use `storeTokens(token, refreshToken)` in `src/utils/tokenManager.js` and call `tokenRefreshManager.start()` after successful login (see `src/services/authService.js`).
+- Update token storage: use `storeTokens(token)` in `src/utils/tokenManager.js` and call `tokenRefreshManager.start()` after successful login (see `src/services/authService.js`). Refresh tokens are managed via HTTP-only cookies.
 - Implement transaction filters by following `src/hooks/useTransactions.js` patterns: build `filterPayload` objects and call `fetchTransactions(page, size, payload)`.
 
 ## Missing / not configured
