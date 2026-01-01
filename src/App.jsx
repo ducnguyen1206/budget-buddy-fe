@@ -1,4 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { useEffect } from "react";
@@ -9,7 +16,6 @@ import EmailVerificationPage from "./components/register/EmailVerificationPage";
 import TokenVerificationPage from "./components/register/TokenVerificationPage";
 import PasswordResetPage from "./components/register/PasswordResetPage";
 import RegistrationSuccessPage from "./components/register/RegistrationSuccessPage";
-import DashboardPage from "./components/dashboard/DashboardPage";
 import AccountsPage from "./components/accounts/AccountsPage";
 import AccountForm from "./components/accounts/AccountForm";
 import TransactionsPage from "./components/transactions/TransactionsPage";
@@ -19,46 +25,25 @@ import BudgetForm from "./components/budgets/BudgetForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
-import { isAuthenticated} from "./utils/tokenManager";
+import { isAuthenticated } from "./utils/tokenManager";
 import { GOOGLE_CLIENT_ID } from "./constants/socialProviders";
 
-// Component to handle token refresh
-function TokenRefreshHandler() {
-  useEffect(() => {
-    // Check authentication status and start/stop token refresh manager accordingly
-    const checkAuthAndManageRefresh = () => {
-      const hasToken = isAuthenticated();
+function ProtectedRoutes() {
+  const location = useLocation();
 
-      if (hasToken) {
-        tokenRefreshManager.start();
-      } else {
-        tokenRefreshManager.stop();
-      }
-    };
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-    // Initial check
-    checkAuthAndManageRefresh();
+  return <Outlet />;
+}
 
-    // Listen for token storage events (immediate trigger)
-    const handleTokensStored = () => {
-      checkAuthAndManageRefresh();
-    };
+function PublicOnly({ children }) {
+  if (isAuthenticated()) {
+    return <Navigate to="/transactions" replace />;
+  }
 
-    window.addEventListener("authTokensStored", handleTokensStored);
-
-    // Set up an interval to check authentication status every 30 seconds
-    // This ensures the token refresh manager starts when user logs in
-    const authCheckInterval = setInterval(checkAuthAndManageRefresh, 30000);
-
-    // Cleanup on unmount
-    return () => {
-      clearInterval(authCheckInterval);
-      window.removeEventListener("authTokensStored", handleTokensStored);
-      tokenRefreshManager.stop();
-    };
-  }, []);
-
-  return null; // This component doesn't render anything
+  return children;
 }
 
 export default function App() {
@@ -66,36 +51,55 @@ export default function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <LanguageProvider>
         <BrowserRouter>
-          <TokenRefreshHandler />
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/verify-email" element={<EmailVerificationPage />} />
-            <Route path="/token/:token" element={<TokenVerificationPage />} />
-            <Route path="/reset-password" element={<PasswordResetPage />} />
+            {/* Public auth routes */}
             <Route
-              path="/registration-success"
-              element={<RegistrationSuccessPage />}
+              path="/login"
+              element={
+                <PublicOnly>
+                  <LoginPage />
+                </PublicOnly>
+              }
             />
-            {/* Dashboard routes */}
-            {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
-            <Route path="/accounts" element={<AccountsPage />} />
-            <Route path="/accounts/new" element={<AccountForm />} />
-            <Route path="/accounts/edit/:id" element={<AccountForm />} />
-            <Route path="/transactions" element={<TransactionsPage />} />
-            <Route path="/transactions/new" element={<TransactionForm />} />
-            <Route path="/transactions/edit/:id" element={<TransactionForm />} />
-            <Route path="/budgets" element={<BudgetsPage />} />
-            <Route path="/budgets/new" element={<BudgetForm />} />
-            <Route path="/budgets/edit/:id" element={<BudgetForm />} />
-            <Route path="/categories" element={<CategoriesPage />} />
-            <Route path="/categories/new" element={<CategoryForm />} />
-            <Route path="/categories/edit/:id" element={<CategoryForm />} />
+            {/* Protected app routes */}
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/accounts" element={<AccountsPage />} />
+              <Route path="/accounts/new" element={<AccountForm />} />
+              <Route path="/accounts/edit/:id" element={<AccountForm />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/transactions/new" element={<TransactionForm />} />
+              <Route
+                path="/transactions/edit/:id"
+                element={<TransactionForm />}
+              />
+              <Route path="/budgets" element={<BudgetsPage />} />
+              <Route path="/budgets/new" element={<BudgetForm />} />
+              <Route path="/budgets/edit/:id" element={<BudgetForm />} />
+              <Route path="/categories" element={<CategoriesPage />} />
+              <Route path="/categories/new" element={<CategoryForm />} />
+              <Route path="/categories/edit/:id" element={<CategoryForm />} />
+            </Route>
+
             {/* Root path redirect */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={isAuthenticated() ? "/transactions" : "/login"}
+                  replace
+                />
+              }
+            />
             {/* Catch-all redirect for any undefined routes */}
-            <Route path="*" element={<Navigate to="/transactions" replace />} />
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to={isAuthenticated() ? "/transactions" : "/login"}
+                  replace
+                />
+              }
+            />
           </Routes>
         </BrowserRouter>
       </LanguageProvider>
