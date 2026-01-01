@@ -8,9 +8,6 @@ export const storeTokens = (token, refreshToken) => {
   if (token) {
     sessionStorage.setItem(TOKEN_KEY, token);
   }
-  if (refreshToken) {
-    sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  }
 };
 
 // Get access token

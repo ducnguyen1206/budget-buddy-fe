@@ -15,23 +15,24 @@ export const loginWithGoogle = async (code, t = null) => {
     const response = await fetch(url, {
       method: "GET",
       headers: getApiHeaders(false),
+      credentials: "include",
     });
 
     if (response.status === 200) {
       try {
         const responseData = await response.json();
-        const { token, refreshToken } = responseData;
+        const { token } = responseData;
 
         // Store tokens in sessionStorage
-        if (token || refreshToken) {
-          storeTokens(token, refreshToken);
+        if (token) {
+          storeTokens(token);
           // Start token refresh manager
           tokenRefreshManager.start();
 
           // Dispatch custom event to notify other components
           window.dispatchEvent(
             new CustomEvent("authTokensStored", {
-              detail: { token, refreshToken },
+              detail: { token },
             })
           );
         }
@@ -317,22 +318,14 @@ export const resetPassword = async (
 // Refresh token service
 export const refreshToken = async (t = null) => {
   try {
-    const refreshTokenValue = getRefreshToken();
-
-    if (!refreshTokenValue) {
-      console.warn("No refresh token available");
-      return {
-        success: false,
-        error: "No refresh token available",
-      };
-    }
+   
 
     const response = await fetchWithAuth(
       getApiUrl(API_ENDPOINTS.REFRESH_TOKEN),
       {
         method: "POST",
         headers: getApiHeaders(true), // Include auth token for refresh token API
-        body: JSON.stringify({ refreshToken: refreshTokenValue }),
+        credentials: "include",
       },
       t
     );
