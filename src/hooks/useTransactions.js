@@ -225,38 +225,28 @@ export const useTransactions = () => {
 
   const applyNameFilter = (filter) => {
     setNameFilter(filter);
-    // Only trigger API call if there's a value
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (filter.value && filter.value.trim() !== "") {
-      const filterPayload = {
-        name: { operator: filter.operator, value: filter.value.trim() },
-      };
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearNameFilter = () => {
     // Only reload if there was actually a filter value to clear
     const hadValue = nameFilter.value && nameFilter.value.trim() !== "";
+    if (!hadValue) return;
     setNameFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyAmountFilter = (filter) => {
     setAmountFilter(filter);
-    // Only trigger API call if there's a value (handle both string and numeric values)
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (
       filter.value !== "" &&
       filter.value !== null &&
       filter.value !== undefined
     ) {
-      const filterPayload = {
-        amount: { operator: filter.operator, value: filter.value },
-      };
-      console.log("Amount filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
@@ -266,40 +256,19 @@ export const useTransactions = () => {
       amountFilter.value !== "" &&
       amountFilter.value !== null &&
       amountFilter.value !== undefined;
+    if (!hadValue) return;
     setAmountFilter({ operator: "=", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyDateFilter = (filter) => {
     setDateFilter(filter);
-    // Only trigger API call if there's a value
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (
       filter.value !== "" &&
       filter.value !== null &&
       filter.value !== undefined
     ) {
-      let filterPayload;
-      if (filter.operator === "is") {
-        filterPayload = {
-          date: {
-            operator: filter.operator,
-            startDate: filter.value,
-          },
-        };
-      } else if (filter.operator === "is between") {
-        filterPayload = {
-          date: {
-            operator: filter.operator,
-            startDate: filter.value.startDate,
-            endDate: filter.value.endDate,
-          },
-        };
-      }
-      console.log("Date filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
@@ -309,122 +278,81 @@ export const useTransactions = () => {
       dateFilter.value !== "" &&
       dateFilter.value !== null &&
       dateFilter.value !== undefined;
+    if (!hadValue) return;
     setDateFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyAccountFilter = (filter) => {
     setAccountFilter(filter);
-    // Only trigger API call if there are selected accounts
+    // Reset to page 0 when applying a selection; data load is handled by the consolidated effect.
     if (filter.ids && filter.ids.length > 0) {
-      const filterPayload = {
-        accounts: { operator: filter.operator, ids: filter.ids },
-      };
-      console.log("Account filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearAccountFilter = () => {
     // Only reload if there were actually selected accounts to clear
     const hadAccounts = accountFilter.ids && accountFilter.ids.length > 0;
+    if (!hadAccounts) return;
     setAccountFilter({ operator: "is", ids: [] });
-
-    if (hadAccounts) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyCategoryFilter = (filter) => {
     setCategoryFilter(filter);
-    // Only trigger API call if there are selected categories
+    // Reset to page 0 when applying a selection; data load is handled by the consolidated effect.
     if (filter.ids && filter.ids.length > 0) {
-      const filterPayload = {
-        categories: { operator: filter.operator, ids: filter.ids },
-      };
-      console.log("Category filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearCategoryFilter = () => {
     // Only reload if there were actually selected categories to clear
     const hadCategories = categoryFilter.ids && categoryFilter.ids.length > 0;
+    if (!hadCategories) return;
     setCategoryFilter({ operator: "is", ids: [] });
-
-    if (hadCategories) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Type filter functions
   const applyTypeFilter = (filter) => {
     setTypeFilter(filter);
     if (filter.types && filter.types.length > 0) {
-      const filterPayload = {
-        types: { operator: filter.operator, types: filter.types },
-      };
-      console.log("Type filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearTypeFilter = () => {
     const hadTypes = typeFilter.types && typeFilter.types.length > 0;
+    if (!hadTypes) return;
     setTypeFilter({ operator: "is", types: [] });
-
-    if (hadTypes) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Remarks filter functions
   const applyRemarksFilter = (filter) => {
     setRemarksFilter(filter);
     if (filter.value && filter.value.trim() !== "") {
-      const filterPayload = {
-        remarks: { operator: filter.operator, value: filter.value.trim() },
-      };
-      console.log("Remarks filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearRemarksFilter = () => {
     const hadValue = remarksFilter.value && remarksFilter.value.trim() !== "";
+    if (!hadValue) return;
     setRemarksFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Currency filter functions
   const applyCurrencyFilter = (filter) => {
     setCurrencyFilter(filter);
     if (filter.currencies && filter.currencies.length > 0) {
-      const filterPayload = {
-        currencies: {
-          operator: filter.operator,
-          currencies: filter.currencies,
-        },
-      };
-      console.log("Currency filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearCurrencyFilter = () => {
     const hadCurrencies =
       currencyFilter.currencies && currencyFilter.currencies.length > 0;
+    if (!hadCurrencies) return;
     setCurrencyFilter({ operator: "is", currencies: [] });
-
-    if (hadCurrencies) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Sorting functions
