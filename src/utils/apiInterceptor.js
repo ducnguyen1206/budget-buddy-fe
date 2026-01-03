@@ -10,8 +10,12 @@ export const handleApiResponse = async (response, t = null) => {
     // Clear all tokens
     removeTokens();
 
-    // Redirect to login page
-    window.location.href = "/login";
+    // Redirect to login page (avoid redirect loops when we are already on /login)
+    const currentPath = window.location?.pathname || "";
+    const isAlreadyOnLoginPage = currentPath === "/login" || currentPath.startsWith("/login/");
+    if (!isAlreadyOnLoginPage) {
+      window.location.href = "/login";
+    }
 
     // Return a standardized error response
     return {
