@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Building2,
   Coins,
+  PiggyBank,
   PieChart,
   List,
   LogOut,
@@ -75,6 +76,12 @@ export default function DashboardSidebar({ activePage = "overview" }) {
       icon: Coins,
       label: t("dashboard.nav.transactions"),
       path: "/transactions",
+    },
+    {
+      id: "savings",
+      icon: PiggyBank,
+      label: t("dashboard.nav.savings"),
+      path: "/savings",
     },
     {
       id: "budgets",
