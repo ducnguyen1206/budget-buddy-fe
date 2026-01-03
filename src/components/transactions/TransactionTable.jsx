@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import SortableHeader from "./SortableHeader";
 import { Edit, Trash2 } from "lucide-react";
@@ -10,10 +10,16 @@ const TransactionTable = ({
   onRetry,
   sorting,
   onSort,
+  onUpdate,
   onEdit,
   onDelete,
 }) => {
   const { t } = useLanguage();
+
+  const [editingDateId, setEditingDateId] = useState(null);
+  const [draftDate, setDraftDate] = useState("");
+  const [savingId, setSavingId] = useState(null);
+
   const formatAmount = (amount) => {
     const formattedAmount = new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
@@ -33,6 +39,84 @@ const TransactionTable = ({
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  const toDateInputValue = (dateValue) => {
+    if (!dateValue) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
+
+  const buildUpdatePayload = (transaction, newDate) => {
+    const payload = {
+      name: transaction.name,
+      amount: transaction.amount,
+      categoryId: transaction.categoryId,
+      date: newDate,
+      remarks: transaction.remarks || "",
+      categoryType: transaction.categoryType,
+      accountId: transaction.accountId,
+    };
+
+    if (transaction.categoryType === "TRANSFER") {
+      payload.targetAccountId = transaction.targetAccountId;
+    }
+
+    return payload;
+  };
+
+  const beginEditDate = (transaction) => {
+    if (!onUpdate) return;
+    if (transaction.categoryType === "TRANSFER") return;
+    setEditingDateId(transaction.id);
+    setDraftDate(toDateInputValue(transaction.date));
+  };
+
+  const cancelEditDate = () => {
+    setEditingDateId(null);
+    setDraftDate("");
+    setSavingId(null);
+  };
+
+  const commitDate = async (transaction) => {
+    if (!onUpdate) return;
+    if (savingId) return;
+
+    const nextDate = draftDate;
+    const currentDate = toDateInputValue(transaction.date);
+
+    // No-op if unchanged or empty
+    if (!nextDate || nextDate === currentDate) {
+      cancelEditDate();
+      return;
+    }
+
+    try {
+      setSavingId(transaction.id);
+      const result = await onUpdate(
+        transaction.id,
+        buildUpdatePayload(transaction, nextDate)
+      );
+
+      if (result && result.success === false) {
+        // Keep the editor open so user can adjust, but don't crash.
+        console.error("Inline update failed:", result);
+        setSavingId(null);
+        return;
+      }
+
+      cancelEditDate();
+    } catch (e) {
+      console.error("Inline update error:", e);
+      setSavingId(null);
+    }
+  };
+
+  const dateCellTitle = useMemo(() => {
+    if (!onUpdate) return undefined;
+    return t("common.edit");
+  }, [onUpdate, t]);
 
   if (loading) {
     return (
@@ -128,7 +212,47 @@ const TransactionTable = ({
                 {transaction.currency}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
-                {formatDate(transaction.date)}
+                {editingDateId === transaction.id ? (
+                  <input
+                    type="date"
+                    value={draftDate}
+                    onChange={(e) => setDraftDate(e.target.value)}
+                    onBlur={() => void commitDate(transaction)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        void commitDate(transaction);
+                      }
+                      if (e.key === "Escape") {
+                        e.preventDefault();
+                        cancelEditDate();
+                      }
+                    }}
+                    max={new Date().toISOString().split("T")[0]}
+                    disabled={savingId === transaction.id}
+                    className="w-[9.5rem] px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label={t("transactions.date")}
+                    autoFocus
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => beginEditDate(transaction)}
+                    disabled={!onUpdate || transaction.categoryType === "TRANSFER"}
+                    title={
+                      transaction.categoryType === "TRANSFER"
+                        ? t("transactions.transferCannotBeEdited")
+                        : dateCellTitle
+                    }
+                    className={
+                      !onUpdate || transaction.categoryType === "TRANSFER"
+                        ? "cursor-default"
+                        : "text-gray-500 hover:text-gray-700"
+                    }
+                  >
+                    {formatDate(transaction.date)}
+                  </button>
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
                 {transaction.categoryName}

@@ -104,6 +104,84 @@ export const useTransactions = () => {
     }
   };
 
+  const buildCurrentFilterPayload = () => {
+    const filterPayload = {};
+
+    if (nameFilter.value && nameFilter.value.trim() !== "") {
+      filterPayload.name = {
+        operator: nameFilter.operator,
+        value: nameFilter.value.trim(),
+      };
+    }
+
+    if (
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined
+    ) {
+      filterPayload.amount = {
+        operator: amountFilter.operator,
+        value: amountFilter.value,
+      };
+    }
+
+    if (
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined
+    ) {
+      if (dateFilter.operator === "is") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value,
+        };
+      } else if (dateFilter.operator === "is between") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value.startDate,
+          endDate: dateFilter.value.endDate,
+        };
+      }
+    }
+
+    if (accountFilter.ids && accountFilter.ids.length > 0) {
+      filterPayload.accounts = {
+        operator: accountFilter.operator,
+        ids: accountFilter.ids,
+      };
+    }
+
+    if (categoryFilter.ids && categoryFilter.ids.length > 0) {
+      filterPayload.categories = {
+        operator: categoryFilter.operator,
+        ids: categoryFilter.ids,
+      };
+    }
+
+    if (typeFilter.types && typeFilter.types.length > 0) {
+      filterPayload.types = {
+        operator: typeFilter.operator,
+        types: typeFilter.types,
+      };
+    }
+
+    if (remarksFilter.value && remarksFilter.value.trim() !== "") {
+      filterPayload.remarks = {
+        operator: remarksFilter.operator,
+        value: remarksFilter.value.trim(),
+      };
+    }
+
+    if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
+      filterPayload.currencies = {
+        operator: currencyFilter.operator,
+        currencies: currencyFilter.currencies,
+      };
+    }
+
+    return filterPayload;
+  };
+
   const updateTransaction = async (transactionId, transactionData) => {
     try {
       setLoading(true);
@@ -114,7 +192,7 @@ export const useTransactions = () => {
       );
       if (result.success) {
         // Reload transactions to reflect the update
-        await loadTransactions(currentPage);
+        await loadTransactions(currentPage, buildCurrentFilterPayload());
       }
       return result;
     } catch (err) {
@@ -133,7 +211,7 @@ export const useTransactions = () => {
       const result = await deleteTransactionService(transactionId);
       if (result.success) {
         // Reload transactions to reflect the deletion
-        await loadTransactions(currentPage);
+        await loadTransactions(currentPage, buildCurrentFilterPayload());
       }
       return result;
     } catch (err) {

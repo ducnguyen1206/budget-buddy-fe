@@ -423,6 +423,7 @@ const TransactionsPage = () => {
             onRetry={retry}
             sorting={sorting}
             onSort={handleSort}
+            onUpdate={updateTransaction}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
