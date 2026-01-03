@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
+import { fetchCategories } from "../../services/categoryService";
+import { fetchAccounts } from "../../services/accountService";
+import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 import {
   NameFilter,
   AmountFilter,
@@ -20,6 +23,10 @@ import TransactionPagination from "./TransactionPagination";
 const TransactionsPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  const loadedDropdownDataRef = useRef(false);
+  const [categoriesForDropdown, setCategoriesForDropdown] = useState([]);
+  const [accountsForDropdown, setAccountsForDropdown] = useState([]);
 
   // Custom hook for transaction management
   const {
@@ -72,6 +79,42 @@ const TransactionsPage = () => {
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showRemarksFilter, setShowRemarksFilter] = useState(false);
   const [showCurrencyFilter, setShowCurrencyFilter] = useState(false);
+
+  // Fetch dropdown data once when landing on this page
+  useEffect(() => {
+    if (loadedDropdownDataRef.current) return;
+    loadedDropdownDataRef.current = true;
+
+    const loadDropdownData = async () => {
+      const [categoriesResult, accountsResult] = await Promise.all([
+        fetchCategories(),
+        fetchAccounts(),
+      ]);
+
+      if (
+        shouldRedirectToLogin(categoriesResult) ||
+        shouldRedirectToLogin(accountsResult)
+      ) {
+        return;
+      }
+
+      if (categoriesResult?.success) {
+        const categories = Array.isArray(categoriesResult.data)
+          ? categoriesResult.data
+          : [];
+        setCategoriesForDropdown(categories);
+      }
+
+      if (accountsResult?.success) {
+        const raw = accountsResult.data;
+        const groups = Array.isArray(raw) ? raw : [];
+        const flatAccounts = groups.flatMap((g) => g.accounts || []);
+        setAccountsForDropdown(flatAccounts);
+      }
+    };
+
+    void loadDropdownData();
+  }, []);
 
   // Extract unique accounts from transactions
   const getUniqueAccounts = () => {
@@ -424,6 +467,8 @@ const TransactionsPage = () => {
             sorting={sorting}
             onSort={handleSort}
             onUpdate={updateTransaction}
+            categories={categoriesForDropdown}
+            accounts={accountsForDropdown}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
