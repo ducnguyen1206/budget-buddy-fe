@@ -341,6 +341,14 @@ export const refreshToken = async (t = null) => {
         // Store new tokens
         if (token) {
           storeTokens(token);
+          tokenRefreshManager.start();
+
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(
+            new CustomEvent("authTokensStored", {
+              detail: { token },
+            })
+          );
         }
 
         return {

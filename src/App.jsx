@@ -46,11 +46,42 @@ function PublicOnly({ children }) {
   return children;
 }
 
+function TokenRefreshHandler() {
+  useEffect(() => {
+    const checkAuthAndManageRefresh = () => {
+      if (isAuthenticated()) {
+        tokenRefreshManager.start();
+      } else {
+        tokenRefreshManager.stop();
+      }
+    };
+
+    checkAuthAndManageRefresh();
+
+    const handleTokensStored = () => {
+      checkAuthAndManageRefresh();
+    };
+
+    window.addEventListener("authTokensStored", handleTokensStored);
+
+    const authCheckInterval = setInterval(checkAuthAndManageRefresh, 30000);
+
+    return () => {
+      clearInterval(authCheckInterval);
+      window.removeEventListener("authTokensStored", handleTokensStored);
+      tokenRefreshManager.stop();
+    };
+  }, []);
+
+  return null;
+}
+
 export default function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <LanguageProvider>
         <BrowserRouter>
+          <TokenRefreshHandler />
           <Routes>
             {/* Public auth routes */}
             <Route
