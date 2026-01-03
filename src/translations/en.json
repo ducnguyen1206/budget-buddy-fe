@@ -244,7 +244,7 @@
     "currency": "Currency",
     "account": "Account",
     "notes": "Notes",
-    "updatedAt": "Updated At",
+    "date": "Date",
     "allCurrencies": "All Currencies",
     "createSaving": "Create Saving",
     "editSaving": "Edit Saving",

@@ -22,6 +22,7 @@ export default function SavingForm() {
     amount: "",
     currency: "SGD",
     notes: "",
+    date: "",
   });
 
   const [validationErrors, setValidationErrors] = useState({});
@@ -42,6 +43,14 @@ export default function SavingForm() {
       loadSaving();
     }
   }, [isEditMode, id]);
+
+  const toDateInputValue = (dateValue) => {
+    if (!dateValue) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
 
   const loadAccounts = async () => {
     try {
@@ -92,6 +101,7 @@ export default function SavingForm() {
             : "",
         currency: saving.currency || "SGD",
         notes: saving.notes || "",
+        date: toDateInputValue(saving.date || saving.updatedAt || saving.createdAt),
       });
     } else {
       setLoadError(result.error || t("errors.fetchSavingFailed"));
@@ -129,13 +139,18 @@ export default function SavingForm() {
       errors.amount = t("validation.amountRequired");
     } else {
       const amountValue = parseFloat(formData.amount);
-      if (isNaN(amountValue) || amountValue <= 0) {
+      if (isNaN(amountValue)) {
         errors.amount = t("validation.amountInvalid");
       }
+      // Allow negative amounts; no lower-bound check
     }
 
     if (!formData.currency) {
       errors.currency = t("validation.currencyRequired");
+    }
+
+    if (!formData.date) {
+      errors.date = t("validation.dateRequired") || "Date is required";
     }
 
     setValidationErrors(errors);
@@ -157,6 +172,7 @@ export default function SavingForm() {
       amount: parseFloat(formData.amount),
       currency: formData.currency,
       notes: formData.notes?.trim() || "",
+      date: formData.date,
     };
 
     const result = isEditMode
@@ -322,6 +338,8 @@ export default function SavingForm() {
             {renderFormField("amount", t("savings.amount"), "number")}
 
             {renderFormField("currency", t("savings.currency"), "select", currencyOptions)}
+
+            {renderFormField("date", t("savings.date"), "date")}
 
             {renderFormField("notes", t("savings.notes"), "textarea")}
 

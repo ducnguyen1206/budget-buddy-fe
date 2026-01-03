@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchSavings, deleteSaving } from "../../services/savingService";
+import { fetchSavings, deleteSaving, updateSaving } from "../../services/savingService";
+import { fetchAccounts } from "../../services/accountService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
 export default function SavingsPage() {
@@ -17,6 +18,10 @@ export default function SavingsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState("SGD");
+  const [accounts, setAccounts] = useState([]);
+  const [editingCell, setEditingCell] = useState(null); // { id, field }
+  const [draftValue, setDraftValue] = useState("");
+  const [savingId, setSavingId] = useState(null);
 
   const currencies = useMemo(
     () => [
@@ -30,6 +35,25 @@ export default function SavingsPage() {
   useEffect(() => {
     loadSavings();
   }, [selectedCurrency]);
+
+  useEffect(() => {
+    // Fetch accounts once for inline account selection
+    const loadAccounts = async () => {
+      const result = await fetchAccounts(t);
+      if (shouldRedirectToLogin(result)) return;
+      if (result.success) {
+        const flat = (result.data || []).flatMap((group) =>
+          (group.accounts || []).map((account) => ({
+            ...account,
+            accountType: group.accountType,
+          }))
+        );
+        setAccounts(flat);
+      }
+    };
+
+    loadAccounts();
+  }, [t]);
 
   const loadSavings = async () => {
     setIsLoading(true);
@@ -64,6 +88,161 @@ export default function SavingsPage() {
       0
     );
   }, [filteredSavings, selectedCurrency]);
+
+  const accountOptions = useMemo(() => {
+    const list = Array.isArray(accounts) ? accounts : [];
+    const map = new Map();
+    for (const a of list) {
+      if (a && a.id != null && a.name) {
+        map.set(String(a.id), {
+          id: String(a.id),
+          name: a.accountType ? `${a.name} (${a.accountType})` : a.name,
+        });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [accounts]);
+
+  const currencyOptions = useMemo(
+    () => [
+      { code: "SGD", label: "SGD" },
+      { code: "VND", label: "VND" },
+      // include any currencies present in savings data
+      ...Array.from(
+        new Set((savings || []).map((s) => s.currency).filter(Boolean))
+      )
+        .filter((c) => c !== "SGD" && c !== "VND")
+        .map((c) => ({ code: c, label: c })),
+    ],
+    [savings]
+  );
+
+  const toDateInputValue = (dateValue) => {
+    if (!dateValue) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
+
+  const beginEdit = (saving, field) => {
+    if (savingId) return;
+    setEditingCell({ id: saving.id, field });
+
+    if (field === "date") {
+      setDraftValue(toDateInputValue(saving.date));
+    } else if (field === "amount") {
+      const amountValue = Number(saving.amount);
+      setDraftValue(Number.isFinite(amountValue) ? String(amountValue) : "");
+    } else if (field === "name") {
+      setDraftValue(saving.name || "");
+    } else if (field === "notes") {
+      setDraftValue(saving.notes || "");
+    } else if (field === "currency") {
+      setDraftValue(saving.currency || "");
+    } else if (field === "accountId") {
+      setDraftValue(saving.accountId ? String(saving.accountId) : "");
+    } else {
+      setDraftValue("");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingCell(null);
+    setDraftValue("");
+    setSavingId(null);
+  };
+
+  const commitEdit = async (saving) => {
+    if (!editingCell || savingId) return;
+
+    const field = editingCell.field;
+    const payload = {
+      accountId: saving.accountId,
+      name: saving.name,
+      amount: Number.isFinite(Number(saving.amount)) ? Number(saving.amount) : 0,
+      currency: saving.currency,
+      notes: saving.notes || "",
+      date: toDateInputValue(saving.date),
+    };
+
+    if (field === "date") {
+      const nextDate = draftValue;
+      const currentDate = toDateInputValue(saving.date);
+      if (!nextDate || nextDate === currentDate) {
+        cancelEdit();
+        return;
+      }
+      payload.date = nextDate;
+    }
+
+    if (field === "name") {
+      const nextName = (draftValue || "").trim();
+      if (!nextName || nextName === (saving.name || "")) {
+        cancelEdit();
+        return;
+      }
+      payload.name = nextName;
+    }
+
+    if (field === "amount") {
+      const parsed = Number(String(draftValue).replace(/,/g, ""));
+      if (!Number.isFinite(parsed)) return;
+      const currentAmount = Number.isFinite(Number(saving.amount))
+        ? Number(saving.amount)
+        : 0;
+      if (parsed === currentAmount) {
+        cancelEdit();
+        return;
+      }
+      payload.amount = parsed;
+    }
+
+    if (field === "notes") {
+      const nextNotes = draftValue || "";
+      const currentNotes = saving.notes || "";
+      if (nextNotes === currentNotes) {
+        cancelEdit();
+        return;
+      }
+      payload.notes = nextNotes;
+    }
+
+    if (field === "currency") {
+      const nextCurrency = (draftValue || "").trim();
+      const currentCurrency = (saving.currency || "").trim();
+      if (!nextCurrency || nextCurrency === currentCurrency) {
+        cancelEdit();
+        return;
+      }
+      payload.currency = nextCurrency;
+    }
+
+    if (field === "accountId") {
+      const nextAccountId = draftValue ? Number(draftValue) : null;
+      if (!nextAccountId || nextAccountId === saving.accountId) {
+        cancelEdit();
+        return;
+      }
+      payload.accountId = nextAccountId;
+    }
+
+    try {
+      setSavingId(saving.id);
+      const result = await updateSaving(saving.id, payload, t);
+      if (shouldRedirectToLogin(result)) return;
+      if (result.success) {
+        await loadSavings();
+        cancelEdit();
+      } else {
+        setError(result.error || t("errors.updateSavingFailed"));
+        setSavingId(null);
+      }
+    } catch (e) {
+      console.error("Inline saving update error:", e);
+      setSavingId(null);
+    }
+  };
 
   const handleEdit = (id) => {
     navigate(`/savings/edit/${id}`);
@@ -106,11 +285,11 @@ export default function SavingsPage() {
   const formatDate = (value) => {
     try {
       const date = new Date(value);
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+      if (Number.isNaN(date.getTime())) return value || "";
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     } catch (error) {
       return value || "";
     }
@@ -177,30 +356,169 @@ export default function SavingsPage() {
   const renderSavingRow = (saving) => (
     <tr key={saving.id} className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">{saving.name}</div>
+        {editingCell?.id === saving.id && editingCell?.field === "name" ? (
+          <input
+            autoFocus
+            type="text"
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <button
+            type="button"
+            className="text-left text-base font-medium text-gray-900 w-full"
+            onClick={() => beginEdit(saving, "name")}
+            disabled={savingId === saving.id}
+          >
+            {saving.name}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div
-          className={`text-base font-medium ${
-            (saving.amount || 0) < 0 ? "text-red-600" : "text-green-700"
-          }`}
-        >
-          {formatAmount(saving.amount)}
-        </div>
+        {editingCell?.id === saving.id && editingCell?.field === "amount" ? (
+          <input
+            autoFocus
+            type="number"
+            step="0.01"
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <button
+            type="button"
+            className={`text-base font-medium ${
+              (saving.amount || 0) < 0 ? "text-red-600" : "text-green-700"
+            }`}
+            onClick={() => beginEdit(saving, "amount")}
+            disabled={savingId === saving.id}
+          >
+            {formatAmount(saving.amount)}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">{saving.accountName || "-"}</div>
+        {editingCell?.id === saving.id && editingCell?.field === "accountId" ? (
+          <select
+            autoFocus
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">{t("savings.selectAccount")}</option>
+            {accountOptions.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <button
+            type="button"
+            className="text-base font-medium text-gray-900"
+            onClick={() => beginEdit(saving, "accountId")}
+            disabled={savingId === saving.id}
+          >
+            {saving.accountName || "-"}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">{saving.currency}</div>
+        {editingCell?.id === saving.id && editingCell?.field === "currency" ? (
+          <select
+            autoFocus
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {currencyOptions.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <button
+            type="button"
+            className="text-base font-medium text-gray-900"
+            onClick={() => beginEdit(saving, "currency")}
+            disabled={savingId === saving.id}
+          >
+            {saving.currency}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap max-w-xs">
-        <div className="text-sm text-gray-700 truncate" title={saving.notes || ""}>
-          {saving.notes || "-"}
-        </div>
+        {editingCell?.id === saving.id && editingCell?.field === "notes" ? (
+          <input
+            autoFocus
+            type="text"
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <button
+            type="button"
+            className="text-sm text-gray-700 truncate w-full text-left"
+            title={saving.notes || ""}
+            onClick={() => beginEdit(saving, "notes")}
+            disabled={savingId === saving.id}
+          >
+            {saving.notes || "-"}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">{formatDate(saving.updatedAt || saving.createdAt)}</div>
+        {editingCell?.id === saving.id && editingCell?.field === "date" ? (
+          <input
+            autoFocus
+            type="date"
+            value={draftValue}
+            onChange={(e) => setDraftValue(e.target.value)}
+            onBlur={() => commitEdit(saving)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitEdit(saving);
+              if (e.key === "Escape") cancelEdit();
+            }}
+            className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <button
+            type="button"
+            className="text-base font-medium text-gray-900"
+            onClick={() => beginEdit(saving, "date")}
+            disabled={savingId === saving.id}
+          >
+            {formatDate(saving.date || saving.updatedAt || saving.createdAt)}
+          </button>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
         <div className="flex justify-center items-center gap-3">
@@ -294,7 +612,7 @@ export default function SavingsPage() {
                       {t("savings.notes")}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("savings.updatedAt")}
+                      {t("savings.date")}
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("common.actions")}
