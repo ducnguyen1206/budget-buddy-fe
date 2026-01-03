@@ -5,7 +5,7 @@ import {
   deleteTransaction as deleteTransactionService,
 } from "../services/transactionService";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState([]);
