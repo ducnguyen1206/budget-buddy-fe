@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import {
   fetchTransactions,
   updateTransaction as updateTransactionService,
@@ -28,7 +29,7 @@ export const useTransactions = () => {
   });
   const [dateFilter, setDateFilter] = useState({
     operator: "is",
-    value: "",
+    value: format(new Date(), "yyyy-MM-dd"),
   });
   const [accountFilter, setAccountFilter] = useState({
     operator: "is",
