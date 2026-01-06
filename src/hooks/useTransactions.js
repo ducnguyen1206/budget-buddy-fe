@@ -49,7 +49,7 @@ export const useTransactions = () => {
   });
   const [currencyFilter, setCurrencyFilter] = useState({
     operator: "is",
-    currencies: [],
+    currencies: ["SGD"],
   });
   const [sorting, setSorting] = useState({
     date: null, // null, 'asc', 'desc'

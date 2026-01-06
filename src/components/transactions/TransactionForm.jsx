@@ -18,6 +18,13 @@ const TransactionForm = () => {
   const isEditMode = !!id;
   const existingTransaction = location.state?.transaction;
 
+  const getTodayDateInputValue = () => {
+    // Use local date (not UTC) to avoid off-by-one day in timezones ahead of UTC.
+    const now = new Date();
+    const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return localTime.toISOString().slice(0, 10);
+  };
+
   // State
   const [formData, setFormData] = useState({
     name: "",
@@ -29,7 +36,7 @@ const TransactionForm = () => {
     toAccountId: "",
     type: "EXPENSE",
     remarks: "",
-    date: new Date().toISOString().split("T")[0], // YYYY-MM-DD format
+    date: getTodayDateInputValue(), // YYYY-MM-DD format (local)
   });
 
   const [validationErrors, setValidationErrors] = useState({});
@@ -149,7 +156,7 @@ const TransactionForm = () => {
           toAccountId: existingTransaction.targetAccountId || "",
           type: existingTransaction.categoryType || "EXPENSE",
           remarks: existingTransaction.remarks || "",
-          date: existingTransaction.date || new Date().toISOString().split("T")[0],
+          date: existingTransaction.date || getTodayDateInputValue(),
         });
       }
     } catch (error) {
@@ -438,7 +445,7 @@ const TransactionForm = () => {
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
-                max={new Date().toISOString().split("T")[0]}
+                // max={new Date().toISOString().split("T")[0]}
                 className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

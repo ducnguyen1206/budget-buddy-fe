@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -164,6 +164,25 @@ const TransactionsPage = () => {
       transaction.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+  const totalCurrency = useMemo(() => {
+    const list = currencyFilter?.currencies || [];
+    return list.length === 1 ? list[0] : null;
+  }, [currencyFilter]);
+
+  const totalAmount = useMemo(() => {
+    if (!totalCurrency) return null;
+    return filteredTransactions.reduce((sum, tx) => {
+      const value = Number(tx?.amount);
+      return Number.isFinite(value) ? sum + value : sum;
+    }, 0);
+  }, [filteredTransactions, totalCurrency]);
+
+  const formatAmount = (amount) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 10,
+    }).format(amount ?? 0);
 
   // Event handlers
   const handleSearchChange = (e) => {
@@ -481,6 +500,14 @@ const TransactionsPage = () => {
             totalElements={pagination.totalElements}
             pageSize={pagination.size}
           />
+
+          {totalAmount !== null && (
+            <div className="px-6 py-4 border-t border-black flex justify-start">
+              <div className="text-base font-semibold text-gray-900">
+                Total: {formatAmount(totalAmount)} {totalCurrency}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
