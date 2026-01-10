@@ -621,7 +621,7 @@ const TransactionForm = () => {
                 value={formData.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
                 // max={new Date().toISOString().split("T")[0]}
-                className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full max-w-full px-4 sm:px-6 py-3 border border-gray-300 rounded-2xl text-base sm:text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500 box-border"
               />
             </div>
 

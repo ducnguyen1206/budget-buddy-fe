@@ -386,17 +386,17 @@ export default function BudgetsPage() {
                       {/* Totals Row - Only show when currency is selected */}
                       {totals && (
                         <tr className="bg-gray-50 font-semibold border-t-2 border-gray-300">
-                          <td className="px-6 py-5 whitespace-nowrap text-xl font-bold text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap text-base sm:text-xl font-bold text-gray-900">
                             Total
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-xl font-bold text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
+                            <div className="text-base sm:text-xl font-bold text-gray-900">
                               {formatAmount(totals.totalBudget)}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap hidden sm:table-cell">
                             <div
-                              className={`text-xl font-bold ${
+                              className={`text-base sm:text-xl font-bold ${
                                 totals.totalSpent < 0
                                   ? "text-red-600"
                                   : "text-gray-900"
@@ -405,9 +405,9 @@ export default function BudgetsPage() {
                               {formatAmount(totals.totalSpent)}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">
                             <div
-                              className={`text-xl font-bold ${
+                              className={`text-base sm:text-xl font-bold ${
                                 totals.totalRemaining < 0
                                   ? "text-red-600"
                                   : "text-green-600"
@@ -416,17 +416,17 @@ export default function BudgetsPage() {
                               {formatAmount(totals.totalRemaining)}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-xl font-bold text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap hidden md:table-cell">
+                            <div className="text-base sm:text-xl font-bold text-gray-900">
                               -
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="text-xl font-bold text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap hidden sm:table-cell">
+                            <div className="text-base sm:text-xl font-bold text-gray-900">
                               {selectedCurrency}
                             </div>
                           </td>
-                          <td className="px-6 py-5 whitespace-nowrap">-</td>
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">-</td>
                         </tr>
                       )}
                     </>
