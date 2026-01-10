@@ -39,7 +39,7 @@ export default function SavingsPage() {
   useEffect(() => {
     // Fetch accounts once for inline account selection
     const loadAccounts = async () => {
-      const result = await fetchAccounts(t);
+      const result = await fetchAccounts(t, { savingAccount: true });
       if (shouldRedirectToLogin(result)) return;
       if (result.success) {
         const flat = (result.data || []).flatMap((group) =>

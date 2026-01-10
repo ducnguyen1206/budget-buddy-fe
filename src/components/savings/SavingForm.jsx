@@ -55,7 +55,7 @@ export default function SavingForm() {
   const loadAccounts = async () => {
     try {
       setLoadingAccounts(true);
-      const result = await fetchAccounts(t);
+      const result = await fetchAccounts(t, { savingAccount: true });
 
       if (shouldRedirectToLogin(result)) {
         return;

@@ -23,6 +23,7 @@ const INITIAL_FORM_DATA = {
   balance: "0",
   currency: "SGD",
   type: "",
+  savingAccount: false,
 };
 
 export default function AccountForm() {
@@ -106,6 +107,7 @@ export default function AccountForm() {
           balance: account.balance ? account.balance.toString() : "0",
           currency: account.currency || "SGD",
           type: account.type || "",
+          savingAccount: Boolean(account.savingAccount),
         });
         setAccountTypeSearch(account.type || "");
       } else {
@@ -211,6 +213,7 @@ export default function AccountForm() {
           : 0,
         currency: formData.currency,
         type: formData.type,
+        savingAccount: Boolean(formData.savingAccount),
       };
 
       const result = isEditMode
@@ -391,6 +394,24 @@ export default function AccountForm() {
                   {errors.type}
                 </p>
               )}
+            </div>
+
+            {/* Saving Account */}
+            <div>
+              <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                Saving account
+              </label>
+              <label className="inline-flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.savingAccount)}
+                  onChange={(e) =>
+                    handleInputChange("savingAccount", e.target.checked)
+                  }
+                  className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-gray-700 font-inter">This is a saving account</span>
+              </label>
             </div>
 
             {/* Form Actions */}

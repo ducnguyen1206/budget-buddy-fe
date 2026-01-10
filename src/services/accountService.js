@@ -63,12 +63,23 @@ export const fetchAccountTypes = async (t = null) => {
 /**
  * Fetch all accounts grouped by account type
  * @param {Function} t - Translation function
+ * @param {Object} queryParams - Optional query params (e.g. { savingAccount: true })
  * @returns {Promise<Object>} - Success/error result
  */
-export const fetchAccounts = async (t = null) => {
+export const fetchAccounts = async (t = null, queryParams = {}) => {
   try {
+    const params = new URLSearchParams();
+    Object.entries(queryParams || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+      params.set(key, String(value));
+    });
+
+    const accountsUrl = params.toString()
+      ? `${getApiUrl(API_ENDPOINTS.ACCOUNTS)}?${params.toString()}`
+      : getApiUrl(API_ENDPOINTS.ACCOUNTS);
+
     const response = await fetchWithAuth(
-      getApiUrl(API_ENDPOINTS.ACCOUNTS),
+      accountsUrl,
       {
         method: "GET",
         headers: getApiHeaders(true),
