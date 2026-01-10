@@ -399,7 +399,7 @@ export default function AccountForm() {
             {/* Saving Account */}
             <div>
               <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
-                Saving account
+                {t("accounts.savingAccount")}
               </label>
               <label className="inline-flex items-center gap-3">
                 <input
@@ -410,7 +410,9 @@ export default function AccountForm() {
                   }
                   className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                 />
-                <span className="text-gray-700 font-inter">This is a saving account</span>
+                <span className="text-gray-700 font-inter">
+                  {t("accounts.savingAccountHint")}
+                </span>
               </label>
             </div>
 

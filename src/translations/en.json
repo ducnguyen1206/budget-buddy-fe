@@ -27,7 +27,10 @@
     "removeFilter": "Remove filter",
     "clearFilters": "Clear filters",
     "applyFilters": "Apply filters",
-    "actions": "Actions"
+    "actions": "Actions",
+    "clear": "Clear",
+    "remove": "Remove",
+    "editing": "Editing"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -286,7 +289,11 @@
     "deleteGroupWarning": "Are you sure you want to delete the account group \"{name}\"? This will delete all accounts in this group and all related transactions in those accounts. This action cannot be undone.",
     "expandGroup": "Expand group",
     "collapseGroup": "Collapse group",
-    "totalConsolidated": "Total Consolidated"
+    "totalConsolidated": "Total Consolidated",
+    "savingAccount": "Saving account",
+    "savingAccountHint": "This is a saving account",
+    "saving": "Saving",
+    "normal": "Normal"
   },
   "transactions": {
     "title": "Transactions",
@@ -371,6 +378,12 @@
     "deleteTransaction": "Delete Transaction",
     "deleteConfirmation": "Are you sure you want to delete the transaction '{name}'? This action cannot be undone.",
     "transferCannotBeEdited": "Transfer transactions cannot be edited",
-    "transferCannotBeDeleted": "Transfer transactions cannot be deleted"
+    "transferCannotBeDeleted": "Transfer transactions cannot be deleted",
+    "addToList": "Add to list",
+    "updateItem": "Update item",
+    "submitAll": "Submit all",
+    "pendingTransactions": "Pending transactions",
+    "createManyFailed": "Failed to create transactions",
+    "createManyFailedTryAgain": "Failed to create transactions. Please try again."
   }
 }

@@ -430,11 +430,11 @@ const TransactionForm = () => {
         if (result.success) {
           navigate("/transactions");
         } else {
-          setError(result.message || "Failed to create transactions");
+          setError(result.message || t("transactions.createManyFailed"));
         }
       } catch (error) {
         console.error("Error creating transactions:", error);
-        setError("Failed to create transactions. Please try again.");
+        setError(t("transactions.createManyFailedTryAgain"));
       } finally {
         setLoading(false);
       }
@@ -870,8 +870,16 @@ const TransactionForm = () => {
                   onClick={handleStageTransaction}
                   disabled={loading}
                   className="inline-flex items-center justify-center h-10 w-10 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={editingStagedIndex !== null ? "Update item" : "Add to list"}
-                  aria-label={editingStagedIndex !== null ? "Update item" : "Add to list"}
+                  title={
+                    editingStagedIndex !== null
+                      ? t("transactions.updateItem")
+                      : t("transactions.addToList")
+                  }
+                  aria-label={
+                    editingStagedIndex !== null
+                      ? t("transactions.updateItem")
+                      : t("transactions.addToList")
+                  }
                 >
                   <Plus className="h-5 w-5" />
                 </button>
@@ -894,7 +902,7 @@ const TransactionForm = () => {
                   : isEditMode
                   ? t("common.update")
                   : stagedTransactions.length > 0
-                  ? "Submit all"
+                  ? t("transactions.submitAll")
                   : t("common.save")}
               </button>
             </div>
@@ -903,7 +911,7 @@ const TransactionForm = () => {
               <div className="pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-sm font-medium text-gray-900">
-                    Pending transactions ({stagedTransactions.length})
+                    {t("transactions.pendingTransactions")} ({stagedTransactions.length})
                   </div>
                   <button
                     type="button"
@@ -914,7 +922,7 @@ const TransactionForm = () => {
                     disabled={loading}
                     className="text-sm text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Clear
+                    {t("common.clear")}
                   </button>
                 </div>
 
@@ -945,7 +953,9 @@ const TransactionForm = () => {
                           {tx.categoryType} • {tx.date}
                         </div>
                         {editingStagedIndex === index && (
-                          <div className="text-xs text-blue-700 mt-1">Editing</div>
+                          <div className="text-xs text-blue-700 mt-1">
+                            {t("common.editing")}
+                          </div>
                         )}
                       </button>
 
@@ -965,7 +975,7 @@ const TransactionForm = () => {
                         disabled={loading}
                         className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Remove
+                        {t("common.remove")}
                       </button>
                     </div>
                   ))}

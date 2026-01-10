@@ -27,7 +27,10 @@
     "removeFilter": "Xóa bộ lọc",
     "clearFilters": "Xóa tất cả bộ lọc",
     "applyFilters": "Áp dụng bộ lọc",
-    "actions": "Thao tác"
+    "actions": "Thao tác",
+    "clear": "Xóa",
+    "remove": "Gỡ",
+    "editing": "Đang chỉnh sửa"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -286,7 +289,11 @@
     "deleteGroupWarning": "Bạn có chắc chắn muốn xóa nhóm tài khoản \"{name}\"? Điều này sẽ xóa tất cả tài khoản trong nhóm này và tất cả giao dịch liên quan trong những tài khoản đó. Hành động này không thể hoàn tác.",
     "expandGroup": "Mở rộng nhóm",
     "collapseGroup": "Thu gọn nhóm",
-    "totalConsolidated": "Tổng Cộng"
+    "totalConsolidated": "Tổng Cộng",
+    "savingAccount": "Tài khoản tiết kiệm",
+    "savingAccountHint": "Đây là tài khoản tiết kiệm",
+    "saving": "Tiết kiệm",
+    "normal": "Thường"
   },
   "transactions": {
     "title": "Giao Dịch",
@@ -371,6 +378,12 @@
     "deleteTransaction": "Xóa giao dịch",
     "deleteConfirmation": "Bạn có chắc chắn muốn xóa giao dịch '{name}'? Hành động này không thể hoàn tác.",
     "transferCannotBeEdited": "Giao dịch chuyển khoản không thể chỉnh sửa",
-    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa"
+    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa",
+    "addToList": "Thêm vào danh sách",
+    "updateItem": "Cập nhật mục",
+    "submitAll": "Gửi tất cả",
+    "pendingTransactions": "Giao dịch đang chờ",
+    "createManyFailed": "Không thể tạo nhiều giao dịch",
+    "createManyFailedTryAgain": "Không thể tạo nhiều giao dịch. Vui lòng thử lại."
   }
 }

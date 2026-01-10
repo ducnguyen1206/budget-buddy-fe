@@ -236,7 +236,7 @@ export default function AccountsPage() {
                 : "bg-slate-50 text-slate-700 border-slate-200"
             }`}
           >
-            {account.savingAccount ? "Saving" : "Normal"}
+            {account.savingAccount ? t("accounts.saving") : t("accounts.normal")}
           </span>
         </div>
       </div>
