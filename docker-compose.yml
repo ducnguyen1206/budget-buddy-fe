@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-  # Production build with nginx
-  budget-buddy-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: budget-buddy-prod
-    ports:
-      - "3000:80"
-    restart: unless-stopped
-    networks:
-      - budget-buddy-network
+  # # Production build with nginx
+  # budget-buddy-prod:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: budget-buddy-prod
+  #   ports:
+  #     - "3000:80"
+  #   restart: unless-stopped
+  #   networks:
+  #     - budget-buddy-network
 
-  # Development server
+  # # Development server
   budget-buddy-dev:
     build:
       context: .

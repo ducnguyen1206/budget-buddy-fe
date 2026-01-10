@@ -27,7 +27,10 @@
     "removeFilter": "Xóa bộ lọc",
     "clearFilters": "Xóa tất cả bộ lọc",
     "applyFilters": "Áp dụng bộ lọc",
-    "actions": "Thao tác"
+    "actions": "Thao tác",
+    "clear": "Xóa",
+    "remove": "Gỡ",
+    "editing": "Đang chỉnh sửa"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -104,7 +107,9 @@
     "accountRequired": "Vui lòng chọn tài khoản",
     "fromAccountRequired": "Vui lòng chọn tài khoản nguồn",
     "toAccountRequired": "Vui lòng chọn tài khoản đích",
-    "differentAccountsRequired": "Tài khoản nguồn và đích phải khác nhau"
+    "differentAccountsRequired": "Tài khoản nguồn và đích phải khác nhau",
+    "targetCategoryRequired": "Vui lòng chọn danh mục đích",
+    "differentCategoriesRequired": "Danh mục nguồn và danh mục đích phải khác nhau"
   },
   "errors": {
     "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
@@ -134,6 +139,14 @@
     "categoryAlreadyExists": "Một danh mục với tên này đã tồn tại. Vui lòng chọn tên khác.",
     "categoryNotFound": "Không tìm thấy danh mục. Vui lòng kiểm tra ID danh mục và thử lại.",
     "categoryInUse": "Danh mục này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tham chiếu đến danh mục này trước.",
+    "fetchSavingsFailed": "Không thể tải mục tiết kiệm. Vui lòng thử lại.",
+    "fetchSavingFailed": "Không thể tải mục tiết kiệm. Vui lòng thử lại.",
+    "createSavingFailed": "Không thể tạo mục tiết kiệm. Vui lòng thử lại.",
+    "invalidSavingData": "Dữ liệu tiết kiệm không hợp lệ. Vui lòng kiểm tra thông tin nhập và thử lại.",
+    "deleteSavingFailed": "Không thể xóa mục tiết kiệm. Vui lòng thử lại.",
+    "updateSavingFailed": "Không thể cập nhật mục tiết kiệm. Vui lòng thử lại.",
+    "savingNotFound": "Không tìm thấy mục tiết kiệm. Vui lòng kiểm tra ID và thử lại.",
+    "savingInUse": "Mục tiết kiệm này đang được sử dụng và không thể xóa.",
     "fetchBudgetsFailed": "Không thể tải ngân sách. Vui lòng thử lại.",
     "fetchBudgetFailed": "Không thể tải ngân sách. Vui lòng thử lại.",
     "createBudgetFailed": "Không thể tạo ngân sách. Vui lòng thử lại.",
@@ -167,6 +180,7 @@
       "overview": "Tổng quan",
       "accounts": "Tài khoản",
       "transactions": "Giao dịch",
+      "savings": "Tiết kiệm",
       "budgets": "Ngân sách",
       "categories": "Danh mục"
     },
@@ -214,6 +228,7 @@
     "remaining": "Còn Lại",
     "updatedAt": "Cập Nhật Lúc",
     "currency": "Tiền Tệ",
+    "allCurrencies": "Tất Cả Tiền Tệ",
     "amount": "Số Tiền",
     "createBudget": "Tạo Ngân Sách",
     "editBudget": "Chỉnh Sửa Ngân Sách",
@@ -226,6 +241,29 @@
     "noBudgetsMatching": "Không có ngân sách nào phù hợp với tìm kiếm của bạn",
     "confirmDelete": "Xóa Ngân Sách",
     "deleteWarning": "Bạn có chắc chắn muốn xóa ngân sách cho '{name}'? Hành động này không thể hoàn tác."
+  },
+  "savings": {
+    "title": "Tiết Kiệm",
+    "name": "Tên",
+    "amount": "Số Tiền",
+    "currency": "Tiền Tệ",
+    "account": "Tài Khoản",
+    "notes": "Ghi Chú",
+    "date": "Ngày",
+    "allCurrencies": "Tất Cả Tiền Tệ",
+    "createSaving": "Tạo Tiết Kiệm",
+    "editSaving": "Chỉnh Sửa Tiết Kiệm",
+    "selectAccount": "Chọn tài khoản",
+    "selectCurrency": "Chọn tiền tệ",
+    "namePlaceholder": "Nhập tên khoản tiết kiệm",
+    "amountPlaceholder": "Nhập số tiền tiết kiệm",
+    "notesPlaceholder": "Thêm ghi chú (tùy chọn)",
+    "new": "Tiết Kiệm Mới",
+    "searchPlaceholder": "Tìm kiếm tiết kiệm...",
+    "noSavingsFound": "Không tìm thấy khoản tiết kiệm nào",
+    "noSavingsMatching": "Không có khoản tiết kiệm nào phù hợp với tìm kiếm của bạn",
+    "confirmDelete": "Xóa Tiết Kiệm",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa khoản tiết kiệm '{name}'? Hành động này không thể hoàn tác."
   },
   "accounts": {
     "searchPlaceholder": "Tìm kiếm tài khoản...",
@@ -253,7 +291,11 @@
     "deleteGroupWarning": "Bạn có chắc chắn muốn xóa nhóm tài khoản \"{name}\"? Điều này sẽ xóa tất cả tài khoản trong nhóm này và tất cả giao dịch liên quan trong những tài khoản đó. Hành động này không thể hoàn tác.",
     "expandGroup": "Mở rộng nhóm",
     "collapseGroup": "Thu gọn nhóm",
-    "totalConsolidated": "Tổng Cộng"
+    "totalConsolidated": "Tổng Cộng",
+    "savingAccount": "Tài khoản tiết kiệm",
+    "savingAccountHint": "Đây là tài khoản tiết kiệm",
+    "saving": "Tiết kiệm",
+    "normal": "Thường"
   },
   "transactions": {
     "title": "Giao Dịch",
@@ -330,14 +372,22 @@
     "accountPlaceholder": "Chọn tài khoản",
     "fromAccount": "Từ Tài Khoản",
     "toAccount": "Đến Tài Khoản",
+    "toCategory": "Đến Danh Mục",
     "fromAccountPlaceholder": "Chọn tài khoản nguồn",
     "toAccountPlaceholder": "Chọn tài khoản đích",
+    "toCategoryPlaceholder": "Chọn danh mục đích",
     "currencyNote": "Tiền tệ sẽ được đặt dựa trên tài khoản đã chọn",
     "typePlaceholder": "Chọn loại giao dịch",
     "remarksPlaceholder": "Nhập ghi chú (tùy chọn)",
     "deleteTransaction": "Xóa giao dịch",
     "deleteConfirmation": "Bạn có chắc chắn muốn xóa giao dịch '{name}'? Hành động này không thể hoàn tác.",
     "transferCannotBeEdited": "Giao dịch chuyển khoản không thể chỉnh sửa",
-    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa"
+    "transferCannotBeDeleted": "Giao dịch chuyển khoản không thể xóa",
+    "addToList": "Thêm vào danh sách",
+    "updateItem": "Cập nhật mục",
+    "submitAll": "Gửi tất cả",
+    "pendingTransactions": "Giao dịch đang chờ",
+    "createManyFailed": "Không thể tạo nhiều giao dịch",
+    "createManyFailedTryAgain": "Không thể tạo nhiều giao dịch. Vui lòng thử lại."
   }
 }

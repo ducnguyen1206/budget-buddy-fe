@@ -80,6 +80,14 @@ export const API_ERROR_MESSAGES = {
   UPDATE_BUDGET_FAILED: "errors.updateBudgetFailed",
   BUDGET_NOT_FOUND: "errors.budgetNotFound",
   BUDGET_IN_USE: "errors.budgetInUse",
+  FETCH_SAVINGS_FAILED: "errors.fetchSavingsFailed",
+  FETCH_SAVING_FAILED: "errors.fetchSavingFailed",
+  CREATE_SAVING_FAILED: "errors.createSavingFailed",
+  INVALID_SAVING_DATA: "errors.invalidSavingData",
+  DELETE_SAVING_FAILED: "errors.deleteSavingFailed",
+  UPDATE_SAVING_FAILED: "errors.updateSavingFailed",
+  SAVING_NOT_FOUND: "errors.savingNotFound",
+  SAVING_IN_USE: "errors.savingInUse",
 };
 
 // HTTP status codes

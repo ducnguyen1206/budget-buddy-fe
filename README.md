@@ -366,7 +366,7 @@ POST /api/v1/auth/verify
 Content-Type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
 }
 ```
 

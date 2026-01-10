@@ -227,7 +227,18 @@ export default function AccountsPage() {
     >
       <div className="w-8"></div>
       <div className="flex-1 px-4 ">
-        <span className="text-gray-700">{account.name}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-gray-700">{account.name}</span>
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+              account.savingAccount
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-slate-50 text-slate-700 border-slate-200"
+            }`}
+          >
+            {account.savingAccount ? t("accounts.saving") : t("accounts.normal")}
+          </span>
+        </div>
       </div>
       <div className="flex-1 px-4 text-right">
         <span

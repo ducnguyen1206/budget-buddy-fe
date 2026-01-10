@@ -62,15 +62,16 @@ if (shouldRedirectToLogin(response)) {
 
 ### Automatic Token Refresh
 
-The system automatically refreshes tokens every 5 minutes to maintain user sessions:
+The system automatically refreshes tokens every 2 minutes to maintain user sessions:
 
 ```javascript
-// Token refresh manager runs every 5 minutes
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+// Token refresh manager runs every 2 minutes
+const REFRESH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 
-// After successful refresh, new tokens are stored
-if (token || newRefreshToken) {
-  storeTokens(token, newRefreshToken);
+// After successful refresh, new access token is stored
+// Refresh token is managed via HTTP-only cookies
+if (token) {
+  storeTokens(token);
   console.log(
     "Token refreshed successfully - new token will be used for subsequent API calls"
   );

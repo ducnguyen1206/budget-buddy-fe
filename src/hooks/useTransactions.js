@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import {
   fetchTransactions,
   updateTransaction as updateTransactionService,
   deleteTransaction as deleteTransactionService,
 } from "../services/transactionService";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -28,7 +29,7 @@ export const useTransactions = () => {
   });
   const [dateFilter, setDateFilter] = useState({
     operator: "is",
-    value: "",
+    value: format(new Date(), "yyyy-MM-dd"),
   });
   const [accountFilter, setAccountFilter] = useState({
     operator: "is",
@@ -48,7 +49,7 @@ export const useTransactions = () => {
   });
   const [currencyFilter, setCurrencyFilter] = useState({
     operator: "is",
-    currencies: [],
+    currencies: ["SGD"],
   });
   const [sorting, setSorting] = useState({
     date: null, // null, 'asc', 'desc'
@@ -103,6 +104,84 @@ export const useTransactions = () => {
     }
   };
 
+  const buildCurrentFilterPayload = () => {
+    const filterPayload = {};
+
+    if (nameFilter.value && nameFilter.value.trim() !== "") {
+      filterPayload.name = {
+        operator: nameFilter.operator,
+        value: nameFilter.value.trim(),
+      };
+    }
+
+    if (
+      amountFilter.value !== "" &&
+      amountFilter.value !== null &&
+      amountFilter.value !== undefined
+    ) {
+      filterPayload.amount = {
+        operator: amountFilter.operator,
+        value: amountFilter.value,
+      };
+    }
+
+    if (
+      dateFilter.value !== "" &&
+      dateFilter.value !== null &&
+      dateFilter.value !== undefined
+    ) {
+      if (dateFilter.operator === "is") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value,
+        };
+      } else if (dateFilter.operator === "is between") {
+        filterPayload.date = {
+          operator: dateFilter.operator,
+          startDate: dateFilter.value.startDate,
+          endDate: dateFilter.value.endDate,
+        };
+      }
+    }
+
+    if (accountFilter.ids && accountFilter.ids.length > 0) {
+      filterPayload.accounts = {
+        operator: accountFilter.operator,
+        ids: accountFilter.ids,
+      };
+    }
+
+    if (categoryFilter.ids && categoryFilter.ids.length > 0) {
+      filterPayload.categories = {
+        operator: categoryFilter.operator,
+        ids: categoryFilter.ids,
+      };
+    }
+
+    if (typeFilter.types && typeFilter.types.length > 0) {
+      filterPayload.types = {
+        operator: typeFilter.operator,
+        types: typeFilter.types,
+      };
+    }
+
+    if (remarksFilter.value && remarksFilter.value.trim() !== "") {
+      filterPayload.remarks = {
+        operator: remarksFilter.operator,
+        value: remarksFilter.value.trim(),
+      };
+    }
+
+    if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
+      filterPayload.currencies = {
+        operator: currencyFilter.operator,
+        currencies: currencyFilter.currencies,
+      };
+    }
+
+    return filterPayload;
+  };
+
   const updateTransaction = async (transactionId, transactionData) => {
     try {
       setLoading(true);
@@ -113,7 +192,7 @@ export const useTransactions = () => {
       );
       if (result.success) {
         // Reload transactions to reflect the update
-        await loadTransactions(currentPage);
+        await loadTransactions(currentPage, buildCurrentFilterPayload());
       }
       return result;
     } catch (err) {
@@ -132,7 +211,7 @@ export const useTransactions = () => {
       const result = await deleteTransactionService(transactionId);
       if (result.success) {
         // Reload transactions to reflect the deletion
-        await loadTransactions(currentPage);
+        await loadTransactions(currentPage, buildCurrentFilterPayload());
       }
       return result;
     } catch (err) {
@@ -146,38 +225,28 @@ export const useTransactions = () => {
 
   const applyNameFilter = (filter) => {
     setNameFilter(filter);
-    // Only trigger API call if there's a value
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (filter.value && filter.value.trim() !== "") {
-      const filterPayload = {
-        name: { operator: filter.operator, value: filter.value.trim() },
-      };
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearNameFilter = () => {
     // Only reload if there was actually a filter value to clear
     const hadValue = nameFilter.value && nameFilter.value.trim() !== "";
+    if (!hadValue) return;
     setNameFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyAmountFilter = (filter) => {
     setAmountFilter(filter);
-    // Only trigger API call if there's a value (handle both string and numeric values)
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (
       filter.value !== "" &&
       filter.value !== null &&
       filter.value !== undefined
     ) {
-      const filterPayload = {
-        amount: { operator: filter.operator, value: filter.value },
-      };
-      console.log("Amount filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
@@ -187,40 +256,19 @@ export const useTransactions = () => {
       amountFilter.value !== "" &&
       amountFilter.value !== null &&
       amountFilter.value !== undefined;
+    if (!hadValue) return;
     setAmountFilter({ operator: "=", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyDateFilter = (filter) => {
     setDateFilter(filter);
-    // Only trigger API call if there's a value
+    // Reset to page 0 when applying a real value; data load is handled by the consolidated effect.
     if (
       filter.value !== "" &&
       filter.value !== null &&
       filter.value !== undefined
     ) {
-      let filterPayload;
-      if (filter.operator === "is") {
-        filterPayload = {
-          date: {
-            operator: filter.operator,
-            startDate: filter.value,
-          },
-        };
-      } else if (filter.operator === "is between") {
-        filterPayload = {
-          date: {
-            operator: filter.operator,
-            startDate: filter.value.startDate,
-            endDate: filter.value.endDate,
-          },
-        };
-      }
-      console.log("Date filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
@@ -230,122 +278,81 @@ export const useTransactions = () => {
       dateFilter.value !== "" &&
       dateFilter.value !== null &&
       dateFilter.value !== undefined;
+    if (!hadValue) return;
     setDateFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyAccountFilter = (filter) => {
     setAccountFilter(filter);
-    // Only trigger API call if there are selected accounts
+    // Reset to page 0 when applying a selection; data load is handled by the consolidated effect.
     if (filter.ids && filter.ids.length > 0) {
-      const filterPayload = {
-        accounts: { operator: filter.operator, ids: filter.ids },
-      };
-      console.log("Account filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearAccountFilter = () => {
     // Only reload if there were actually selected accounts to clear
     const hadAccounts = accountFilter.ids && accountFilter.ids.length > 0;
+    if (!hadAccounts) return;
     setAccountFilter({ operator: "is", ids: [] });
-
-    if (hadAccounts) {
-      loadTransactions(currentPage);
-    }
   };
 
   const applyCategoryFilter = (filter) => {
     setCategoryFilter(filter);
-    // Only trigger API call if there are selected categories
+    // Reset to page 0 when applying a selection; data load is handled by the consolidated effect.
     if (filter.ids && filter.ids.length > 0) {
-      const filterPayload = {
-        categories: { operator: filter.operator, ids: filter.ids },
-      };
-      console.log("Category filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearCategoryFilter = () => {
     // Only reload if there were actually selected categories to clear
     const hadCategories = categoryFilter.ids && categoryFilter.ids.length > 0;
+    if (!hadCategories) return;
     setCategoryFilter({ operator: "is", ids: [] });
-
-    if (hadCategories) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Type filter functions
   const applyTypeFilter = (filter) => {
     setTypeFilter(filter);
     if (filter.types && filter.types.length > 0) {
-      const filterPayload = {
-        types: { operator: filter.operator, types: filter.types },
-      };
-      console.log("Type filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearTypeFilter = () => {
     const hadTypes = typeFilter.types && typeFilter.types.length > 0;
+    if (!hadTypes) return;
     setTypeFilter({ operator: "is", types: [] });
-
-    if (hadTypes) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Remarks filter functions
   const applyRemarksFilter = (filter) => {
     setRemarksFilter(filter);
     if (filter.value && filter.value.trim() !== "") {
-      const filterPayload = {
-        remarks: { operator: filter.operator, value: filter.value.trim() },
-      };
-      console.log("Remarks filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearRemarksFilter = () => {
     const hadValue = remarksFilter.value && remarksFilter.value.trim() !== "";
+    if (!hadValue) return;
     setRemarksFilter({ operator: "is", value: "" });
-
-    if (hadValue) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Currency filter functions
   const applyCurrencyFilter = (filter) => {
     setCurrencyFilter(filter);
     if (filter.currencies && filter.currencies.length > 0) {
-      const filterPayload = {
-        currencies: {
-          operator: filter.operator,
-          currencies: filter.currencies,
-        },
-      };
-      console.log("Currency filter applied:", filterPayload);
-      loadTransactions(0, filterPayload);
+      setCurrentPage(0);
     }
   };
 
   const clearCurrencyFilter = () => {
     const hadCurrencies =
       currencyFilter.currencies && currencyFilter.currencies.length > 0;
+    if (!hadCurrencies) return;
     setCurrencyFilter({ operator: "is", currencies: [] });
-
-    if (hadCurrencies) {
-      loadTransactions(currentPage);
-    }
   };
 
   // Sorting functions
@@ -458,17 +465,15 @@ export const useTransactions = () => {
     loadTransactions(page, filterPayload);
   };
 
-  // Filter effect - only when there's a value
+  // Consolidated effect - load transactions when dependencies change
   useEffect(() => {
     const filterPayload = {};
-    let hasFilters = false;
 
     if (nameFilter.value && nameFilter.value.trim() !== "") {
       filterPayload.name = {
         operator: nameFilter.operator,
         value: nameFilter.value.trim(),
       };
-      hasFilters = true;
     }
 
     if (
@@ -480,7 +485,6 @@ export const useTransactions = () => {
         operator: amountFilter.operator,
         value: amountFilter.value,
       };
-      hasFilters = true;
     }
 
     if (
@@ -500,7 +504,6 @@ export const useTransactions = () => {
           endDate: dateFilter.value.endDate,
         };
       }
-      hasFilters = true;
     }
 
     if (accountFilter.ids && accountFilter.ids.length > 0) {
@@ -508,7 +511,6 @@ export const useTransactions = () => {
         operator: accountFilter.operator,
         ids: accountFilter.ids,
       };
-      hasFilters = true;
     }
 
     if (categoryFilter.ids && categoryFilter.ids.length > 0) {
@@ -516,7 +518,6 @@ export const useTransactions = () => {
         operator: categoryFilter.operator,
         ids: categoryFilter.ids,
       };
-      hasFilters = true;
     }
 
     if (typeFilter.types && typeFilter.types.length > 0) {
@@ -524,7 +525,6 @@ export const useTransactions = () => {
         operator: typeFilter.operator,
         types: typeFilter.types,
       };
-      hasFilters = true;
     }
 
     if (remarksFilter.value && remarksFilter.value.trim() !== "") {
@@ -532,7 +532,6 @@ export const useTransactions = () => {
         operator: remarksFilter.operator,
         value: remarksFilter.value.trim(),
       };
-      hasFilters = true;
     }
 
     if (currencyFilter.currencies && currencyFilter.currencies.length > 0) {
@@ -540,72 +539,30 @@ export const useTransactions = () => {
         operator: currencyFilter.operator,
         currencies: currencyFilter.currencies,
       };
-      hasFilters = true;
     }
 
-    if (hasFilters) {
-      loadTransactions(0, filterPayload);
-    }
-  }, [
-    nameFilter.value,
-    amountFilter.value,
-    dateFilter.value,
-    accountFilter.ids,
-    categoryFilter.ids,
-    typeFilter.types,
-    remarksFilter.value,
-    currencyFilter.currencies,
-  ]); // Watch all filter values
-
-  // Pagination effect - only when no filter
-  useEffect(() => {
-    const hasNameFilter = nameFilter.value && nameFilter.value.trim() !== "";
-    const hasAmountFilter =
-      amountFilter.value !== "" &&
-      amountFilter.value !== null &&
-      amountFilter.value !== undefined;
-    const hasDateFilter =
-      dateFilter.value !== "" &&
-      dateFilter.value !== null &&
-      dateFilter.value !== undefined;
-    const hasAccountFilter = accountFilter.ids && accountFilter.ids.length > 0;
-    const hasCategoryFilter =
-      categoryFilter.ids && categoryFilter.ids.length > 0;
-    const hasTypeFilter = typeFilter.types && typeFilter.types.length > 0;
-    const hasRemarksFilter =
-      remarksFilter.value && remarksFilter.value.trim() !== "";
-    const hasCurrencyFilter =
-      currencyFilter.currencies && currencyFilter.currencies.length > 0;
-
-    if (
-      !hasNameFilter &&
-      !hasAmountFilter &&
-      !hasDateFilter &&
-      !hasAccountFilter &&
-      !hasCategoryFilter &&
-      !hasTypeFilter &&
-      !hasRemarksFilter &&
-      !hasCurrencyFilter
-    ) {
-      loadTransactions(currentPage);
-    }
+    loadTransactions(currentPage, filterPayload);
   }, [
     currentPage,
     nameFilter.value,
+    nameFilter.operator,
     amountFilter.value,
+    amountFilter.operator,
     dateFilter.value,
+    dateFilter.operator,
     accountFilter.ids,
+    accountFilter.operator,
     categoryFilter.ids,
+    categoryFilter.operator,
     typeFilter.types,
+    typeFilter.operator,
     remarksFilter.value,
+    remarksFilter.operator,
     currencyFilter.currencies,
+    currencyFilter.operator,
+    sorting.date,
+    sorting.amount,
   ]);
-
-  // Sorting effect - reload when sorting changes
-  useEffect(() => {
-    // Always reload when sorting changes, even when clearing sort
-    loadTransactions(currentPage);
-  }, [sorting.date, sorting.amount]);
 
   return {
     transactions,

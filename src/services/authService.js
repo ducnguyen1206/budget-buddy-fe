@@ -2,7 +2,6 @@ import { getApiUrl, API_ENDPOINTS, getApiHeaders } from "../config/api";
 import { HTTP_STATUS, API_ERROR_MESSAGES } from "../constants/validation";
 import {
   storeTokens,
-  getRefreshToken,
 } from "../utils/tokenManager";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import tokenRefreshManager from "../utils/tokenRefreshManager";
@@ -15,23 +14,24 @@ export const loginWithGoogle = async (code, t = null) => {
     const response = await fetch(url, {
       method: "GET",
       headers: getApiHeaders(false),
+      credentials: "include",
     });
 
     if (response.status === 200) {
       try {
         const responseData = await response.json();
-        const { token, refreshToken } = responseData;
+        const { token } = responseData;
 
         // Store tokens in sessionStorage
-        if (token || refreshToken) {
-          storeTokens(token, refreshToken);
+        if (token) {
+          storeTokens(token);
           // Start token refresh manager
           tokenRefreshManager.start();
 
           // Dispatch custom event to notify other components
           window.dispatchEvent(
             new CustomEvent("authTokensStored", {
-              detail: { token, refreshToken },
+              detail: { token },
             })
           );
         }
@@ -81,18 +81,18 @@ export const loginUser = async (email, password, t = null) => {
     if (response.status === 200) {
       try {
         const responseData = await response.json();
-        const { token, refreshToken } = responseData;
+        const { token } = responseData;
 
         // Store tokens in sessionStorage
-        if (token || refreshToken) {
-          storeTokens(token, refreshToken);
+        if (token) {
+          storeTokens(token);
           // Start token refresh manager
           tokenRefreshManager.start();
 
           // Dispatch custom event to notify other components
           window.dispatchEvent(
             new CustomEvent("authTokensStored", {
-              detail: { token, refreshToken },
+              detail: { token },
             })
           );
         }
@@ -102,7 +102,6 @@ export const loginUser = async (email, password, t = null) => {
           data: {
             email,
             token,
-            refreshToken,
           },
         };
       } catch (jsonError) {
@@ -187,7 +186,7 @@ export const verifyToken = async (token, t = null) => {
     const response = await fetch(getApiUrl(API_ENDPOINTS.VERIFY), {
       method: "POST",
       headers: getApiHeaders(false), // No auth needed for token verification
-      body: JSON.stringify({ refreshToken: token }),
+      body: JSON.stringify({ token }),
     });
 
     if (response.status === HTTP_STATUS.CREATED || response.status === 200) {
@@ -317,22 +316,14 @@ export const resetPassword = async (
 // Refresh token service
 export const refreshToken = async (t = null) => {
   try {
-    const refreshTokenValue = getRefreshToken();
-
-    if (!refreshTokenValue) {
-      console.warn("No refresh token available");
-      return {
-        success: false,
-        error: "No refresh token available",
-      };
-    }
+   
 
     const response = await fetchWithAuth(
       getApiUrl(API_ENDPOINTS.REFRESH_TOKEN),
       {
         method: "POST",
         headers: getApiHeaders(true), // Include auth token for refresh token API
-        body: JSON.stringify({ refreshToken: refreshTokenValue }),
+        credentials: "include",
       },
       t
     );
@@ -345,18 +336,25 @@ export const refreshToken = async (t = null) => {
     if (response.status === 200) {
       try {
         const responseData = await response.json();
-        const { token, refreshToken: newRefreshToken } = responseData;
+        const { token } = responseData;
 
         // Store new tokens
-        if (token || newRefreshToken) {
-          storeTokens(token, newRefreshToken);
+        if (token) {
+          storeTokens(token);
+          tokenRefreshManager.start();
+
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(
+            new CustomEvent("authTokensStored", {
+              detail: { token },
+            })
+          );
         }
 
         return {
           success: true,
           data: {
             token,
-            refreshToken: newRefreshToken,
           },
         };
       } catch (jsonError) {

@@ -18,23 +18,51 @@ export default function BudgetsPage() {
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("SGD");
 
-  // Fetch budgets from API on component mount
+  // Common currencies list
+  const currencies = [
+    { code: "", label: t("budgets.allCurrencies") },
+    { code: "SGD", label: "SGD" },
+    { code: "VND", label: "VND" },
+  ];
+
+  // Fetch budgets from API on component mount or when currency changes
   useEffect(() => {
     loadBudgets();
-  }, []);
+  }, [selectedCurrency]);
 
   // Filter budgets based on search input
   const filteredBudgets = budgets.filter((budget) =>
     budget.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Calculate totals when currency is selected
+  const calculateTotals = () => {
+    if (!selectedCurrency || filteredBudgets.length === 0) {
+      return null;
+    }
+
+    const totals = filteredBudgets.reduce(
+      (acc, budget) => ({
+        totalBudget: acc.totalBudget + (budget.amount || 0),
+        totalSpent: acc.totalSpent + (budget.spentAmount || 0),
+        totalRemaining: acc.totalRemaining + (budget.remainingAmount || 0),
+      }),
+      { totalBudget: 0, totalSpent: 0, totalRemaining: 0 }
+    );
+
+    return totals;
+  };
+
+  const totals = calculateTotals();
+
   // Load budgets from API
   const loadBudgets = async () => {
     setIsLoading(true);
     setError("");
 
-    const result = await fetchBudgets(t);
+    const result = await fetchBudgets(selectedCurrency, t);
 
     // Check if the result indicates a redirect should happen
     if (shouldRedirectToLogin(result)) {
@@ -280,14 +308,29 @@ export default function BudgetsPage() {
             </div>
           </div>
 
-          {/* New Budget Button */}
-          <button
-            onClick={() => navigate("/budgets/new")}
-            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>{t("budgets.new")}</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            {/* Currency Filter */}
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            >
+              {currencies.map((currency) => (
+                <option key={currency.code} value={currency.code}>
+                  {currency.label}
+                </option>
+              ))}
+            </select>
+
+            {/* New Budget Button */}
+            <button
+              onClick={() => navigate("/budgets/new")}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>{t("budgets.new")}</span>
+            </button>
+          </div>
         </div>
 
         {/* Error Message */}
@@ -337,7 +380,56 @@ export default function BudgetsPage() {
                       </td>
                     </tr>
                   ) : (
-                    filteredBudgets.map(renderBudgetRow)
+                    <>
+                      {filteredBudgets.map(renderBudgetRow)}
+
+                      {/* Totals Row - Only show when currency is selected */}
+                      {totals && (
+                        <tr className="bg-gray-50 font-semibold border-t-2 border-gray-300">
+                          <td className="px-6 py-5 whitespace-nowrap text-xl font-bold text-gray-900">
+                            Total
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              {formatAmount(totals.totalBudget)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div
+                              className={`text-xl font-bold ${
+                                totals.totalSpent < 0
+                                  ? "text-red-600"
+                                  : "text-gray-900"
+                              }`}
+                            >
+                              {formatAmount(totals.totalSpent)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div
+                              className={`text-xl font-bold ${
+                                totals.totalRemaining < 0
+                                  ? "text-red-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {formatAmount(totals.totalRemaining)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              -
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <div className="text-xl font-bold text-gray-900">
+                              {selectedCurrency}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">-</td>
+                        </tr>
+                      )}
+                    </>
                   )}
                 </tbody>
               </table>

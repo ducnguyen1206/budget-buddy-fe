@@ -27,7 +27,10 @@
     "removeFilter": "Remove filter",
     "clearFilters": "Clear filters",
     "applyFilters": "Apply filters",
-    "actions": "Actions"
+    "actions": "Actions",
+    "clear": "Clear",
+    "remove": "Remove",
+    "editing": "Editing"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -104,7 +107,9 @@
     "accountRequired": "Please select an account",
     "fromAccountRequired": "Please select a source account",
     "toAccountRequired": "Please select a destination account",
-    "differentAccountsRequired": "Source and destination accounts must be different"
+    "differentAccountsRequired": "Source and destination accounts must be different",
+    "targetCategoryRequired": "Please select a target category",
+    "differentCategoriesRequired": "Source and target categories must be different"
   },
   "errors": {
     "networkError": "Connection issue detected. Please check your internet connection and try again.",
@@ -134,6 +139,14 @@
     "categoryAlreadyExists": "A category with this name already exists. Please choose a different name.",
     "categoryNotFound": "Category not found. Please check the category ID and try again.",
     "categoryInUse": "This category is currently in use and cannot be deleted. Please remove all references to this category first.",
+    "fetchSavingsFailed": "Failed to fetch savings. Please try again.",
+    "fetchSavingFailed": "Failed to fetch saving. Please try again.",
+    "createSavingFailed": "Failed to create saving. Please try again.",
+    "invalidSavingData": "Invalid saving data. Please check your input and try again.",
+    "deleteSavingFailed": "Failed to delete saving. Please try again.",
+    "updateSavingFailed": "Failed to update saving. Please try again.",
+    "savingNotFound": "Saving not found. Please check the ID and try again.",
+    "savingInUse": "This saving is currently in use and cannot be deleted.",
     "fetchBudgetsFailed": "Failed to fetch budgets. Please try again.",
     "fetchBudgetFailed": "Failed to fetch budget. Please try again.",
     "createBudgetFailed": "Failed to create budget. Please try again.",
@@ -167,6 +180,7 @@
       "overview": "Overview",
       "accounts": "Accounts",
       "transactions": "Transactions",
+      "savings": "Savings",
       "budgets": "Budgets",
       "categories": "Categories"
     },
@@ -214,6 +228,7 @@
     "remaining": "Remaining",
     "updatedAt": "Updated At",
     "currency": "Currency",
+    "allCurrencies": "All Currencies",
     "amount": "Amount",
     "createBudget": "Create Budget",
     "editBudget": "Edit Budget",
@@ -226,6 +241,29 @@
     "noBudgetsMatching": "No budgets match your search",
     "confirmDelete": "Delete Budget",
     "deleteWarning": "Are you sure you want to delete the budget for '{name}'? This action cannot be undone."
+  },
+  "savings": {
+    "title": "Savings",
+    "name": "Name",
+    "amount": "Amount",
+    "currency": "Currency",
+    "account": "Account",
+    "notes": "Notes",
+    "date": "Date",
+    "allCurrencies": "All Currencies",
+    "createSaving": "Create Saving",
+    "editSaving": "Edit Saving",
+    "selectAccount": "Select account",
+    "selectCurrency": "Select currency",
+    "namePlaceholder": "Enter saving name",
+    "amountPlaceholder": "Enter saving amount",
+    "notesPlaceholder": "Add a note (optional)",
+    "new": "New Saving",
+    "searchPlaceholder": "Search savings...",
+    "noSavingsFound": "No savings found",
+    "noSavingsMatching": "No savings match your search",
+    "confirmDelete": "Delete Saving",
+    "deleteWarning": "Are you sure you want to delete the saving '{name}'? This action cannot be undone."
   },
   "accounts": {
     "searchPlaceholder": "Search accounts...",
@@ -253,7 +291,11 @@
     "deleteGroupWarning": "Are you sure you want to delete the account group \"{name}\"? This will delete all accounts in this group and all related transactions in those accounts. This action cannot be undone.",
     "expandGroup": "Expand group",
     "collapseGroup": "Collapse group",
-    "totalConsolidated": "Total Consolidated"
+    "totalConsolidated": "Total Consolidated",
+    "savingAccount": "Saving account",
+    "savingAccountHint": "This is a saving account",
+    "saving": "Saving",
+    "normal": "Normal"
   },
   "transactions": {
     "title": "Transactions",
@@ -330,14 +372,22 @@
     "accountPlaceholder": "Select account",
     "fromAccount": "From Account",
     "toAccount": "To Account",
+    "toCategory": "To Category",
     "fromAccountPlaceholder": "Select source account",
     "toAccountPlaceholder": "Select destination account",
+    "toCategoryPlaceholder": "Select target category",
     "currencyNote": "Currency will be set based on selected account",
     "typePlaceholder": "Select transaction type",
     "remarksPlaceholder": "Enter remarks (optional)",
     "deleteTransaction": "Delete Transaction",
     "deleteConfirmation": "Are you sure you want to delete the transaction '{name}'? This action cannot be undone.",
     "transferCannotBeEdited": "Transfer transactions cannot be edited",
-    "transferCannotBeDeleted": "Transfer transactions cannot be deleted"
+    "transferCannotBeDeleted": "Transfer transactions cannot be deleted",
+    "addToList": "Add to list",
+    "updateItem": "Update item",
+    "submitAll": "Submit all",
+    "pendingTransactions": "Pending transactions",
+    "createManyFailed": "Failed to create transactions",
+    "createManyFailedTryAgain": "Failed to create transactions. Please try again."
   }
 }

@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { Plus } from "lucide-react";
 import {
   fetchCategoriesForTransaction,
   fetchAccountsForTransaction,
   createTransaction,
+  createTransactionCollection,
   updateTransaction,
 } from "../../services/transactionService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
@@ -18,17 +20,26 @@ const TransactionForm = () => {
   const isEditMode = !!id;
   const existingTransaction = location.state?.transaction;
 
+  const getTodayDateInputValue = () => {
+    // Use local date (not UTC) to avoid off-by-one day in timezones ahead of UTC.
+    const now = new Date();
+    const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return localTime.toISOString().slice(0, 10);
+  };
+
   // State
   const [formData, setFormData] = useState({
     name: "",
     amount: "",
     currency: "",
     categoryId: "",
+    targetCategoryId: "",
     accountId: "",
     fromAccountId: "",
     toAccountId: "",
-    type: "",
+    type: "EXPENSE",
     remarks: "",
+    date: getTodayDateInputValue(), // YYYY-MM-DD format (local)
   });
 
   const [validationErrors, setValidationErrors] = useState({});
@@ -37,9 +48,12 @@ const TransactionForm = () => {
   const [categories, setCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [stagedTransactions, setStagedTransactions] = useState([]);
+  const [editingStagedIndex, setEditingStagedIndex] = useState(null);
 
   // Refs for dropdowns
   const categoryRef = useRef(null);
+  const targetCategoryRef = useRef(null);
   const accountRef = useRef(null);
   const fromAccountRef = useRef(null);
   const toAccountRef = useRef(null);
@@ -47,6 +61,7 @@ const TransactionForm = () => {
 
   // Dropdown states
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showTargetCategoryDropdown, setShowTargetCategoryDropdown] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showFromAccountDropdown, setShowFromAccountDropdown] = useState(false);
   const [showToAccountDropdown, setShowToAccountDropdown] = useState(false);
@@ -89,6 +104,12 @@ const TransactionForm = () => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) {
         setShowCategoryDropdown(false);
+      }
+      if (
+        targetCategoryRef.current &&
+        !targetCategoryRef.current.contains(event.target)
+      ) {
+        setShowTargetCategoryDropdown(false);
       }
       if (accountRef.current && !accountRef.current.contains(event.target)) {
         setShowAccountDropdown(false);
@@ -140,11 +161,16 @@ const TransactionForm = () => {
           amount: Math.abs(existingTransaction.amount).toString() || "",
           currency: existingTransaction.currency || "",
           categoryId: existingTransaction.categoryId || "",
+          targetCategoryId: existingTransaction.targetCategoryId || "",
           accountId: existingTransaction.accountId || "",
-          fromAccountId: existingTransaction.categoryType === "TRANSFER" ? existingTransaction.accountId : "",
+          fromAccountId:
+            existingTransaction.categoryType === "TRANSFER"
+              ? existingTransaction.accountId
+              : "",
           toAccountId: existingTransaction.targetAccountId || "",
           type: existingTransaction.categoryType || "EXPENSE",
           remarks: existingTransaction.remarks || "",
+          date: existingTransaction.date || getTodayDateInputValue(),
         });
       }
     } catch (error) {
@@ -169,9 +195,9 @@ const TransactionForm = () => {
   const getTypesForCategory = () => {
     // When editing, only allow EXPENSE and INCOME (no TRANSFER)
     if (isEditMode) {
-      return ['EXPENSE', 'INCOME'];
+      return ["EXPENSE", "INCOME"];
     }
-    return ['EXPENSE', 'INCOME', 'TRANSFER'];
+    return ["EXPENSE", "INCOME", "TRANSFER"];
   };
 
   // Get all accounts from all groups
@@ -182,12 +208,8 @@ const TransactionForm = () => {
   // All data (no filtering since only selection is allowed)
   const filteredCategories = getDistinctCategories();
   const filteredAccounts = getAllAccounts();
-  const filteredFromAccounts = getAllAccounts().filter(
-    (account) => account.id !== formData.toAccountId
-  );
-  const filteredToAccounts = getAllAccounts().filter(
-    (account) => account.id !== formData.fromAccountId
-  );
+  const filteredFromAccounts = getAllAccounts();
+  const filteredToAccounts = getAllAccounts();
 
   // Event handlers
   const handleInputChange = (field, value) => {
@@ -206,8 +228,17 @@ const TransactionForm = () => {
       categoryName: category.name,
       // Reset type when category changes
       type: "EXPENSE",
+      targetCategoryId: "",
     }));
     setShowCategoryDropdown(false);
+  };
+
+  const handleTargetCategorySelect = (category) => {
+    setFormData((prev) => ({
+      ...prev,
+      targetCategoryId: category.id,
+    }));
+    setShowTargetCategoryDropdown(false);
   };
 
   const handleAccountSelect = (account) => {
@@ -266,8 +297,17 @@ const TransactionForm = () => {
       if (!formData.toAccountId) {
         errors.toAccount = t("validation.toAccountRequired");
       }
-      if (formData.fromAccountId === formData.toAccountId) {
-        errors.toAccount = t("validation.differentAccountsRequired");
+    
+
+      if (!formData.targetCategoryId) {
+        errors.targetCategory = t("validation.targetCategoryRequired");
+      }
+      if (
+        formData.categoryId &&
+        formData.targetCategoryId &&
+        String(formData.categoryId) === String(formData.targetCategoryId)
+      ) {
+        errors.targetCategory = t("validation.differentCategoriesRequired");
       }
     } else {
       if (!formData.accountId) {
@@ -279,8 +319,157 @@ const TransactionForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const buildTransactionPayload = () => {
+    const currentDate = formData.date;
+    const transactionData = {
+      name: formData.name.trim(),
+      amount: parseFloat(formData.amount),
+      categoryId: formData.categoryId,
+      date: currentDate,
+      remarks: formData.remarks.trim(),
+      categoryType: formData.type,
+    };
+
+    if (formData.type === "TRANSFER") {
+      transactionData.accountId = formData.fromAccountId;
+      transactionData.targetAccountId = formData.toAccountId;
+      transactionData.targetCategoryId = formData.targetCategoryId;
+    } else {
+      transactionData.accountId = formData.accountId;
+    }
+
+    return transactionData;
+  };
+
+  const isFormEffectivelyEmpty = () => {
+    return (
+      !formData.name.trim() &&
+      !formData.amount &&
+      !formData.categoryId &&
+      !formData.targetCategoryId &&
+      !formData.accountId &&
+      !formData.fromAccountId &&
+      !formData.toAccountId &&
+      !formData.remarks.trim()
+    );
+  };
+
+  const getCurrencyForAccountId = (accountId) => {
+    if (!accountId) return "";
+    const all = getAllAccounts();
+    const account = all.find((a) => String(a.id) === String(accountId));
+    return account?.currency || "";
+  };
+
+  const handleStageTransaction = () => {
+    setError("");
+    if (!validateForm()) return;
+
+    const payload = buildTransactionPayload();
+
+    setStagedTransactions((prev) => {
+      if (editingStagedIndex === null || editingStagedIndex === undefined) {
+        return [...prev, payload];
+      }
+      return prev.map((tx, idx) => (idx === editingStagedIndex ? payload : tx));
+    });
+
+    setEditingStagedIndex(null);
+    setFormData((prev) => ({
+      ...prev,
+      name: "",
+      amount: "",
+      categoryId: "",
+      targetCategoryId: "",
+      accountId: "",
+      fromAccountId: "",
+      toAccountId: "",
+      currency: "",
+      remarks: "",
+      type: "EXPENSE",
+      date: prev.date,
+    }));
+    setValidationErrors({});
+  };
+
+  const handleEditStagedTransaction = (tx, index) => {
+    setError("");
+    setValidationErrors({});
+    setEditingStagedIndex(index);
+
+    const type = tx.categoryType || "EXPENSE";
+    if (type === "TRANSFER") {
+      const fromId = tx.accountId || "";
+      const toId = tx.targetAccountId || "";
+      setFormData((prev) => ({
+        ...prev,
+        name: tx.name || "",
+        amount: tx.amount != null ? String(tx.amount) : "",
+        currency: getCurrencyForAccountId(fromId),
+        categoryId: tx.categoryId || "",
+        targetCategoryId: tx.targetCategoryId || "",
+        accountId: "",
+        fromAccountId: fromId,
+        toAccountId: toId,
+        type,
+        remarks: tx.remarks || "",
+        date: tx.date || prev.date,
+      }));
+      return;
+    }
+
+    const accountId = tx.accountId || "";
+    setFormData((prev) => ({
+      ...prev,
+      name: tx.name || "",
+      amount: tx.amount != null ? String(tx.amount) : "",
+      currency: getCurrencyForAccountId(accountId),
+      categoryId: tx.categoryId || "",
+      targetCategoryId: "",
+      accountId,
+      fromAccountId: "",
+      toAccountId: "",
+      type,
+      remarks: tx.remarks || "",
+      date: tx.date || prev.date,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isEditMode && stagedTransactions.length > 0) {
+      const transactionsToCreate = [...stagedTransactions];
+
+      if (!isFormEffectivelyEmpty()) {
+        if (!validateForm()) {
+          return;
+        }
+        transactionsToCreate.push(buildTransactionPayload());
+      }
+
+      try {
+        setLoading(true);
+
+        const result =
+          transactionsToCreate.length > 1
+            ? await createTransactionCollection(transactionsToCreate)
+            : await createTransaction(transactionsToCreate[0]);
+
+        if (result.success) {
+          navigate("/transactions");
+        } else {
+          setError(result.message || t("transactions.createManyFailed"));
+        }
+      } catch (error) {
+        console.error("Error creating transactions:", error);
+        setError(t("transactions.createManyFailedTryAgain"));
+      } finally {
+        setLoading(false);
+      }
+
+      return;
+    }
 
     if (!validateForm()) {
       return;
@@ -289,27 +478,8 @@ const TransactionForm = () => {
     try {
       setLoading(true);
 
-      // Get current date or use existing date in YYYY-MM-DD format
-      const currentDate = isEditMode && existingTransaction?.date
-        ? existingTransaction.date
-        : new Date().toISOString().split("T")[0];
-
-      const transactionData = {
-        name: formData.name.trim(),
-        amount: parseFloat(formData.amount),
-        categoryId: formData.categoryId,
-        date: currentDate,
-        remarks: formData.remarks.trim(),
-        categoryType: formData.type,
-      };
-
-      // Add account fields based on transaction type
-      if (formData.type === "TRANSFER") {
-        transactionData.accountId = formData.fromAccountId;
-        transactionData.targetAccountId = formData.toAccountId;
-      } else {
-        transactionData.accountId = formData.accountId;
-      }
+      // Use the date from formData
+      const transactionData = buildTransactionPayload();
 
       let result;
       if (isEditMode) {
@@ -336,7 +506,9 @@ const TransactionForm = () => {
         error
       );
       setError(
-        `Failed to ${isEditMode ? "update" : "create"} transaction. Please try again.`
+        `Failed to ${
+          isEditMode ? "update" : "create"
+        } transaction. Please try again.`
       );
     } finally {
       setLoading(false);
@@ -346,6 +518,11 @@ const TransactionForm = () => {
   // Get selected category name
   const getSelectedCategoryName = () => {
     const category = categories.find((cat) => cat.id === formData.categoryId);
+    return category ? category.name : "";
+  };
+
+  const getSelectedTargetCategoryName = () => {
+    const category = categories.find((cat) => cat.id === formData.targetCategoryId);
     return category ? category.name : "";
   };
 
@@ -400,7 +577,17 @@ const TransactionForm = () => {
 
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              const target = e.target;
+              const tag = target && typeof target.tagName === "string" ? target.tagName : "";
+              if (tag.toUpperCase() === "TEXTAREA") return;
+              e.preventDefault();
+            }}
+            className="space-y-6"
+          >
             {/* Name Field */}
             <div>
               <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
@@ -422,6 +609,20 @@ const TransactionForm = () => {
                   {validationErrors.name}
                 </p>
               )}
+            </div>
+
+            {/* Date Field */}
+            <div>
+              <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                {t("transactions.date")}
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleInputChange("date", e.target.value)}
+                // max={new Date().toISOString().split("T")[0]}
+                className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             {/* Account Selection - Regular */}
@@ -637,35 +838,77 @@ const TransactionForm = () => {
               )}
             </div>
 
-            {/* Type Selection - Only available after category is selected */}
-            {formData.categoryId && (
-              <div ref={typeRef} className="relative">
+            {/* Target Category Selection (Transfer only) */}
+            {formData.type === "TRANSFER" && (
+              <div ref={targetCategoryRef} className="relative">
                 <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
-                  {t("transactions.type")}
+                  {t("transactions.toCategory")}
                 </label>
                 <input
                   type="text"
-                  value={t(`transactions.${formData.type.toLowerCase()}`)}
-                  onChange={() => {}} // Read-only input
-                  onFocus={() => setShowTypeDropdown(true)}
-                  className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  placeholder={t("transactions.typePlaceholder")}
+                  value={getSelectedTargetCategoryName()}
+                  onChange={() => {}} // Read-only
+                  onFocus={() => setShowTargetCategoryDropdown(true)}
+                  className={`w-full px-6 py-3 border rounded-2xl text-lg font-inter ${
+                    validationErrors.targetCategory
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  } focus:outline-none focus:ring-2 cursor-pointer`}
+                  placeholder={t("transactions.toCategoryPlaceholder")}
                 />
-                {showTypeDropdown && (
+                {showTargetCategoryDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
-                    {getTypesForCategory().map((type) => (
-                      <div
-                        key={type}
-                        onClick={() => handleTypeSelect(type)}
-                        className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
-                      >
-                        {t(`transactions.${type.toLowerCase()}`)}
-                      </div>
-                    ))}
+                    {filteredCategories
+                      .filter(
+                        (category) =>
+                          String(category.id) !== String(formData.categoryId)
+                      )
+                      .map((category) => (
+                        <div
+                          key={category.id}
+                          onClick={() => handleTargetCategorySelect(category)}
+                          className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
+                        >
+                          {category.name}
+                        </div>
+                      ))}
                   </div>
+                )}
+                {validationErrors.targetCategory && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {validationErrors.targetCategory}
+                  </p>
                 )}
               </div>
             )}
+
+            {/* Type Selection - Only available after category is selected */}
+            <div ref={typeRef} className="relative">
+              <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                {t("transactions.type")}
+              </label>
+              <input
+                type="text"
+                value={t(`transactions.${formData.type.toLowerCase()}`)}
+                onChange={() => {}} // Read-only input
+                onFocus={() => setShowTypeDropdown(true)}
+                className="w-full px-6 py-3 border border-gray-300 rounded-2xl text-lg font-inter focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                placeholder={t("transactions.typePlaceholder")}
+              />
+              {showTypeDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
+                  {getTypesForCategory().map((type) => (
+                    <div
+                      key={type}
+                      onClick={() => handleTypeSelect(type)}
+                      className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
+                    >
+                      {t(`transactions.${type.toLowerCase()}`)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Remarks Field */}
             <div>
@@ -699,6 +942,26 @@ const TransactionForm = () => {
 
             {/* Submit Buttons */}
             <div className="flex justify-end gap-4 pt-6">
+              {!isEditMode && (
+                <button
+                  type="button"
+                  onClick={handleStageTransaction}
+                  disabled={loading}
+                  className="inline-flex items-center justify-center h-10 w-10 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={
+                    editingStagedIndex !== null
+                      ? t("transactions.updateItem")
+                      : t("transactions.addToList")
+                  }
+                  aria-label={
+                    editingStagedIndex !== null
+                      ? t("transactions.updateItem")
+                      : t("transactions.addToList")
+                  }
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => navigate("/transactions")}
@@ -716,9 +979,87 @@ const TransactionForm = () => {
                   ? t("common.saving")
                   : isEditMode
                   ? t("common.update")
+                  : stagedTransactions.length > 0
+                  ? t("transactions.submitAll")
                   : t("common.save")}
               </button>
             </div>
+
+            {!isEditMode && stagedTransactions.length > 0 && (
+              <div className="pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-sm font-medium text-gray-900">
+                    {t("transactions.pendingTransactions")} ({stagedTransactions.length})
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStagedTransactions([]);
+                      setEditingStagedIndex(null);
+                    }}
+                    disabled={loading}
+                    className="text-sm text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t("common.clear")}
+                  </button>
+                </div>
+
+                <div className="border border-gray-200 rounded-lg divide-y">
+                  {stagedTransactions.map((tx, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between p-3 ${
+                        editingStagedIndex === index ? "bg-blue-50" : ""
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editingStagedIndex === index) {
+                            handleStageTransaction();
+                            return;
+                          }
+                          handleEditStagedTransaction(tx, index);
+                        }}
+                        disabled={loading}
+                        className="min-w-0 text-left flex-1 pr-4 disabled:opacity-50"
+                      >
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {tx.name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {tx.categoryType} • {tx.date}
+                        </div>
+                        {editingStagedIndex === index && (
+                          <div className="text-xs text-blue-700 mt-1">
+                            {t("common.editing")}
+                          </div>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStagedTransactions((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          );
+                          setEditingStagedIndex((prev) => {
+                            if (prev === null) return null;
+                            if (prev === index) return null;
+                            if (prev > index) return prev - 1;
+                            return prev;
+                          });
+                        }}
+                        disabled={loading}
+                        className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {t("common.remove")}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </form>
         </div>
       </div>
