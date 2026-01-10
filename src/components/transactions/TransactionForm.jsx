@@ -412,7 +412,17 @@ const TransactionForm = () => {
 
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              const target = e.target;
+              const tag = target && typeof target.tagName === "string" ? target.tagName : "";
+              if (tag.toUpperCase() === "TEXTAREA") return;
+              e.preventDefault();
+            }}
+            className="space-y-6"
+          >
             {/* Name Field */}
             <div>
               <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
