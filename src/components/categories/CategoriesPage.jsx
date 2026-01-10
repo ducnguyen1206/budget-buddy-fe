@@ -175,13 +175,13 @@ export default function CategoriesPage() {
   // Render category row
   const renderCategoryRow = (category) => (
     <tr key={category.id} className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-lg text-gray-900 font-semibold">
+      <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+        <div className="text-base sm:text-lg text-gray-900 font-semibold">
           {category.name}
         </div>
       </td>
       
-      <td className="px-6 py-4 whitespace-nowrap text-right text-lg font-medium">
+      <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-base sm:text-lg font-medium">
         <div className="flex justify-center items-center gap-3">
           <button
             onClick={() => handleEdit(category.id)}
@@ -206,14 +206,14 @@ export default function CategoriesPage() {
     <DashboardLayout activePage="categories">
       <div className="max-w-8xl mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {t("dashboard.nav.categories")}
           </h1>
         </div>
 
         {/* Search and New Button Row */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
           {/* Search Input */}
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -231,7 +231,7 @@ export default function CategoriesPage() {
           {/* New Category Button */}
           <button
             onClick={() => navigate("/categories/new")}
-            className="ml-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors flex items-center space-x-2"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors flex items-center justify-center space-x-2"
           >
             <Plus className="w-5 h-5" />
             <span>{t("categories.new")}</span>
@@ -252,10 +252,10 @@ export default function CategoriesPage() {
                 {/* Table Header */}
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-lg font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-left text-sm sm:text-lg font-medium text-gray-500 uppercase tracking-wider">
                       {t("categories.name")}
                     </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-center text-sm sm:text-lg font-medium text-gray-500 uppercase tracking-wider">
                       {t("common.actions")}
                     </th>
                   </tr>

@@ -223,14 +223,14 @@ export default function AccountsPage() {
   const renderAccountRow = (account) => (
     <div
       key={account.id}
-      className="flex items-center py-3 px-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+      className="flex items-center py-3 px-4 sm:px-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
     >
       <div className="w-8"></div>
-      <div className="flex-1 px-4 ">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-700">{account.name}</span>
+      <div className="flex-1 px-2 sm:px-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+          <span className="text-sm sm:text-base text-gray-700">{account.name}</span>
           <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border w-fit ${
               account.savingAccount
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                 : "bg-slate-50 text-slate-700 border-slate-200"
@@ -240,14 +240,14 @@ export default function AccountsPage() {
           </span>
         </div>
       </div>
-      <div className="flex-1 px-4 text-right">
+      <div className="flex-1 px-2 sm:px-4 text-right">
         <span
-          className={account.balance < 0 ? "text-red-500" : "text-gray-700"}
+          className={`text-sm sm:text-base ${account.balance < 0 ? "text-red-500" : "text-gray-700"}`}
         >
           {formatCurrency(account.balance, account.currency)}
         </span>
       </div>
-      <div className="w-24 flex justify-center pr-8">
+      <div className="w-20 sm:w-24 flex justify-center pr-2 sm:pr-8">
         {renderActionsButtons(account.id, false)}
       </div>
     </div>
@@ -262,22 +262,22 @@ export default function AccountsPage() {
     return (
       <div key={accountGroup.accountType} className="border-b border-gray-200">
         {/* Group Header */}
-        <div className="flex items-center py-4 px-6 hover:bg-gray-50">
+        <div className="flex items-center py-4 px-4 sm:px-6 hover:bg-gray-50">
           {renderExpandButton(
             accountGroup.accountType,
             isExpanded,
             hasAccounts
           )}
 
-          <div className="flex-1 px-4">
-            <h3 className="text-lg font-medium text-gray-900">
+          <div className="flex-1 px-2 sm:px-4">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900">
               {accountGroup.accountType}
             </h3>
           </div>
 
-          <div className="flex-1 px-4 text-right">
+          <div className="flex-1 px-2 sm:px-4 text-right">
             <span
-              className={`text-lg font-semibold ${
+              className={`text-base sm:text-lg font-semibold ${
                 groupBalance < 0 ? "text-red-500" : "text-gray-900"
               }`}
             >
@@ -288,7 +288,7 @@ export default function AccountsPage() {
             </span>
           </div>
 
-          <div className="w-24 flex justify-center">
+          <div className="w-20 sm:w-24 flex justify-center">
             {renderActionsButtons(
               accountGroup.accountType,
               true // isGroup = true
@@ -406,14 +406,14 @@ export default function AccountsPage() {
     <DashboardLayout activePage="accounts">
       <div className="max-w-8xl mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {t("dashboard.nav.accounts")}
           </h1>
         </div>
 
         {/* Search and Actions */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
           <div className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -428,7 +428,7 @@ export default function AccountsPage() {
           </div>
           <button
             onClick={() => navigate("/accounts/new")}
-            className="inline-flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center justify-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
             <span>{t("accounts.new")}</span>
@@ -436,40 +436,42 @@ export default function AccountsPage() {
         </div>
 
         {/* Accounts Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {/* Table Header */}
-          <div className="flex items-center py-4 px-6 bg-gray-50 border-b border-gray-200">
-            <div className="w-8"></div>
-            <div className="flex-1 px-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                {t("accounts.name")}
-              </h3>
-            </div>
-            <div className="flex-1 px-4 text-right">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                {t("accounts.availableBalance")}
-              </h3>
-            </div>
-            <div className="w-24 text-center">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                {t("common.actions")}
-              </h3>
-            </div>
-          </div>
-
-          {/* Table Body */}
-          <div className="divide-y divide-gray-200">
-            {filteredAccounts.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-gray-500 text-lg">
-                  {searchTerm
-                    ? t("accounts.noAccountsMatching")
-                    : t("accounts.noAccountsFound")}
-                </p>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            {/* Table Header */}
+            <div className="flex items-center py-4 px-4 sm:px-6 bg-gray-50 border-b border-gray-200 min-w-[500px]">
+              <div className="w-8"></div>
+              <div className="flex-1 px-2 sm:px-4">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">
+                  {t("accounts.name")}
+                </h3>
               </div>
-            ) : (
-              filteredAccounts.map(renderAccountGroup)
-            )}
+              <div className="flex-1 px-2 sm:px-4 text-right">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">
+                  {t("accounts.availableBalance")}
+                </h3>
+              </div>
+              <div className="w-20 sm:w-24 text-center">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">
+                  {t("common.actions")}
+                </h3>
+              </div>
+            </div>
+
+            {/* Table Body */}
+            <div className="divide-y divide-gray-200 min-w-[500px]">
+              {filteredAccounts.length === 0 ? (
+                <div className="py-12 text-center">
+                  <p className="text-gray-500 text-lg">
+                    {searchTerm
+                      ? t("accounts.noAccountsMatching")
+                      : t("accounts.noAccountsFound")}
+                  </p>
+                </div>
+              ) : (
+                filteredAccounts.map(renderAccountGroup)
+              )}
+            </div>
           </div>
         </div>
 

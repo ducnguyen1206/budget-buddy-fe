@@ -248,8 +248,8 @@ export default function AccountForm() {
     <DashboardLayout activePage="accounts">
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {isEditMode
               ? t("accounts.updateAccount")
               : t("accounts.createAccount")}
@@ -257,7 +257,7 @@ export default function AccountForm() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
           {error && <ErrorMessage message={error} className="mb-6" />}
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -417,19 +417,19 @@ export default function AccountForm() {
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-4 pt-6">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:space-x-4 pt-6">
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={loading}
-                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={loading || loadingTypes}
-                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading
                   ? t("common.saving")

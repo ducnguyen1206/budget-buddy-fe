@@ -286,14 +286,14 @@ export default function BudgetsPage() {
     <DashboardLayout activePage="budgets">
       <div className="max-w-8xl mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {t("dashboard.nav.budgets")}
           </h1>
         </div>
 
         {/* Search and New Button Row */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
           {/* Search Input */}
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -325,7 +325,7 @@ export default function BudgetsPage() {
             {/* New Budget Button */}
             <button
               onClick={() => navigate("/budgets/new")}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
             >
               <Plus className="w-5 h-5" />
               <span>{t("budgets.new")}</span>
@@ -341,9 +341,9 @@ export default function BudgetsPage() {
 
         {/* Budgets Table */}
         {!isLoading && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[700px]">
                 {/* Table Header */}
                 <thead className="bg-gray-50">
                   <tr>

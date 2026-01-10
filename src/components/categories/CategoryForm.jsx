@@ -283,8 +283,8 @@ export default function CategoryForm() {
     <DashboardLayout activePage="categories">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {isEditMode
               ? t("categories.updateCategory")
               : t("categories.createCategory")}
@@ -292,7 +292,7 @@ export default function CategoryForm() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8">
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div ref={nameRef} className="relative">
@@ -360,19 +360,19 @@ export default function CategoryForm() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 pt-6">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:space-x-4 pt-6">
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-6 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? t("common.saving") : t("common.save")}
               </button>

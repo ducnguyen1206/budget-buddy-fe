@@ -567,8 +567,8 @@ const TransactionForm = () => {
     <DashboardLayout activePage="transactions">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {isEditMode
               ? t("transactions.updateTransaction")
               : t("transactions.createTransaction")}
@@ -576,7 +576,7 @@ const TransactionForm = () => {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-8">
           <form
             onSubmit={handleSubmit}
             onKeyDown={(e) => {

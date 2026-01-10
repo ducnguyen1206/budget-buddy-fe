@@ -294,10 +294,10 @@ const TransactionTable = ({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
+      <table className="w-full min-w-[900px]">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.name")}
             </th>
             <SortableHeader
@@ -307,7 +307,7 @@ const TransactionTable = ({
             >
               {t("transactions.amount")}
             </SortableHeader>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.currency")}
             </th>
             <SortableHeader
@@ -317,19 +317,19 @@ const TransactionTable = ({
             >
               {t("transactions.date")}
             </SortableHeader>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.category")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.account")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.type")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.remarks")}
             </th>
-            <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("common.actions")}
             </th>
           </tr>
@@ -337,7 +337,7 @@ const TransactionTable = ({
         <tbody className="bg-white divide-y divide-gray-200">
           {transactions.map((transaction) => (
             <tr key={transaction.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-900">
+              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm sm:text-base font-medium text-gray-900">
                 {isCellEditing(transaction.id, "name") ? (
                   <input
                     type="text"

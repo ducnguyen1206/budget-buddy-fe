@@ -15,7 +15,7 @@ import { removeTokens } from "../../utils/tokenManager";
 import tokenRefreshManager from "../../utils/tokenRefreshManager";
 import { logoutUser } from "../../services/authService";
 
-export default function DashboardSidebar({ activePage = "overview" }) {
+export default function DashboardSidebar({ activePage = "overview", onClose }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -97,20 +97,37 @@ export default function DashboardSidebar({ activePage = "overview" }) {
     },
   ];
 
+  const handleNavigation = (path) => {
+    navigate(path);
+    if (onClose) onClose();
+  };
+
   return (
     <div className="w-64 h-screen bg-blue-50 flex flex-col">
       {/* Logo/Header */}
       <div className="p-6 border-b border-blue-100">
-        <div className="flex items-center justify-center space-x-3">
-          {/* Logo */}
-          <img
-            src="/logo.png"
-            alt="Budget Buddy Logo"
-            className="w-12 h-12 object-contain"
-          />
-          <span className="text-xl font-bold text-gray-800 leading-none">
-            {t("header.brandName")}
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {/* Logo */}
+            <img
+              src="/logo.png"
+              alt="Budget Buddy Logo"
+              className="w-12 h-12 object-contain"
+            />
+            <span className="text-xl font-bold text-gray-800 leading-none">
+              {t("header.brandName")}
+            </span>
+          </div>
+          {/* Close button for mobile */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-1 rounded-lg text-gray-600 hover:bg-blue-100 transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -121,7 +138,7 @@ export default function DashboardSidebar({ activePage = "overview" }) {
           return (
             <button
               key={item.id}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigation(item.path)}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive
                   ? "bg-blue-100 text-blue-700"
