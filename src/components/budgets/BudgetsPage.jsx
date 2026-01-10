@@ -223,59 +223,59 @@ export default function BudgetsPage() {
   // Render budget row
   const renderBudgetRow = (budget) => (
     <tr key={budget.id} className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+        <div className="text-sm sm:text-base font-medium text-gray-900">
           {budget.categoryName}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+        <div className="text-sm sm:text-base font-medium text-gray-900">
           {formatAmount(budget.amount)}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
         <div
-          className={`text-base font-medium ${
+          className={`text-sm sm:text-base font-medium ${
             budget.spentAmount < 0 ? "text-red-600" : "text-gray-900"
           }`}
         >
           {formatAmount(budget.spentAmount)}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
         <div
-          className={`text-base font-medium ${
+          className={`text-sm sm:text-base font-medium ${
             budget.remainingAmount < 0 ? "text-red-600" : "text-green-600"
           }`}
         >
           {formatAmount(budget.remainingAmount)}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
+        <div className="text-sm sm:text-base font-medium text-gray-900">
           {formatDate(budget.updatedAt)}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-base font-medium text-gray-900">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
+        <div className="text-sm sm:text-base font-medium text-gray-900">
           {budget.currency}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
-        <div className="flex justify-center items-center gap-3">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm sm:text-base font-medium">
+        <div className="flex justify-center items-center gap-2 sm:gap-3">
           <button
             onClick={() => handleEdit(budget.id)}
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-blue-600 hover:text-blue-800 transition-colors p-1"
             title={t("common.edit")}
           >
-            <Edit className="h-5 w-5" />
+            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           <button
             onClick={() => handleDelete(budget.id)}
-            className="text-red-600 hover:text-red-800 transition-colors"
+            className="text-red-600 hover:text-red-800 transition-colors p-1"
             title={t("common.delete")}
           >
-            <Trash2 className="h-5 w-5" />
+            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
       </td>
@@ -343,29 +343,29 @@ export default function BudgetsPage() {
         {!isLoading && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px]">
+              <table className="w-full min-w-[320px] sm:min-w-[550px]">
                 {/* Table Header */}
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("budgets.category")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("budgets.budget")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       {t("budgets.dispensed")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("budgets.remaining")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                       {t("budgets.updatedAt")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       {t("budgets.currency")}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("common.actions")}
                     </th>
                   </tr>

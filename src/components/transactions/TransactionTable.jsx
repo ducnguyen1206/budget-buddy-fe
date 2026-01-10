@@ -294,10 +294,10 @@ const TransactionTable = ({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px]">
+      <table className="w-full min-w-[320px] sm:min-w-[700px]">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("transactions.name")}
             </th>
             <SortableHeader
@@ -307,7 +307,7 @@ const TransactionTable = ({
             >
               {t("transactions.amount")}
             </SortableHeader>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">
               {t("transactions.currency")}
             </th>
             <SortableHeader
@@ -317,19 +317,19 @@ const TransactionTable = ({
             >
               {t("transactions.date")}
             </SortableHeader>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">
               {t("transactions.category")}
             </th>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">
               {t("transactions.account")}
             </th>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider hidden lg:table-cell">
               {t("transactions.type")}
             </th>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider hidden lg:table-cell">
               {t("transactions.remarks")}
             </th>
-            <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
+            <th className="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wider">
               {t("common.actions")}
             </th>
           </tr>
@@ -337,7 +337,7 @@ const TransactionTable = ({
         <tbody className="bg-white divide-y divide-gray-200">
           {transactions.map((transaction) => (
             <tr key={transaction.id} className="hover:bg-gray-50">
-              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm sm:text-base font-medium text-gray-900">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base font-medium text-gray-900">
                 {isCellEditing(transaction.id, "name") ? (
                   <input
                     type="text"
@@ -380,7 +380,7 @@ const TransactionTable = ({
                 )}
               </td>
               <td
-                className={`px-6 py-4 whitespace-nowrap text-base font-medium ${getAmountColor(
+                className={`px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base font-medium ${getAmountColor(
                   transaction.amount
                 )}`}
               >
@@ -428,7 +428,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base text-gray-500 hidden sm:table-cell">
                 {isCellEditing(transaction.id, "currency") ? (
                   <select
                     value={draftValue}
@@ -471,7 +471,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base text-gray-500">
                 {isCellEditing(transaction.id, "date") ? (
                   <input
                     type="date"
@@ -514,7 +514,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base text-gray-500 hidden md:table-cell">
                 {isCellEditing(transaction.id, "categoryId") ? (
                   <select
                     value={draftValue}
@@ -557,7 +557,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base text-gray-500 hidden md:table-cell">
                 {isCellEditing(transaction.id, "accountId") ? (
                   <select
                     value={draftValue}
@@ -600,7 +600,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap hidden lg:table-cell">
                 {isCellEditing(transaction.id, "categoryType") ? (
                   <select
                     value={draftValue}
@@ -655,7 +655,7 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base text-gray-500">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-base text-gray-500 hidden lg:table-cell">
                 {isCellEditing(transaction.id, "remarks") ? (
                   <input
                     type="text"
@@ -697,13 +697,13 @@ const TransactionTable = ({
                   </button>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-base">
-                <div className="flex items-center gap-3">
+              <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-sm sm:text-base">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {onEdit && (
                     <button
                       onClick={() => onEdit(transaction)}
                       disabled={transaction.categoryType === "TRANSFER"}
-                      className={`transition-colors ${
+                      className={`transition-colors p-1 ${
                         transaction.categoryType === "TRANSFER"
                           ? "text-gray-300 cursor-not-allowed"
                           : "text-blue-600 hover:text-blue-800"
@@ -714,14 +714,14 @@ const TransactionTable = ({
                           : t("common.edit")
                       }
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   )}
                   {onDelete && (
                     <button
                       onClick={() => onDelete(transaction)}
                       disabled={transaction.categoryType === "TRANSFER"}
-                      className={`transition-colors ${
+                      className={`transition-colors p-1 ${
                         transaction.categoryType === "TRANSFER"
                           ? "text-gray-300 cursor-not-allowed"
                           : "text-red-600 hover:text-red-800"
@@ -732,7 +732,7 @@ const TransactionTable = ({
                           : t("common.delete")
                       }
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   )}
                 </div>

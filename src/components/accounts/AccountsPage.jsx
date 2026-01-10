@@ -439,7 +439,7 @@ export default function AccountsPage() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             {/* Table Header */}
-            <div className="flex items-center py-4 px-4 sm:px-6 bg-gray-50 border-b border-gray-200 min-w-[500px]">
+            <div className="flex items-center py-3 sm:py-4 px-3 sm:px-6 bg-gray-50 border-b border-gray-200 min-w-[400px]">
               <div className="w-8"></div>
               <div className="flex-1 px-2 sm:px-4">
                 <h3 className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wide">
@@ -459,7 +459,7 @@ export default function AccountsPage() {
             </div>
 
             {/* Table Body */}
-            <div className="divide-y divide-gray-200 min-w-[500px]">
+            <div className="divide-y divide-gray-200 min-w-[400px]">
               {filteredAccounts.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-gray-500 text-lg">

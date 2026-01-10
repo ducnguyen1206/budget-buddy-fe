@@ -7,7 +7,7 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex min-h-screen h-full bg-gray-50">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -29,9 +29,9 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-auto w-full">
+      <div className="flex-1 overflow-auto w-full pb-safe">
         {/* Top bar with hamburger menu and language switcher */}
-        <div className="px-4 sm:px-6 py-4 flex justify-between items-center">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center sticky top-0 bg-gray-50 z-30">
           {/* Hamburger menu - visible on mobile only */}
           <button
             onClick={() => setSidebarOpen(true)}
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
           <LanguageSwitcher />
         </div>
 
-        <main className="p-4 sm:p-6">{children}</main>
+        <main className="px-3 sm:px-6 py-2 sm:py-4">{children}</main>
       </div>
     </div>
   );

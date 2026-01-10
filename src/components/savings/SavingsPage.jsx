@@ -355,7 +355,7 @@ export default function SavingsPage() {
 
   const renderSavingRow = (saving) => (
     <tr key={saving.id} className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
         {editingCell?.id === saving.id && editingCell?.field === "name" ? (
           <input
             autoFocus
@@ -380,7 +380,7 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
         {editingCell?.id === saving.id && editingCell?.field === "amount" ? (
           <input
             autoFocus
@@ -408,7 +408,7 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
         {editingCell?.id === saving.id && editingCell?.field === "accountId" ? (
           <select
             autoFocus
@@ -439,7 +439,7 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
         {editingCell?.id === saving.id && editingCell?.field === "currency" ? (
           <select
             autoFocus
@@ -469,7 +469,7 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap max-w-xs">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap max-w-xs hidden md:table-cell">
         {editingCell?.id === saving.id && editingCell?.field === "notes" ? (
           <input
             autoFocus
@@ -495,7 +495,7 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
         {editingCell?.id === saving.id && editingCell?.field === "date" ? (
           <input
             autoFocus
@@ -520,21 +520,21 @@ export default function SavingsPage() {
           </button>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-base font-medium">
-        <div className="flex justify-center items-center gap-3">
+      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm sm:text-base font-medium">
+        <div className="flex justify-center items-center gap-2 sm:gap-3">
           <button
             onClick={() => handleEdit(saving.id)}
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-blue-600 hover:text-blue-800 transition-colors p-1"
             title={t("common.edit")}
           >
-            <Edit className="h-5 w-5" />
+            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           <button
             onClick={() => handleDelete(saving.id)}
-            className="text-red-600 hover:text-red-800 transition-colors"
+            className="text-red-600 hover:text-red-800 transition-colors p-1"
             title={t("common.delete")}
           >
-            <Trash2 className="h-5 w-5" />
+            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
       </td>
@@ -593,28 +593,28 @@ export default function SavingsPage() {
         {!isLoading && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px]">
+              <table className="w-full min-w-[320px] sm:min-w-[600px]">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("savings.name")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("savings.amount")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       {t("savings.account")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       {t("savings.currency")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                       {t("savings.notes")}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("savings.date")}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("common.actions")}
                     </th>
                   </tr>
