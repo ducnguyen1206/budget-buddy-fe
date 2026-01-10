@@ -33,6 +33,7 @@ const TransactionForm = () => {
     amount: "",
     currency: "",
     categoryId: "",
+    targetCategoryId: "",
     accountId: "",
     fromAccountId: "",
     toAccountId: "",
@@ -52,6 +53,7 @@ const TransactionForm = () => {
 
   // Refs for dropdowns
   const categoryRef = useRef(null);
+  const targetCategoryRef = useRef(null);
   const accountRef = useRef(null);
   const fromAccountRef = useRef(null);
   const toAccountRef = useRef(null);
@@ -59,6 +61,7 @@ const TransactionForm = () => {
 
   // Dropdown states
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showTargetCategoryDropdown, setShowTargetCategoryDropdown] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showFromAccountDropdown, setShowFromAccountDropdown] = useState(false);
   const [showToAccountDropdown, setShowToAccountDropdown] = useState(false);
@@ -101,6 +104,12 @@ const TransactionForm = () => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) {
         setShowCategoryDropdown(false);
+      }
+      if (
+        targetCategoryRef.current &&
+        !targetCategoryRef.current.contains(event.target)
+      ) {
+        setShowTargetCategoryDropdown(false);
       }
       if (accountRef.current && !accountRef.current.contains(event.target)) {
         setShowAccountDropdown(false);
@@ -152,6 +161,7 @@ const TransactionForm = () => {
           amount: Math.abs(existingTransaction.amount).toString() || "",
           currency: existingTransaction.currency || "",
           categoryId: existingTransaction.categoryId || "",
+          targetCategoryId: existingTransaction.targetCategoryId || "",
           accountId: existingTransaction.accountId || "",
           fromAccountId:
             existingTransaction.categoryType === "TRANSFER"
@@ -198,12 +208,8 @@ const TransactionForm = () => {
   // All data (no filtering since only selection is allowed)
   const filteredCategories = getDistinctCategories();
   const filteredAccounts = getAllAccounts();
-  const filteredFromAccounts = getAllAccounts().filter(
-    (account) => account.id !== formData.toAccountId
-  );
-  const filteredToAccounts = getAllAccounts().filter(
-    (account) => account.id !== formData.fromAccountId
-  );
+  const filteredFromAccounts = getAllAccounts();
+  const filteredToAccounts = getAllAccounts();
 
   // Event handlers
   const handleInputChange = (field, value) => {
@@ -222,8 +228,17 @@ const TransactionForm = () => {
       categoryName: category.name,
       // Reset type when category changes
       type: "EXPENSE",
+      targetCategoryId: "",
     }));
     setShowCategoryDropdown(false);
+  };
+
+  const handleTargetCategorySelect = (category) => {
+    setFormData((prev) => ({
+      ...prev,
+      targetCategoryId: category.id,
+    }));
+    setShowTargetCategoryDropdown(false);
   };
 
   const handleAccountSelect = (account) => {
@@ -282,8 +297,17 @@ const TransactionForm = () => {
       if (!formData.toAccountId) {
         errors.toAccount = t("validation.toAccountRequired");
       }
-      if (formData.fromAccountId === formData.toAccountId) {
-        errors.toAccount = t("validation.differentAccountsRequired");
+    
+
+      if (!formData.targetCategoryId) {
+        errors.targetCategory = t("validation.targetCategoryRequired");
+      }
+      if (
+        formData.categoryId &&
+        formData.targetCategoryId &&
+        String(formData.categoryId) === String(formData.targetCategoryId)
+      ) {
+        errors.targetCategory = t("validation.differentCategoriesRequired");
       }
     } else {
       if (!formData.accountId) {
@@ -309,6 +333,7 @@ const TransactionForm = () => {
     if (formData.type === "TRANSFER") {
       transactionData.accountId = formData.fromAccountId;
       transactionData.targetAccountId = formData.toAccountId;
+      transactionData.targetCategoryId = formData.targetCategoryId;
     } else {
       transactionData.accountId = formData.accountId;
     }
@@ -321,6 +346,7 @@ const TransactionForm = () => {
       !formData.name.trim() &&
       !formData.amount &&
       !formData.categoryId &&
+      !formData.targetCategoryId &&
       !formData.accountId &&
       !formData.fromAccountId &&
       !formData.toAccountId &&
@@ -354,6 +380,7 @@ const TransactionForm = () => {
       name: "",
       amount: "",
       categoryId: "",
+      targetCategoryId: "",
       accountId: "",
       fromAccountId: "",
       toAccountId: "",
@@ -380,6 +407,7 @@ const TransactionForm = () => {
         amount: tx.amount != null ? String(tx.amount) : "",
         currency: getCurrencyForAccountId(fromId),
         categoryId: tx.categoryId || "",
+        targetCategoryId: tx.targetCategoryId || "",
         accountId: "",
         fromAccountId: fromId,
         toAccountId: toId,
@@ -397,6 +425,7 @@ const TransactionForm = () => {
       amount: tx.amount != null ? String(tx.amount) : "",
       currency: getCurrencyForAccountId(accountId),
       categoryId: tx.categoryId || "",
+      targetCategoryId: "",
       accountId,
       fromAccountId: "",
       toAccountId: "",
@@ -489,6 +518,11 @@ const TransactionForm = () => {
   // Get selected category name
   const getSelectedCategoryName = () => {
     const category = categories.find((cat) => cat.id === formData.categoryId);
+    return category ? category.name : "";
+  };
+
+  const getSelectedTargetCategoryName = () => {
+    const category = categories.find((cat) => cat.id === formData.targetCategoryId);
     return category ? category.name : "";
   };
 
@@ -803,6 +837,50 @@ const TransactionForm = () => {
                 </p>
               )}
             </div>
+
+            {/* Target Category Selection (Transfer only) */}
+            {formData.type === "TRANSFER" && (
+              <div ref={targetCategoryRef} className="relative">
+                <label className="block text-lg font-semibold text-gray-700 mb-3 font-inter">
+                  {t("transactions.toCategory")}
+                </label>
+                <input
+                  type="text"
+                  value={getSelectedTargetCategoryName()}
+                  onChange={() => {}} // Read-only
+                  onFocus={() => setShowTargetCategoryDropdown(true)}
+                  className={`w-full px-6 py-3 border rounded-2xl text-lg font-inter ${
+                    validationErrors.targetCategory
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  } focus:outline-none focus:ring-2 cursor-pointer`}
+                  placeholder={t("transactions.toCategoryPlaceholder")}
+                />
+                {showTargetCategoryDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-auto">
+                    {filteredCategories
+                      .filter(
+                        (category) =>
+                          String(category.id) !== String(formData.categoryId)
+                      )
+                      .map((category) => (
+                        <div
+                          key={category.id}
+                          onClick={() => handleTargetCategorySelect(category)}
+                          className="px-6 py-3 hover:bg-gray-100 cursor-pointer transition-colors text-lg font-inter"
+                        >
+                          {category.name}
+                        </div>
+                      ))}
+                  </div>
+                )}
+                {validationErrors.targetCategory && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {validationErrors.targetCategory}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Type Selection - Only available after category is selected */}
             <div ref={typeRef} className="relative">

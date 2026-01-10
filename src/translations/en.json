@@ -107,7 +107,9 @@
     "accountRequired": "Please select an account",
     "fromAccountRequired": "Please select a source account",
     "toAccountRequired": "Please select a destination account",
-    "differentAccountsRequired": "Source and destination accounts must be different"
+    "differentAccountsRequired": "Source and destination accounts must be different",
+    "targetCategoryRequired": "Please select a target category",
+    "differentCategoriesRequired": "Source and target categories must be different"
   },
   "errors": {
     "networkError": "Connection issue detected. Please check your internet connection and try again.",
@@ -370,8 +372,10 @@
     "accountPlaceholder": "Select account",
     "fromAccount": "From Account",
     "toAccount": "To Account",
+    "toCategory": "To Category",
     "fromAccountPlaceholder": "Select source account",
     "toAccountPlaceholder": "Select destination account",
+    "toCategoryPlaceholder": "Select target category",
     "currencyNote": "Currency will be set based on selected account",
     "typePlaceholder": "Select transaction type",
     "remarksPlaceholder": "Enter remarks (optional)",

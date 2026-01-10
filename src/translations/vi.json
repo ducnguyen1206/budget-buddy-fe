@@ -107,7 +107,9 @@
     "accountRequired": "Vui lòng chọn tài khoản",
     "fromAccountRequired": "Vui lòng chọn tài khoản nguồn",
     "toAccountRequired": "Vui lòng chọn tài khoản đích",
-    "differentAccountsRequired": "Tài khoản nguồn và đích phải khác nhau"
+    "differentAccountsRequired": "Tài khoản nguồn và đích phải khác nhau",
+    "targetCategoryRequired": "Vui lòng chọn danh mục đích",
+    "differentCategoriesRequired": "Danh mục nguồn và danh mục đích phải khác nhau"
   },
   "errors": {
     "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
@@ -370,8 +372,10 @@
     "accountPlaceholder": "Chọn tài khoản",
     "fromAccount": "Từ Tài Khoản",
     "toAccount": "Đến Tài Khoản",
+    "toCategory": "Đến Danh Mục",
     "fromAccountPlaceholder": "Chọn tài khoản nguồn",
     "toAccountPlaceholder": "Chọn tài khoản đích",
+    "toCategoryPlaceholder": "Chọn danh mục đích",
     "currencyNote": "Tiền tệ sẽ được đặt dựa trên tài khoản đã chọn",
     "typePlaceholder": "Chọn loại giao dịch",
     "remarksPlaceholder": "Nhập ghi chú (tùy chọn)",
