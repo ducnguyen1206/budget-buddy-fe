@@ -28,6 +28,44 @@ export const fetchCategoriesForTransaction = async () => {
   }
 };
 
+export const createTransactionCollection = async (transactions) => {
+  try {
+    const response = await fetchWithAuth(
+      getApiUrl(`${API_ENDPOINTS.TRANSACTION}/collection`),
+      {
+        method: "POST",
+        headers: getApiHeaders(true),
+        body: JSON.stringify(transactions),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    if (response.status === 201) {
+      return {
+        success: true,
+        message: "Transactions created successfully",
+      };
+    }
+
+    const data = await response.json().catch(() => ({}));
+
+    if (shouldRedirectToLogin(data)) {
+      return data;
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error creating transaction collection:", error);
+    throw error;
+  }
+};
+
 // Fetch accounts for transaction form (reusing existing service)
 export const fetchAccountsForTransaction = async () => {
   try {

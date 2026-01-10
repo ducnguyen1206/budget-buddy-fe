@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { Plus } from "lucide-react";
 import {
   fetchCategoriesForTransaction,
   fetchAccountsForTransaction,
   createTransaction,
+  createTransactionCollection,
   updateTransaction,
 } from "../../services/transactionService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
@@ -45,6 +47,8 @@ const TransactionForm = () => {
   const [categories, setCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [stagedTransactions, setStagedTransactions] = useState([]);
+  const [editingStagedIndex, setEditingStagedIndex] = useState(null);
 
   // Refs for dropdowns
   const categoryRef = useRef(null);
@@ -291,8 +295,152 @@ const TransactionForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const buildTransactionPayload = () => {
+    const currentDate = formData.date;
+    const transactionData = {
+      name: formData.name.trim(),
+      amount: parseFloat(formData.amount),
+      categoryId: formData.categoryId,
+      date: currentDate,
+      remarks: formData.remarks.trim(),
+      categoryType: formData.type,
+    };
+
+    if (formData.type === "TRANSFER") {
+      transactionData.accountId = formData.fromAccountId;
+      transactionData.targetAccountId = formData.toAccountId;
+    } else {
+      transactionData.accountId = formData.accountId;
+    }
+
+    return transactionData;
+  };
+
+  const isFormEffectivelyEmpty = () => {
+    return (
+      !formData.name.trim() &&
+      !formData.amount &&
+      !formData.categoryId &&
+      !formData.accountId &&
+      !formData.fromAccountId &&
+      !formData.toAccountId &&
+      !formData.remarks.trim()
+    );
+  };
+
+  const getCurrencyForAccountId = (accountId) => {
+    if (!accountId) return "";
+    const all = getAllAccounts();
+    const account = all.find((a) => String(a.id) === String(accountId));
+    return account?.currency || "";
+  };
+
+  const handleStageTransaction = () => {
+    setError("");
+    if (!validateForm()) return;
+
+    const payload = buildTransactionPayload();
+
+    setStagedTransactions((prev) => {
+      if (editingStagedIndex === null || editingStagedIndex === undefined) {
+        return [...prev, payload];
+      }
+      return prev.map((tx, idx) => (idx === editingStagedIndex ? payload : tx));
+    });
+
+    setEditingStagedIndex(null);
+    setFormData((prev) => ({
+      ...prev,
+      name: "",
+      amount: "",
+      categoryId: "",
+      accountId: "",
+      fromAccountId: "",
+      toAccountId: "",
+      currency: "",
+      remarks: "",
+      type: "EXPENSE",
+      date: prev.date,
+    }));
+    setValidationErrors({});
+  };
+
+  const handleEditStagedTransaction = (tx, index) => {
+    setError("");
+    setValidationErrors({});
+    setEditingStagedIndex(index);
+
+    const type = tx.categoryType || "EXPENSE";
+    if (type === "TRANSFER") {
+      const fromId = tx.accountId || "";
+      const toId = tx.targetAccountId || "";
+      setFormData((prev) => ({
+        ...prev,
+        name: tx.name || "",
+        amount: tx.amount != null ? String(tx.amount) : "",
+        currency: getCurrencyForAccountId(fromId),
+        categoryId: tx.categoryId || "",
+        accountId: "",
+        fromAccountId: fromId,
+        toAccountId: toId,
+        type,
+        remarks: tx.remarks || "",
+        date: tx.date || prev.date,
+      }));
+      return;
+    }
+
+    const accountId = tx.accountId || "";
+    setFormData((prev) => ({
+      ...prev,
+      name: tx.name || "",
+      amount: tx.amount != null ? String(tx.amount) : "",
+      currency: getCurrencyForAccountId(accountId),
+      categoryId: tx.categoryId || "",
+      accountId,
+      fromAccountId: "",
+      toAccountId: "",
+      type,
+      remarks: tx.remarks || "",
+      date: tx.date || prev.date,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isEditMode && stagedTransactions.length > 0) {
+      const transactionsToCreate = [...stagedTransactions];
+
+      if (!isFormEffectivelyEmpty()) {
+        if (!validateForm()) {
+          return;
+        }
+        transactionsToCreate.push(buildTransactionPayload());
+      }
+
+      try {
+        setLoading(true);
+
+        const result =
+          transactionsToCreate.length > 1
+            ? await createTransactionCollection(transactionsToCreate)
+            : await createTransaction(transactionsToCreate[0]);
+
+        if (result.success) {
+          navigate("/transactions");
+        } else {
+          setError(result.message || "Failed to create transactions");
+        }
+      } catch (error) {
+        console.error("Error creating transactions:", error);
+        setError("Failed to create transactions. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+
+      return;
+    }
 
     if (!validateForm()) {
       return;
@@ -302,24 +450,7 @@ const TransactionForm = () => {
       setLoading(true);
 
       // Use the date from formData
-      const currentDate = formData.date;
-
-      const transactionData = {
-        name: formData.name.trim(),
-        amount: parseFloat(formData.amount),
-        categoryId: formData.categoryId,
-        date: currentDate,
-        remarks: formData.remarks.trim(),
-        categoryType: formData.type,
-      };
-
-      // Add account fields based on transaction type
-      if (formData.type === "TRANSFER") {
-        transactionData.accountId = formData.fromAccountId;
-        transactionData.targetAccountId = formData.toAccountId;
-      } else {
-        transactionData.accountId = formData.accountId;
-      }
+      const transactionData = buildTransactionPayload();
 
       let result;
       if (isEditMode) {
@@ -733,6 +864,18 @@ const TransactionForm = () => {
 
             {/* Submit Buttons */}
             <div className="flex justify-end gap-4 pt-6">
+              {!isEditMode && (
+                <button
+                  type="button"
+                  onClick={handleStageTransaction}
+                  disabled={loading}
+                  className="inline-flex items-center justify-center h-10 w-10 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={editingStagedIndex !== null ? "Update item" : "Add to list"}
+                  aria-label={editingStagedIndex !== null ? "Update item" : "Add to list"}
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => navigate("/transactions")}
@@ -750,9 +893,85 @@ const TransactionForm = () => {
                   ? t("common.saving")
                   : isEditMode
                   ? t("common.update")
+                  : stagedTransactions.length > 0
+                  ? "Submit all"
                   : t("common.save")}
               </button>
             </div>
+
+            {!isEditMode && stagedTransactions.length > 0 && (
+              <div className="pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-sm font-medium text-gray-900">
+                    Pending transactions ({stagedTransactions.length})
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStagedTransactions([]);
+                      setEditingStagedIndex(null);
+                    }}
+                    disabled={loading}
+                    className="text-sm text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                <div className="border border-gray-200 rounded-lg divide-y">
+                  {stagedTransactions.map((tx, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between p-3 ${
+                        editingStagedIndex === index ? "bg-blue-50" : ""
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editingStagedIndex === index) {
+                            handleStageTransaction();
+                            return;
+                          }
+                          handleEditStagedTransaction(tx, index);
+                        }}
+                        disabled={loading}
+                        className="min-w-0 text-left flex-1 pr-4 disabled:opacity-50"
+                      >
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {tx.name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {tx.categoryType} • {tx.date}
+                        </div>
+                        {editingStagedIndex === index && (
+                          <div className="text-xs text-blue-700 mt-1">Editing</div>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStagedTransactions((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          );
+                          setEditingStagedIndex((prev) => {
+                            if (prev === null) return null;
+                            if (prev === index) return null;
+                            if (prev > index) return prev - 1;
+                            return prev;
+                          });
+                        }}
+                        disabled={loading}
+                        className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </form>
         </div>
       </div>
