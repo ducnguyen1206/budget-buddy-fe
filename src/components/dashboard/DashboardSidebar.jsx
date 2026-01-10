@@ -103,7 +103,7 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
   };
 
   return (
-    <div className="w-64 h-screen bg-blue-50 flex flex-col">
+    <div className="w-64 h-screen lg:h-full lg:min-h-screen bg-blue-50 flex flex-col">
       {/* Logo/Header */}
       <div className="p-6 border-b border-blue-100">
         <div className="flex items-center justify-between">
