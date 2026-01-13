@@ -170,7 +170,14 @@
     "accountGroupInUse": "Nhóm tài khoản này đang được sử dụng và không thể xóa. Vui lòng xóa tất cả tài khoản khỏi nhóm này trước.",
     "deleteAccountGroupFailed": "Không thể xóa nhóm tài khoản. Vui lòng thử lại.",
     "currencyMismatch": "Tiền tệ phải khớp với tiền tệ của nhóm. Vui lòng chọn tiền tệ khác.",
-    "fetchTransactionsFailed": "Không thể tải giao dịch. Vui lòng thử lại."
+    "fetchTransactionsFailed": "Không thể tải giao dịch. Vui lòng thử lại.",
+    "fetchInstallmentsFailed": "Không thể tải trả góp. Vui lòng thử lại.",
+    "fetchInstallmentFailed": "Không thể tải trả góp. Vui lòng thử lại.",
+    "createInstallmentFailed": "Không thể tạo trả góp. Vui lòng thử lại.",
+    "invalidInstallmentData": "Dữ liệu trả góp không hợp lệ. Vui lòng kiểm tra và thử lại.",
+    "deleteInstallmentFailed": "Không thể xóa trả góp. Vui lòng thử lại.",
+    "updateInstallmentFailed": "Không thể cập nhật trả góp. Vui lòng thử lại.",
+    "installmentNotFound": "Không tìm thấy trả góp. Vui lòng kiểm tra ID và thử lại."
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -182,6 +189,7 @@
       "transactions": "Giao dịch",
       "savings": "Tiết kiệm",
       "budgets": "Ngân sách",
+      "installments": "Trả góp",
       "categories": "Danh mục"
     },
     "overviewDescription": "Xem tổng quan nhanh về tình trạng tài chính và hoạt động gần đây của bạn.",
@@ -389,5 +397,32 @@
     "pendingTransactions": "Giao dịch đang chờ",
     "createManyFailed": "Không thể tạo nhiều giao dịch",
     "createManyFailedTryAgain": "Không thể tạo nhiều giao dịch. Vui lòng thử lại."
+  },
+  "installments": {
+    "title": "Trả góp",
+    "searchPlaceholder": "Tìm kiếm trả góp...",
+    "new": "Trả góp mới",
+    "name": "Tên",
+    "totalAmount": "Tổng số tiền",
+    "amountPaid": "Đã thanh toán",
+    "outstandingAmount": "Còn lại",
+    "dueDate": "Ngày đáo hạn",
+    "account": "Tài khoản",
+    "currency": "Tiền tệ",
+    "selectCurrency": "Chọn tiền tệ",
+    "createInstallment": "Tạo trả góp",
+    "editInstallment": "Sửa trả góp",
+    "selectAccount": "Chọn tài khoản",
+    "namePlaceholder": "Nhập tên trả góp",
+    "totalAmountPlaceholder": "Nhập tổng số tiền",
+    "amountPaidPlaceholder": "Nhập số tiền đã trả",
+    "noInstallmentsFound": "Không tìm thấy trả góp",
+    "noInstallmentsMatching": "Không có trả góp nào phù hợp",
+    "confirmDelete": "Xóa trả góp",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa trả góp '{name}'? Hành động này không thể hoàn tác.",
+    "nameRequired": "Tên là bắt buộc",
+    "totalAmountRequired": "Tổng số tiền phải lớn hơn 0",
+    "amountPaidInvalid": "Số tiền đã trả không thể âm",
+    "accountRequired": "Tài khoản là bắt buộc"
   }
 }

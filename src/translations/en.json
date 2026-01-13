@@ -170,7 +170,14 @@
     "accountGroupInUse": "This account group is currently in use and cannot be deleted. Please remove all accounts from this group first.",
     "deleteAccountGroupFailed": "Failed to delete account group. Please try again.",
     "currencyMismatch": "Currency must match the group accounts. Please select a different currency.",
-    "fetchTransactionsFailed": "Failed to fetch transactions. Please try again."
+    "fetchTransactionsFailed": "Failed to fetch transactions. Please try again.",
+    "fetchInstallmentsFailed": "Failed to fetch installments. Please try again.",
+    "fetchInstallmentFailed": "Failed to fetch installment. Please try again.",
+    "createInstallmentFailed": "Failed to create installment. Please try again.",
+    "invalidInstallmentData": "Invalid installment data. Please check your input and try again.",
+    "deleteInstallmentFailed": "Failed to delete installment. Please try again.",
+    "updateInstallmentFailed": "Failed to update installment. Please try again.",
+    "installmentNotFound": "Installment not found. Please check the ID and try again."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -182,6 +189,7 @@
       "transactions": "Transactions",
       "savings": "Savings",
       "budgets": "Budgets",
+      "installments": "Installments",
       "categories": "Categories"
     },
     "overviewDescription": "Get a quick overview of your financial status and recent activities.",
@@ -389,5 +397,32 @@
     "pendingTransactions": "Pending transactions",
     "createManyFailed": "Failed to create transactions",
     "createManyFailedTryAgain": "Failed to create transactions. Please try again."
+  },
+  "installments": {
+    "title": "Installments",
+    "searchPlaceholder": "Search installments...",
+    "new": "New Installment",
+    "name": "Name",
+    "totalAmount": "Total Amount",
+    "amountPaid": "Amount Paid",
+    "outstandingAmount": "Outstanding",
+    "dueDate": "Due Date",
+    "account": "Account",
+    "currency": "Currency",
+    "selectCurrency": "Select currency",
+    "createInstallment": "Create Installment",
+    "editInstallment": "Edit Installment",
+    "selectAccount": "Select account",
+    "namePlaceholder": "Enter installment name",
+    "totalAmountPlaceholder": "Enter total amount",
+    "amountPaidPlaceholder": "Enter amount paid",
+    "noInstallmentsFound": "No installments found",
+    "noInstallmentsMatching": "No installments match your search",
+    "confirmDelete": "Delete Installment",
+    "deleteWarning": "Are you sure you want to delete the installment '{name}'? This action cannot be undone.",
+    "nameRequired": "Name is required",
+    "totalAmountRequired": "Total amount must be greater than 0",
+    "amountPaidInvalid": "Amount paid cannot be negative",
+    "accountRequired": "Account is required"
   }
 }

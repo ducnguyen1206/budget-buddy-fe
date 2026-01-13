@@ -8,6 +8,7 @@ import {
   List,
   LogOut,
   X,
+  CreditCard,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -88,6 +89,12 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
       icon: PieChart,
       label: t("dashboard.nav.budgets"),
       path: "/budgets",
+    },
+    {
+      id: "installments",
+      icon: CreditCard,
+      label: t("dashboard.nav.installments"),
+      path: "/installments",
     },
     {
       id: "categories",
