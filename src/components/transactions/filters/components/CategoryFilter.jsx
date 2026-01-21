@@ -73,7 +73,7 @@ const CategoryFilter = ({
               onItemToggle={handleCategoryToggle}
               emptyMessage={t("transactions.noCategoriesFound")}
               renderItem={(category) => category.categoryName || category.name}
-              renderSubtitle={(category) => category.categoryType || "Unknown"}
+              renderSubtitle={() => null}
             />
           </div>
 

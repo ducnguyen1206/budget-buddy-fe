@@ -439,7 +439,7 @@ const TransactionsPage = () => {
             onClear={handleAccountFilterClear}
             showFilter={showAccountFilter}
             onToggleFilter={handleToggleAccountFilter}
-            accounts={uniqueAccounts}
+            accounts={accountsForDropdown}
           />
           <CategoryFilter
             categoryFilter={categoryFilter}
@@ -448,7 +448,7 @@ const TransactionsPage = () => {
             onClear={handleCategoryFilterClear}
             showFilter={showCategoryFilter}
             onToggleFilter={handleToggleCategoryFilter}
-            categories={uniqueCategories}
+            categories={categoriesForDropdown}
           />
           <TypeFilter
             typeFilter={typeFilter}
