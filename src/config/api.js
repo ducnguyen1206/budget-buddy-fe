@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
   BUDGETS: "/api/v1/budgets",
   SAVINGS: "/api/v1/savings",
   INSTALLMENTS: "/api/v1/installments",
+  SUBSCRIPTIONS: "/api/v1/subscriptions",
   TRANSACTIONS_INQUIRY: "/api/v1/transaction/inquiry",
   TRANSACTION: "/api/v1/transaction",
 };

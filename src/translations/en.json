@@ -190,6 +190,7 @@
       "savings": "Savings",
       "budgets": "Budgets",
       "installments": "Installments",
+      "subscriptions": "Subscriptions",
       "categories": "Categories"
     },
     "overviewDescription": "Get a quick overview of your financial status and recent activities.",
@@ -423,6 +424,31 @@
     "nameRequired": "Name is required",
     "totalAmountRequired": "Total amount must be greater than 0",
     "amountPaidInvalid": "Amount paid cannot be negative",
+    "accountRequired": "Account is required"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "searchPlaceholder": "Search subscriptions...",
+    "new": "New Subscription",
+    "name": "Name",
+    "amount": "Amount",
+    "payDay": "Pay Day",
+    "account": "Account",
+    "currency": "Currency",
+    "createSubscription": "Create Subscription",
+    "editSubscription": "Edit Subscription",
+    "selectAccount": "Select account",
+    "namePlaceholder": "Enter subscription name",
+    "amountPlaceholder": "Enter amount",
+    "payDayPlaceholder": "Enter pay day (1-31)",
+    "noSubscriptionsFound": "No subscriptions found",
+    "noSubscriptionsMatching": "No subscriptions match your search",
+    "confirmDelete": "Delete Subscription",
+    "deleteWarning": "Are you sure you want to delete the subscription '{name}'? This action cannot be undone.",
+    "nameRequired": "Name is required",
+    "amountRequired": "Amount must be greater than 0",
+    "payDayRequired": "Pay day is required",
+    "payDayInvalid": "Pay day must be between 1 and 31",
     "accountRequired": "Account is required"
   }
 }

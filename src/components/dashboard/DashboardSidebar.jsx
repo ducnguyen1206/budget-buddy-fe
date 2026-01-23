@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
   CreditCard,
+  RefreshCw,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -95,6 +96,12 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
       icon: CreditCard,
       label: t("dashboard.nav.installments"),
       path: "/installments",
+    },
+    {
+      id: "subscriptions",
+      icon: RefreshCw,
+      label: t("dashboard.nav.subscriptions"),
+      path: "/subscriptions",
     },
     {
       id: "categories",

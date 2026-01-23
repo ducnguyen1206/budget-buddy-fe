@@ -26,6 +26,8 @@ import SavingsPage from "./components/savings/SavingsPage";
 import SavingForm from "./components/savings/SavingForm";
 import InstallmentsPage from "./components/installments/InstallmentsPage";
 import InstallmentForm from "./components/installments/InstallmentForm";
+import SubscriptionsPage from "./components/subscriptions/SubscriptionsPage";
+import SubscriptionForm from "./components/subscriptions/SubscriptionForm";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
@@ -113,6 +115,9 @@ export default function App() {
               <Route path="/installments" element={<InstallmentsPage />} />
               <Route path="/installments/new" element={<InstallmentForm />} />
               <Route path="/installments/edit/:id" element={<InstallmentForm />} />
+              <Route path="/subscriptions" element={<SubscriptionsPage />} />
+              <Route path="/subscriptions/new" element={<SubscriptionForm />} />
+              <Route path="/subscriptions/edit/:id" element={<SubscriptionForm />} />
               <Route path="/budgets" element={<BudgetsPage />} />
               <Route path="/budgets/new" element={<BudgetForm />} />
               <Route path="/budgets/edit/:id" element={<BudgetForm />} />

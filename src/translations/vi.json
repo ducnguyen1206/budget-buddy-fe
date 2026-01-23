@@ -190,6 +190,7 @@
       "savings": "Tiết kiệm",
       "budgets": "Ngân sách",
       "installments": "Trả góp",
+      "subscriptions": "Đăng ký",
       "categories": "Danh mục"
     },
     "overviewDescription": "Xem tổng quan nhanh về tình trạng tài chính và hoạt động gần đây của bạn.",
@@ -423,6 +424,31 @@
     "nameRequired": "Tên là bắt buộc",
     "totalAmountRequired": "Tổng số tiền phải lớn hơn 0",
     "amountPaidInvalid": "Số tiền đã trả không thể âm",
+    "accountRequired": "Tài khoản là bắt buộc"
+  },
+  "subscriptions": {
+    "title": "Đăng ký",
+    "searchPlaceholder": "Tìm kiếm đăng ký...",
+    "new": "Đăng ký mới",
+    "name": "Tên",
+    "amount": "Số tiền",
+    "payDay": "Ngày thanh toán",
+    "account": "Tài khoản",
+    "currency": "Tiền tệ",
+    "createSubscription": "Tạo đăng ký",
+    "editSubscription": "Sửa đăng ký",
+    "selectAccount": "Chọn tài khoản",
+    "namePlaceholder": "Nhập tên đăng ký",
+    "amountPlaceholder": "Nhập số tiền",
+    "payDayPlaceholder": "Nhập ngày thanh toán (1-31)",
+    "noSubscriptionsFound": "Không tìm thấy đăng ký",
+    "noSubscriptionsMatching": "Không có đăng ký nào phù hợp",
+    "confirmDelete": "Xóa đăng ký",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa đăng ký '{name}'? Hành động này không thể hoàn tác.",
+    "nameRequired": "Tên là bắt buộc",
+    "amountRequired": "Số tiền phải lớn hơn 0",
+    "payDayRequired": "Ngày thanh toán là bắt buộc",
+    "payDayInvalid": "Ngày thanh toán phải từ 1 đến 31",
     "accountRequired": "Tài khoản là bắt buộc"
   }
 }
