@@ -30,6 +30,7 @@ import SubscriptionsPage from "./components/subscriptions/SubscriptionsPage";
 import SubscriptionForm from "./components/subscriptions/SubscriptionForm";
 import ThresholdsPage from "./components/thresholds/ThresholdsPage";
 import ThresholdForm from "./components/thresholds/ThresholdForm";
+import ThresholdDashboard from "./components/dashboard/ThresholdDashboard";
 import CategoriesPage from "./components/categories/CategoriesPage";
 import CategoryForm from "./components/categories/CategoryForm";
 import tokenRefreshManager from "./utils/tokenRefreshManager";
@@ -102,6 +103,7 @@ export default function App() {
             />
             {/* Protected app routes */}
             <Route element={<ProtectedRoutes />}>
+              <Route path="/spending-dashboard" element={<ThresholdDashboard />} />
               <Route path="/accounts" element={<AccountsPage />} />
               <Route path="/accounts/new" element={<AccountForm />} />
               <Route path="/accounts/edit/:id" element={<AccountForm />} />
@@ -136,7 +138,7 @@ export default function App() {
               path="/"
               element={
                 <Navigate
-                  to={isAuthenticated() ? "/transactions" : "/login"}
+                  to={isAuthenticated() ? "/spending-dashboard" : "/login"}
                   replace
                 />
               }
@@ -146,7 +148,7 @@ export default function App() {
               path="*"
               element={
                 <Navigate
-                  to={isAuthenticated() ? "/transactions" : "/login"}
+                  to={isAuthenticated() ? "/spending-dashboard" : "/login"}
                   replace
                 />
               }

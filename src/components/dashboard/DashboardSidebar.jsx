@@ -11,6 +11,7 @@ import {
   CreditCard,
   RefreshCw,
   Gauge,
+  BarChart3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -68,6 +69,12 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
     //   label: t("dashboard.nav.overview"),
     //   path: "/dashboard",
     // },
+    {
+      id: "spending-dashboard",
+      icon: BarChart3,
+      label: t("dashboard.nav.spendingDashboard"),
+      path: "/spending-dashboard",
+    },
     {
       id: "accounts",
       icon: Building2,

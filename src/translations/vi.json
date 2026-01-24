@@ -185,6 +185,7 @@
     "tokenReady": "Token đã được lưu trữ và sẵn sàng cho các cuộc gọi API.",
     "nav": {
       "overview": "Tổng quan",
+      "spendingDashboard": "Bảng chi tiêu",
       "accounts": "Tài khoản",
       "transactions": "Giao dịch",
       "savings": "Tiết kiệm",
@@ -469,5 +470,26 @@
     "deleteWarning": "Bạn có chắc chắn muốn xóa ngưỡng cho '{name}'? Hành động này không thể hoàn tác.",
     "categoryRequired": "Danh mục là bắt buộc",
     "thresholdRequired": "Ngưỡng phải lớn hơn 0"
+  },
+  "thresholdDashboard": {
+    "title": "Bảng điều khiển chi tiêu",
+    "subtitle": "Theo dõi chi tiêu hàng ngày so với ngưỡng danh mục",
+    "category": "Danh mục",
+    "selectCategory": "Chọn một danh mục",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "currency": "Tiền tệ",
+    "spent": "Đã chi",
+    "threshold": "Ngưỡng",
+    "exceeded": "Vượt quá",
+    "underBudget": "Dưới ngân sách",
+    "withinBudget": "Trong ngân sách",
+    "overBudget": "Vượt ngân sách",
+    "thresholdLine": "Ngưỡng",
+    "noThresholdConfigured": "Chưa thiết lập ngưỡng cho danh mục này. Vui lòng thiết lập ngưỡng trước.",
+    "selectCategoryPrompt": "Vui lòng chọn danh mục để xem dữ liệu chi tiêu",
+    "noDataAvailable": "Không có dữ liệu chi tiêu cho khoảng thời gian đã chọn",
+    "setAsDefault": "Đặt làm danh mục mặc định",
+    "removeDefault": "Bỏ danh mục mặc định"
   }
 }

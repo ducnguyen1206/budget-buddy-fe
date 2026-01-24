@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   INSTALLMENTS: "/api/v1/installments",
   SUBSCRIPTIONS: "/api/v1/subscriptions",
   THRESHOLDS: "/api/v1/thresholds",
+  THRESHOLD_TRANSACTIONS: "/api/v1/transaction/threshold",
   TRANSACTIONS_INQUIRY: "/api/v1/transaction/inquiry",
   TRANSACTION: "/api/v1/transaction",
 };

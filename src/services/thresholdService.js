@@ -3,6 +3,52 @@ import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 import { HTTP_STATUS } from "../constants/validation";
 
+// Fetch threshold transactions for dashboard chart
+export const fetchThresholdTransactions = async (requestData, t = null) => {
+  try {
+    const response = await fetchWithAuth(
+      getApiUrl(API_ENDPOINTS.THRESHOLD_TRANSACTIONS),
+      {
+        method: "POST",
+        headers: getApiHeaders(true),
+        body: JSON.stringify(requestData),
+      },
+      t
+    );
+
+    if (shouldRedirectToLogin(response)) {
+      return response;
+    }
+
+    if (response.status === 200) {
+      try {
+        const data = await response.json();
+        return { success: true, data };
+      } catch (jsonError) {
+        console.warn("JSON parsing failed for threshold transactions:", jsonError);
+        return { success: false, error: handleApiError("FETCH_THRESHOLD_TRANSACTIONS_FAILED", t) };
+      }
+    }
+
+    if (response.status === HTTP_STATUS.BAD_REQUEST) {
+      return { success: false, error: handleApiError("INVALID_REQUEST_DATA", t) };
+    }
+
+    if (response.status === HTTP_STATUS.NOT_FOUND) {
+      return { success: false, error: handleApiError("THRESHOLD_NOT_FOUND_FOR_CATEGORY", t), notFound: true };
+    }
+
+    if (response.status >= 500) {
+      return { success: false, error: handleApiError("SERVER_ERROR", t) };
+    }
+
+    return { success: false, error: handleApiError("FETCH_THRESHOLD_TRANSACTIONS_FAILED", t) };
+  } catch (error) {
+    console.error("Fetch threshold transactions error:", error);
+    return { success: false, error: handleNetworkError(error, t) };
+  }
+};
+
 // Fetch thresholds list
 export const fetchThresholds = async (t = null) => {
   try {

@@ -185,6 +185,7 @@
     "tokenReady": "Token is stored and ready for API calls.",
     "nav": {
       "overview": "Overview",
+      "spendingDashboard": "Spending",
       "accounts": "Accounts",
       "transactions": "Transactions",
       "savings": "Savings",
@@ -469,5 +470,26 @@
     "deleteWarning": "Are you sure you want to delete the threshold for '{name}'? This action cannot be undone.",
     "categoryRequired": "Category is required",
     "thresholdRequired": "Threshold must be greater than 0"
+  },
+  "thresholdDashboard": {
+    "title": "Spending Dashboard",
+    "subtitle": "Track your daily spending against category thresholds",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "currency": "Currency",
+    "spent": "Spent",
+    "threshold": "Threshold",
+    "exceeded": "Exceeded by",
+    "underBudget": "Under budget by",
+    "withinBudget": "Within Budget",
+    "overBudget": "Over Budget",
+    "thresholdLine": "Threshold",
+    "noThresholdConfigured": "No threshold has been configured for this category. Please set up a threshold first.",
+    "selectCategoryPrompt": "Please select a category to view spending data",
+    "noDataAvailable": "No spending data available for the selected period",
+    "setAsDefault": "Set as default category",
+    "removeDefault": "Remove as default category"
   }
 }
