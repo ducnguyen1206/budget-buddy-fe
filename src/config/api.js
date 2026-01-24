@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
   SAVINGS: "/api/v1/savings",
   INSTALLMENTS: "/api/v1/installments",
   SUBSCRIPTIONS: "/api/v1/subscriptions",
+  THRESHOLDS: "/api/v1/thresholds",
   TRANSACTIONS_INQUIRY: "/api/v1/transaction/inquiry",
   TRANSACTION: "/api/v1/transaction",
 };

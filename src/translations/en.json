@@ -191,6 +191,7 @@
       "budgets": "Budgets",
       "installments": "Installments",
       "subscriptions": "Subscriptions",
+      "thresholds": "Thresholds",
       "categories": "Categories"
     },
     "overviewDescription": "Get a quick overview of your financial status and recent activities.",
@@ -450,5 +451,23 @@
     "payDayRequired": "Pay day is required",
     "payDayInvalid": "Pay day must be between 1 and 31",
     "accountRequired": "Account is required"
+  },
+  "thresholds": {
+    "title": "Thresholds",
+    "searchPlaceholder": "Search thresholds...",
+    "new": "New Threshold",
+    "categoryName": "Category",
+    "threshold": "Threshold",
+    "currency": "Currency",
+    "createThreshold": "Create Threshold",
+    "editThreshold": "Edit Threshold",
+    "selectCategory": "Select category",
+    "thresholdPlaceholder": "Enter threshold amount",
+    "noThresholdsFound": "No thresholds found",
+    "noThresholdsMatching": "No thresholds match your search",
+    "confirmDelete": "Delete Threshold",
+    "deleteWarning": "Are you sure you want to delete the threshold for '{name}'? This action cannot be undone.",
+    "categoryRequired": "Category is required",
+    "thresholdRequired": "Threshold must be greater than 0"
   }
 }

@@ -191,6 +191,7 @@
       "budgets": "Ngân sách",
       "installments": "Trả góp",
       "subscriptions": "Đăng ký",
+      "thresholds": "Ngưỡng chi tiêu",
       "categories": "Danh mục"
     },
     "overviewDescription": "Xem tổng quan nhanh về tình trạng tài chính và hoạt động gần đây của bạn.",
@@ -450,5 +451,23 @@
     "payDayRequired": "Ngày thanh toán là bắt buộc",
     "payDayInvalid": "Ngày thanh toán phải từ 1 đến 31",
     "accountRequired": "Tài khoản là bắt buộc"
+  },
+  "thresholds": {
+    "title": "Ngưỡng chi tiêu",
+    "searchPlaceholder": "Tìm kiếm ngưỡng...",
+    "new": "Ngưỡng mới",
+    "categoryName": "Danh mục",
+    "threshold": "Ngưỡng",
+    "currency": "Tiền tệ",
+    "createThreshold": "Tạo ngưỡng",
+    "editThreshold": "Sửa ngưỡng",
+    "selectCategory": "Chọn danh mục",
+    "thresholdPlaceholder": "Nhập số tiền ngưỡng",
+    "noThresholdsFound": "Không tìm thấy ngưỡng",
+    "noThresholdsMatching": "Không có ngưỡng nào phù hợp",
+    "confirmDelete": "Xóa ngưỡng",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa ngưỡng cho '{name}'? Hành động này không thể hoàn tác.",
+    "categoryRequired": "Danh mục là bắt buộc",
+    "thresholdRequired": "Ngưỡng phải lớn hơn 0"
   }
 }

@@ -10,6 +10,7 @@ import {
   X,
   CreditCard,
   RefreshCw,
+  Gauge,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -102,6 +103,12 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
       icon: RefreshCw,
       label: t("dashboard.nav.subscriptions"),
       path: "/subscriptions",
+    },
+    {
+      id: "thresholds",
+      icon: Gauge,
+      label: t("dashboard.nav.thresholds"),
+      path: "/thresholds",
     },
     {
       id: "categories",
