@@ -14,28 +14,119 @@ import {
 } from "recharts";
 import { Calendar, AlertTriangle, Star } from "lucide-react";
 
-const STORAGE_KEY = "thresholdDashboard_defaultCategoryId";
 import DashboardLayout from "./DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { fetchThresholdTransactions } from "../../services/thresholdService";
 import { fetchCategories } from "../../services/categoryService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
+const STORAGE_KEY = "thresholdDashboard_defaultCategoryId";
+
+const CURRENCY_OPTIONS = [
+  { value: "SGD", label: "SGD" },
+  { value: "VND", label: "VND" },
+];
+
+const CHART_COLORS = {
+  withinBudget: "#22c55e",
+  overBudget: "#ef4444",
+  grid: "#e5e7eb",
+  axis: "#d1d5db",
+  tick: "#6b7280",
+};
+
+const SELECT_ARROW_STYLE = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
+  backgroundPosition: "right 0.5rem center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "1.5em 1.5em",
+  paddingRight: "2.5rem",
+};
+
+const getDefaultDateRange = () => {
+  const today = new Date();
+  const start = setDate(today, 5);
+  const end = setDate(addMonths(today, 1), 5);
+  return {
+    startDate: format(start, "yyyy-MM-dd"),
+    endDate: format(end, "yyyy-MM-dd"),
+  };
+};
+
+const CustomTooltip = ({ active, payload, currency, t }) => {
+  if (!active || !payload?.length) return null;
+
+  const data = payload[0].payload;
+  return (
+    <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+      <p className="font-medium text-gray-900 mb-1">{data.fullDate}</p>
+      <p className="text-sm text-gray-600">
+        {t("thresholdDashboard.spent")}: {currency} {data.totalAmount.toFixed(2)}
+      </p>
+      <p className="text-sm text-gray-600">
+        {t("thresholdDashboard.threshold")}: {currency} {data.threshold.toFixed(2)}
+      </p>
+      <p className={`text-sm font-medium ${data.isExceeded ? "text-red-600" : "text-green-600"}`}>
+        {data.isExceeded
+          ? `${t("thresholdDashboard.exceeded")}: ${Math.abs(data.exceededAmount).toFixed(2)}`
+          : `${t("thresholdDashboard.underBudget")}: ${data.exceededAmount.toFixed(2)}`}
+      </p>
+    </div>
+  );
+};
+
+const LoadingState = ({ t }) => (
+  <div className="flex items-center justify-center py-16">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+    <span className="ml-3 text-gray-600">{t("common.loading")}</span>
+  </div>
+);
+
+const ErrorState = ({ error, notFound, t }) => (
+  <div className="flex flex-col items-center justify-center py-16">
+    <AlertTriangle className="w-12 h-12 text-yellow-500 mb-4" />
+    <p className="text-gray-600 text-center mb-4">{error}</p>
+    {notFound && (
+      <p className="text-sm text-gray-500 text-center">
+        {t("thresholdDashboard.noThresholdConfigured")}
+      </p>
+    )}
+  </div>
+);
+
+const EmptyState = ({ message }) => (
+  <div className="flex flex-col items-center justify-center py-16">
+    <p className="text-gray-500">{message}</p>
+  </div>
+);
+
+const ChartLegend = ({ thresholdValue, t }) => (
+  <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 bg-green-500 rounded" />
+      <span className="text-sm text-gray-600">
+        {thresholdValue > 0 ? t("thresholdDashboard.withinBudget") : t("thresholdDashboard.spent")}
+      </span>
+    </div>
+    {thresholdValue > 0 && (
+      <>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-red-500 rounded" />
+          <span className="text-sm text-gray-600">{t("thresholdDashboard.overBudget")}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-8 border-t-2 border-red-500 border-dashed" />
+          <span className="text-sm text-gray-600">{t("thresholdDashboard.thresholdLine")}</span>
+        </div>
+      </>
+    )}
+  </div>
+);
+
 export default function ThresholdDashboard() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-
-  // Get default date range: 5th of current month to 5th of next month
-  const getDefaultDateRange = () => {
-    const today = new Date();
-    const startDate = setDate(today, 5);
-    const endDate = setDate(addMonths(today, 1), 5);
-    return {
-      startDate: format(startDate, "yyyy-MM-dd"),
-      endDate: format(endDate, "yyyy-MM-dd"),
-    };
-  };
-
   const defaultRange = getDefaultDateRange();
 
   const [categories, setCategories] = useState([]);
@@ -134,11 +225,6 @@ export default function ThresholdDashboard() {
     [categories]
   );
 
-  const currencyOptions = [
-    { value: "SGD", label: "SGD" },
-    { value: "VND", label: "VND" },
-  ];
-
   // Handle category change
   const handleCategoryChange = (e) => {
     const newCategoryId = e.target.value;
@@ -205,35 +291,7 @@ export default function ThresholdDashboard() {
     return Math.max(thresholdValue * 1.2, maxTotalAmount * 1.1);
   }, [thresholdValue, maxTotalAmount]);
 
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-1">{data.fullDate}</p>
-          <p className="text-sm text-gray-600">
-            {t("thresholdDashboard.spent")}: {chartData?.currency || currency}{" "}
-            {data.totalAmount.toFixed(2)}
-          </p>
-          <p className="text-sm text-gray-600">
-            {t("thresholdDashboard.threshold")}: {chartData?.currency || currency}{" "}
-            {data.threshold.toFixed(2)}
-          </p>
-          <p
-            className={`text-sm font-medium ${
-              data.isExceeded ? "text-red-600" : "text-green-600"
-            }`}
-          >
-            {data.isExceeded
-              ? `${t("thresholdDashboard.exceeded")}: ${Math.abs(data.exceededAmount).toFixed(2)}`
-              : `${t("thresholdDashboard.underBudget")}: ${data.exceededAmount.toFixed(2)}`}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const displayCurrency = chartData?.currency || currency;
 
   return (
     <DashboardLayout activePage="threshold-dashboard">
@@ -260,14 +318,7 @@ export default function ThresholdDashboard() {
                   onChange={handleCategoryChange}
                   disabled={loadingCategories}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                  style={{
-                    backgroundImage:
-                      "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
-                    backgroundPosition: "right 0.5rem center",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "1.5em 1.5em",
-                    paddingRight: "2.5rem",
-                  }}
+                  style={SELECT_ARROW_STYLE}
                 >
                   <option value="">{t("thresholdDashboard.selectCategory")}</option>
                   {categoryOptions.map((opt) => (
@@ -333,16 +384,9 @@ export default function ThresholdDashboard() {
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                style={{
-                  backgroundImage:
-                    "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
-                  backgroundPosition: "right 0.5rem center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "1.5em 1.5em",
-                  paddingRight: "2.5rem",
-                }}
+                style={SELECT_ARROW_STYLE}
               >
-                {currencyOptions.map((opt) => (
+                {CURRENCY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
                   </option>
@@ -354,32 +398,10 @@ export default function ThresholdDashboard() {
 
         {/* Chart Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-16">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">{t("common.loading")}</span>
-            </div>
-          )}
-
-          {/* Error State */}
-          {error && !isLoading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <AlertTriangle className="w-12 h-12 text-yellow-500 mb-4" />
-              <p className="text-gray-600 text-center mb-4">{error}</p>
-              {notFound && (
-                <p className="text-sm text-gray-500 text-center">
-                  {t("thresholdDashboard.noThresholdConfigured")}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* No Category Selected */}
+          {isLoading && <LoadingState t={t} />}
+          {error && !isLoading && <ErrorState error={error} notFound={notFound} t={t} />}
           {!selectedCategoryId && !isLoading && !error && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <p className="text-gray-500">{t("thresholdDashboard.selectCategoryPrompt")}</p>
-            </div>
+            <EmptyState message={t("thresholdDashboard.selectCategoryPrompt")} />
           )}
 
           {/* Chart */}
@@ -405,23 +427,23 @@ export default function ThresholdDashboard() {
                     data={formattedChartData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
                     <XAxis
                       dataKey="date"
-                      tick={{ fill: "#6b7280", fontSize: 12 }}
-                      axisLine={{ stroke: "#d1d5db" }}
+                      tick={{ fill: CHART_COLORS.tick, fontSize: 12 }}
+                      axisLine={{ stroke: CHART_COLORS.axis }}
                     />
                     <YAxis
-                      tick={{ fill: "#6b7280", fontSize: 12 }}
-                      axisLine={{ stroke: "#d1d5db" }}
+                      tick={{ fill: CHART_COLORS.tick, fontSize: 12 }}
+                      axisLine={{ stroke: CHART_COLORS.axis }}
                       domain={[0, chartMaxValue]}
                       tickFormatter={(value) => `${value.toFixed(0)}`}
                     />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip currency={displayCurrency} t={t} />} />
                     {thresholdValue > 0 && (
                       <ReferenceLine
                         y={thresholdValue}
-                        stroke="#ef4444"
+                        stroke={CHART_COLORS.overBudget}
                         strokeDasharray="5 5"
                         strokeWidth={2}
                       />
@@ -429,7 +451,7 @@ export default function ThresholdDashboard() {
                     <Bar 
                       dataKey="baseAmount" 
                       stackId="spending"
-                      fill="#22c55e"
+                      fill={CHART_COLORS.withinBudget}
                     >
                       {formattedChartData.map((entry, index) => (
                         <Cell
@@ -441,46 +463,19 @@ export default function ThresholdDashboard() {
                     <Bar 
                       dataKey="overAmount" 
                       stackId="spending"
-                      fill="#ef4444"
+                      fill={CHART_COLORS.overBudget}
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Legend */}
-              <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-500 rounded"></div>
-                  <span className="text-sm text-gray-600">
-                    {thresholdValue > 0 ? t("thresholdDashboard.withinBudget") : t("thresholdDashboard.spent")}
-                  </span>
-                </div>
-                {thresholdValue > 0 && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-red-500 rounded"></div>
-                      <span className="text-sm text-gray-600">
-                        {t("thresholdDashboard.overBudget")}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 border-t-2 border-red-500 border-dashed"></div>
-                      <span className="text-sm text-gray-600">
-                        {t("thresholdDashboard.thresholdLine")}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
+              <ChartLegend thresholdValue={thresholdValue} t={t} />
             </>
           )}
 
-          {/* No Data */}
           {chartData && !isLoading && !error && formattedChartData.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <p className="text-gray-500">{t("thresholdDashboard.noDataAvailable")}</p>
-            </div>
+            <EmptyState message={t("thresholdDashboard.noDataAvailable")} />
           )}
         </div>
       </div>
