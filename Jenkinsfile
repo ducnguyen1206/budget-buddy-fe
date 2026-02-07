@@ -10,7 +10,7 @@ pipeline {
         // The path on your VPS where Nginx looks for files
         DEPLOY_PATH = "/var/www/budget-buddy"
         // Your VPS Username (e.g. ducnguy or root)
-        VPS_USER = "your_vps_username_here" 
+        VPS_USER = "ducnguyen" 
         // Your VPS IP (Internal IP usually works for Host access from Docker: 172.17.0.1)
         // OR use your Public IP if 172.17.0.1 fails (requires SSH port open)
         VPS_HOST = "172.17.0.1" 
