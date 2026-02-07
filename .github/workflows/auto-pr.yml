@@ -1,0 +1,38 @@
+name: Auto Create PR
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: develop
+          base: main
+          title: "Merge develop into main"
+          body: |
+            ## Auto-generated PR
+            
+            This PR was automatically created when changes were pushed to the `develop` branch.
+            
+            ### Changes
+            - Merging latest changes from `develop` into `main`
+            
+            Please review and merge when ready.
+          labels: |
+            auto-pr
+            develop
+          draft: false
