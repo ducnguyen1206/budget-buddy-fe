@@ -251,7 +251,9 @@
     "noBudgetsFound": "No budgets found",
     "noBudgetsMatching": "No budgets match your search",
     "confirmDelete": "Delete Budget",
-    "deleteWarning": "Are you sure you want to delete the budget for '{name}'? This action cannot be undone."
+    "deleteWarning": "Are you sure you want to delete the budget for '{name}'? This action cannot be undone.",
+    "remarks": "Remarks",
+    "remarksPlaceholder": "Enter remarks (optional)"
   },
   "savings": {
     "title": "Savings",

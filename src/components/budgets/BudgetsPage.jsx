@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { format, setDate, addMonths } from "date-fns";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Calendar } from "lucide-react";
 import { fetchBudgets, deleteBudget } from "../../services/budgetService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
+
+const STORAGE_KEY = "budgetsPage_filters";
 
 export default function BudgetsPage() {
   // Hooks
@@ -18,7 +21,41 @@ export default function BudgetsPage() {
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState("SGD");
+  // Load saved filters from localStorage or use defaults
+  const getInitialFilters = () => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse saved filters:", e);
+      }
+    }
+    // Default: 5th of current month to 5th of next month
+    const today = new Date();
+    const start = setDate(today, 5);
+    const end = setDate(addMonths(today, 1), 5);
+    return {
+      currency: "SGD",
+      startDate: format(start, "yyyy-MM-dd"),
+      endDate: format(end, "yyyy-MM-dd"),
+    };
+  };
+
+  const initialFilters = getInitialFilters();
+  const [selectedCurrency, setSelectedCurrency] = useState(initialFilters.currency);
+  const [startDate, setStartDate] = useState(initialFilters.startDate);
+  const [endDate, setEndDate] = useState(initialFilters.endDate);
+
+  // Save filters to localStorage when they change
+  useEffect(() => {
+    const filters = {
+      currency: selectedCurrency,
+      startDate,
+      endDate,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+  }, [selectedCurrency, startDate, endDate]);
 
   // Common currencies list
   const currencies = [
@@ -27,10 +64,10 @@ export default function BudgetsPage() {
     { code: "VND", label: "VND" },
   ];
 
-  // Fetch budgets from API on component mount or when currency changes
+  // Fetch budgets from API on component mount or when filters change
   useEffect(() => {
     loadBudgets();
-  }, [selectedCurrency]);
+  }, [selectedCurrency, startDate, endDate]);
 
   // Filter budgets based on search input
   const filteredBudgets = budgets.filter((budget) =>
@@ -62,7 +99,7 @@ export default function BudgetsPage() {
     setIsLoading(true);
     setError("");
 
-    const result = await fetchBudgets(selectedCurrency, t);
+    const result = await fetchBudgets(selectedCurrency, startDate, endDate, t);
 
     // Check if the result indicates a redirect should happen
     if (shouldRedirectToLogin(result)) {
@@ -261,6 +298,11 @@ export default function BudgetsPage() {
           {budget.currency}
         </div>
       </td>
+      <td className="px-3 sm:px-6 py-3 sm:py-4 hidden lg:table-cell">
+        <div className="text-sm sm:text-base text-gray-600 max-w-xs truncate" title={budget.remarks || "-"}>
+          {budget.remarks || "-"}
+        </div>
+      </td>
       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm sm:text-base font-medium">
         <div className="flex justify-center items-center gap-2 sm:gap-3">
           <button
@@ -308,7 +350,29 @@ export default function BudgetsPage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Start Date */}
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
             {/* Currency Filter */}
             <select
               value={selectedCurrency}
@@ -365,6 +429,9 @@ export default function BudgetsPage() {
                     <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       {t("budgets.currency")}
                     </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                      {t("budgets.remarks")}
+                    </th>
                     <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t("common.actions")}
                     </th>
@@ -375,7 +442,7 @@ export default function BudgetsPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredBudgets.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="px-6 py-12 text-center">
+                      <td colSpan="8" className="px-6 py-12 text-center">
                         {renderEmptyState()}
                       </td>
                     </tr>
@@ -426,6 +493,7 @@ export default function BudgetsPage() {
                               {selectedCurrency}
                             </div>
                           </td>
+                          <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap hidden lg:table-cell">-</td>
                           <td className="px-3 sm:px-6 py-4 sm:py-5 whitespace-nowrap">-</td>
                         </tr>
                       )}

@@ -4,14 +4,26 @@ import { fetchWithAuth, shouldRedirectToLogin } from "../utils/apiInterceptor";
 import { handleApiError, handleNetworkError } from "../utils/errorHandler";
 
 // Fetch budgets from API
-export const fetchBudgets = async (currency = "", t = null) => {
+export const fetchBudgets = async (currency = "", startDate = "", endDate = "", t = null) => {
   try {
     console.log("Fetching budgets from API...");
 
-    // Build URL with currency parameter if provided
+    // Build URL with query parameters
     let url = getApiUrl(API_ENDPOINTS.BUDGETS);
+    const params = new URLSearchParams();
+    
     if (currency) {
-      url += `?currency=${encodeURIComponent(currency)}`;
+      params.append("currency", currency);
+    }
+    if (startDate) {
+      params.append("startDate", startDate);
+    }
+    if (endDate) {
+      params.append("endDate", endDate);
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
     }
 
     const response = await fetchWithAuth(

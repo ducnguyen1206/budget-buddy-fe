@@ -22,6 +22,7 @@ export default function BudgetForm() {
     categoryId: "",
     amount: "",
     currency: "SGD",
+    remarks: "",
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,6 +92,7 @@ export default function BudgetForm() {
               ? String(budget.amount)
               : "",
           currency: budget.currency || "SGD",
+          remarks: budget.remarks || "",
         });
       } else {
         setLoadError(result.error || t("errors.fetchBudgetFailed"));
@@ -179,6 +181,7 @@ export default function BudgetForm() {
         categoryId: parseInt(formData.categoryId),
         amount: parseFloat(formData.amount),
         currency: formData.currency,
+        remarks: formData.remarks.trim() || null,
       };
 
       const result = isEditMode
@@ -354,6 +357,26 @@ export default function BudgetForm() {
               "select",
               currencyOptions
             )}
+
+            {/* Remarks Field */}
+            <div>
+              <label
+                htmlFor="remarks"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("budgets.remarks")}
+              </label>
+              <textarea
+                id="remarks"
+                name="remarks"
+                value={formData.remarks}
+                onChange={handleChange}
+                disabled={isLoadingBudget}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                placeholder={t("budgets.remarksPlaceholder")}
+              />
+            </div>
 
             {/* Submit Error */}
             {submitError && (

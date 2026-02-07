@@ -1,0 +1,19 @@
+{
+    "category": "Food",
+    "categoryId": 1,
+    "currency": "SGD",
+    "transactions": [
+        {
+            "date": "2026-01-23",
+            "totalAmount": -25.3,
+            "threshold": 20,
+            "exceededAmount": -5.3
+        },
+        {
+            "date": "2026-01-24",
+            "totalAmount": -15.3,
+            "threshold": 20,
+            "exceededAmount": 4.7
+        }
+    ]
+}

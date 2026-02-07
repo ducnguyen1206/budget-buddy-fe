@@ -251,7 +251,9 @@
     "noBudgetsFound": "Không tìm thấy ngân sách nào",
     "noBudgetsMatching": "Không có ngân sách nào phù hợp với tìm kiếm của bạn",
     "confirmDelete": "Xóa Ngân Sách",
-    "deleteWarning": "Bạn có chắc chắn muốn xóa ngân sách cho '{name}'? Hành động này không thể hoàn tác."
+    "deleteWarning": "Bạn có chắc chắn muốn xóa ngân sách cho '{name}'? Hành động này không thể hoàn tác.",
+    "remarks": "Ghi Chú",
+    "remarksPlaceholder": "Nhập ghi chú (tùy chọn)"
   },
   "savings": {
     "title": "Tiết Kiệm",
