@@ -230,4 +230,4 @@ A `Jenkinsfile` is included for automated deployment. Configure:
 
 ---
 
-**Built with React, Vite, and Tailwind CSS** Test
+**Built with React, Vite, and Tailwind CSS**
