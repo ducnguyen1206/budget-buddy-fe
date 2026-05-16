@@ -19,6 +19,37 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
     setIsLoggingOut(true);
     setShowLogoutConfirm(false);
 
+    // Timeout to ensure redirect happens even if API hangs
+    const timeoutId = setTimeout(() => {
+      performLocalLogout();
+    }, 5000);
+
+    const performLocalLogout = () => {
+      clearTimeout(timeoutId);
+      console.log("Performing local logout cleanup...");
+
+      // Stop token refresh
+      tokenRefreshManager.stop();
+
+      // Remove tokens immediately
+      removeTokens();
+      console.log("Tokens removed");
+
+      // Clear localStorage except user preferences
+      const keysToKeep = ['themeDashboard', 'languagePreference'];
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(key => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+      console.log("localStorage cleared");
+
+      // Use window.location.href for a hard redirect to ensure clean state
+      console.log("Redirecting to login page...");
+      window.location.href = "/login";
+    };
+
     try {
       console.log("User confirmed logout, calling API...");
       const result = await logoutUser(t);
@@ -30,16 +61,7 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      tokenRefreshManager.stop();
-      removeTokens();
-      const keysToKeep = ['themeDashboard', 'languagePreference'];
-      const allKeys = Object.keys(localStorage);
-      allKeys.forEach(key => {
-        if (!keysToKeep.includes(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-      navigate("/login");
+      performLocalLogout();
     }
   };
 
