@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { format, setDate, addMonths } from "date-fns";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { Search, Plus, Edit, Trash2, Calendar } from "lucide-react";
 import { fetchBudgets, deleteBudget } from "../../services/budgetService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
-const STORAGE_KEY = "budgetsPage_filters";
+const STORAGE_KEYS = {
+  currency: "budgetsPage_currency",
+  startDate: "budgetsPage_startDate",
+  endDate: "budgetsPage_endDate",
+};
 
 export default function BudgetsPage() {
   // Hooks
@@ -21,41 +24,33 @@ export default function BudgetsPage() {
   const [error, setError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  // Load saved filters from localStorage or use defaults
-  const getInitialFilters = () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse saved filters:", e);
-      }
-    }
-    // Default: 5th of current month to 5th of next month
-    const today = new Date();
-    const start = setDate(today, 5);
-    const end = setDate(addMonths(today, 1), 5);
-    return {
-      currency: "SGD",
-      startDate: format(start, "yyyy-MM-dd"),
-      endDate: format(end, "yyyy-MM-dd"),
-    };
+
+  // Load filters from localStorage (no defaults)
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    localStorage.getItem(STORAGE_KEYS.currency) || ""
+  );
+  const [startDate, setStartDate] = useState(
+    localStorage.getItem(STORAGE_KEYS.startDate) || ""
+  );
+  const [endDate, setEndDate] = useState(
+    localStorage.getItem(STORAGE_KEYS.endDate) || ""
+  );
+
+  // Save filters to localStorage only when user explicitly changes them
+  const handleCurrencyChange = (value) => {
+    setSelectedCurrency(value);
+    localStorage.setItem(STORAGE_KEYS.currency, value);
   };
 
-  const initialFilters = getInitialFilters();
-  const [selectedCurrency, setSelectedCurrency] = useState(initialFilters.currency);
-  const [startDate, setStartDate] = useState(initialFilters.startDate);
-  const [endDate, setEndDate] = useState(initialFilters.endDate);
+  const handleStartDateChange = (value) => {
+    setStartDate(value);
+    localStorage.setItem(STORAGE_KEYS.startDate, value);
+  };
 
-  // Save filters to localStorage when they change
-  useEffect(() => {
-    const filters = {
-      currency: selectedCurrency,
-      startDate,
-      endDate,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
-  }, [selectedCurrency, startDate, endDate]);
+  const handleEndDateChange = (value) => {
+    setEndDate(value);
+    localStorage.setItem(STORAGE_KEYS.endDate, value);
+  };
 
   // Common currencies list
   const currencies = [
@@ -357,7 +352,7 @@ export default function BudgetsPage() {
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(e) => handleStartDateChange(e.target.value)}
                 className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -368,7 +363,7 @@ export default function BudgetsPage() {
               <input
                 type="date"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={(e) => handleEndDateChange(e.target.value)}
                 className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -376,7 +371,7 @@ export default function BudgetsPage() {
             {/* Currency Filter */}
             <select
               value={selectedCurrency}
-              onChange={(e) => setSelectedCurrency(e.target.value)}
+              onChange={(e) => handleCurrencyChange(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             >
               {currencies.map((currency) => (
