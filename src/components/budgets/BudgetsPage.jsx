@@ -69,9 +69,9 @@ export default function BudgetsPage() {
     budget.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calculate totals when currency is selected
+  // Calculate totals from filtered budgets
   const calculateTotals = () => {
-    if (!selectedCurrency || filteredBudgets.length === 0) {
+    if (filteredBudgets.length === 0) {
       return null;
     }
 
