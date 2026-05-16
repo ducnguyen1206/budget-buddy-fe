@@ -379,15 +379,7 @@ const TransactionForm = () => {
       ...prev,
       name: "",
       amount: "",
-      categoryId: "",
-      targetCategoryId: "",
-      accountId: "",
-      fromAccountId: "",
-      toAccountId: "",
-      currency: "",
       remarks: "",
-      type: "EXPENSE",
-      date: prev.date,
     }));
     setValidationErrors({});
   };
