@@ -31,6 +31,7 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
 
   const handleLogoutConfirm = async () => {
     setIsLoggingOut(true);
+    setShowLogoutConfirm(false);
 
     try {
       console.log("User confirmed logout, calling API...");
@@ -53,6 +54,15 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
       tokenRefreshManager.stop();
       // Remove tokens
       removeTokens();
+      // Clear app-specific localStorage except cookies/cache
+      // Keep only user preferences if needed
+      const keysToKeep = ['themeDashboard', 'languagePreference']; // Adjust based on what should persist
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(key => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
       // Redirect to login page
       navigate("/login");
     }
@@ -187,6 +197,7 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
       {/* Sign Out Button */}
       <div className="p-4 border-t border-blue-100">
         <button
+          type="button"
           onClick={handleLogoutClick}
           className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors"
         >
@@ -205,6 +216,7 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
                 {t("auth.confirmLogout")}
               </h3>
               <button
+                type="button"
                 onClick={handleLogoutCancel}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
@@ -221,12 +233,14 @@ export default function DashboardSidebar({ activePage = "overview", onClose }) {
               {/* Action Buttons */}
               <div className="flex space-x-3 justify-end">
                 <button
+                  type="button"
                   onClick={handleLogoutCancel}
                   className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
                 >
                   {t("auth.cancel")}
                 </button>
                 <button
+                  type="button"
                   onClick={handleLogoutConfirm}
                   disabled={isLoggingOut}
                   className={`px-4 py-2 rounded-lg transition-colors font-medium ${
