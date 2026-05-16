@@ -397,6 +397,7 @@ export const logoutUser = async (t = null) => {
       {
         method: "POST",
         headers: getApiHeaders(true), // Include auth token for logout API
+        credentials: "include", // Include refresh token cookie
       },
       t
     );

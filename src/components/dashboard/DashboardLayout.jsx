@@ -35,6 +35,14 @@ export default function DashboardLayout({ children, activePage = "overview" }) {
       removeTokens();
       console.log("Tokens removed");
 
+      // Clear all cookies to remove refresh token and any other auth cookies
+      document.cookie.split(";").forEach(cookie => {
+        const cookieName = cookie.split("=")[0].trim();
+        // Delete by setting to empty with past date
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      });
+      console.log("Cookies cleared");
+
       // Clear localStorage except user preferences
       const keysToKeep = ['themeDashboard', 'languagePreference'];
       const allKeys = Object.keys(localStorage);
