@@ -42,14 +42,20 @@ pipeline {
                 sshagent(['vps-ssh-key']) {
                     // 1. Scan the host key to avoid "unknown host" prompt
                     sh "mkdir -p ~/.ssh && ssh-keyscan -H ${VPS_HOST} >> ~/.ssh/known_hosts"
-                    
+
                     // 2. Clear old files (Optional, but cleaner)
                     // We use SSH to run commands on the remote server
                     sh "ssh ${VPS_USER}@${VPS_HOST} 'rm -rf ${DEPLOY_PATH}/*'"
-                    
+
                     // 3. Copy new files via SCP
                     // -r = recursive (copy folder)
                     sh "scp -r dist/* ${VPS_USER}@${VPS_HOST}:${DEPLOY_PATH}"
+
+                    // 4. Clear Nginx cache (if proxy cache is enabled)
+                    sh "ssh ${VPS_USER}@${VPS_HOST} 'sudo rm -rf /var/cache/nginx/* 2>/dev/null || true'"
+
+                    // 5. Reload Nginx to clear any in-memory cache
+                    sh "ssh ${VPS_USER}@${VPS_HOST} 'sudo systemctl reload nginx || sudo service nginx reload'"
                 }
             }
         }
