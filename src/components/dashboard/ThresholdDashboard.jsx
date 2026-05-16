@@ -20,7 +20,13 @@ import { fetchThresholdTransactions } from "../../services/thresholdService";
 import { fetchCategories } from "../../services/categoryService";
 import { shouldRedirectToLogin } from "../../utils/apiInterceptor";
 
-const STORAGE_KEY = "thresholdDashboard_defaultCategoryId";
+const STORAGE_KEYS = {
+  defaultCategoryId: "thresholdDashboard_defaultCategoryId",
+  selectedCategoryId: "thresholdDashboard_selectedCategoryId",
+  startDate: "thresholdDashboard_startDate",
+  endDate: "thresholdDashboard_endDate",
+  currency: "thresholdDashboard_currency",
+};
 
 const CURRENCY_OPTIONS = [
   { value: "SGD", label: "SGD" },
@@ -131,11 +137,19 @@ export default function ThresholdDashboard() {
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    localStorage.getItem(STORAGE_KEYS.selectedCategoryId) || ""
+  );
   const [isDefaultCategory, setIsDefaultCategory] = useState(false);
-  const [startDate, setStartDate] = useState(defaultRange.startDate);
-  const [endDate, setEndDate] = useState(defaultRange.endDate);
-  const [currency, setCurrency] = useState("SGD");
+  const [startDate, setStartDate] = useState(
+    localStorage.getItem(STORAGE_KEYS.startDate) || defaultRange.startDate
+  );
+  const [endDate, setEndDate] = useState(
+    localStorage.getItem(STORAGE_KEYS.endDate) || defaultRange.endDate
+  );
+  const [currency, setCurrency] = useState(
+    localStorage.getItem(STORAGE_KEYS.currency) || "SGD"
+  );
 
   const [chartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -164,14 +178,21 @@ export default function ThresholdDashboard() {
 
       if (result.success) {
         setCategories(result.data || []);
-        // Load saved default category or use first category
-        const savedCategoryId = localStorage.getItem(STORAGE_KEY);
-        if (savedCategoryId && result.data?.some(cat => cat.id.toString() === savedCategoryId)) {
-          setSelectedCategoryId(savedCategoryId);
-          setIsDefaultCategory(true);
+        // Check if current selection is still valid
+        const currentCategoryId = localStorage.getItem(STORAGE_KEYS.selectedCategoryId);
+        if (currentCategoryId && result.data?.some(cat => cat.id.toString() === currentCategoryId)) {
+          // Selection is still valid, keep it
+          setSelectedCategoryId(currentCategoryId);
         } else if (result.data && result.data.length > 0) {
-          setSelectedCategoryId(result.data[0].id.toString());
+          // No saved selection or it's invalid, use first category
+          const firstCategoryId = result.data[0].id.toString();
+          setSelectedCategoryId(firstCategoryId);
+          localStorage.setItem(STORAGE_KEYS.selectedCategoryId, firstCategoryId);
         }
+
+        // Check if this is marked as default
+        const defaultCategoryId = localStorage.getItem(STORAGE_KEYS.defaultCategoryId);
+        setIsDefaultCategory(defaultCategoryId === (currentCategoryId || localStorage.getItem(STORAGE_KEYS.selectedCategoryId)));
       }
     } catch (error) {
       console.error("Error loading categories:", error);
@@ -229,20 +250,21 @@ export default function ThresholdDashboard() {
   const handleCategoryChange = (e) => {
     const newCategoryId = e.target.value;
     setSelectedCategoryId(newCategoryId);
+    localStorage.setItem(STORAGE_KEYS.selectedCategoryId, newCategoryId);
     // Check if this is the saved default category
-    const savedCategoryId = localStorage.getItem(STORAGE_KEY);
-    setIsDefaultCategory(newCategoryId === savedCategoryId);
+    const defaultCategoryId = localStorage.getItem(STORAGE_KEYS.defaultCategoryId);
+    setIsDefaultCategory(newCategoryId === defaultCategoryId);
   };
 
   // Toggle default category
   const toggleDefaultCategory = () => {
     if (isDefaultCategory) {
       // Remove default
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEYS.defaultCategoryId);
       setIsDefaultCategory(false);
     } else {
       // Set as default
-      localStorage.setItem(STORAGE_KEY, selectedCategoryId);
+      localStorage.setItem(STORAGE_KEYS.defaultCategoryId, selectedCategoryId);
       setIsDefaultCategory(true);
     }
   };
@@ -353,7 +375,10 @@ export default function ThresholdDashboard() {
                 <input
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    localStorage.setItem(STORAGE_KEYS.startDate, e.target.value);
+                  }}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -369,7 +394,10 @@ export default function ThresholdDashboard() {
                 <input
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    localStorage.setItem(STORAGE_KEYS.endDate, e.target.value);
+                  }}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -382,7 +410,10 @@ export default function ThresholdDashboard() {
               </label>
               <select
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
+                onChange={(e) => {
+                  setCurrency(e.target.value);
+                  localStorage.setItem(STORAGE_KEYS.currency, e.target.value);
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
                 style={SELECT_ARROW_STYLE}
               >
