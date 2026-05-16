@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  LayoutDashboard,
   Building2,
   Coins,
   PiggyBank,
@@ -15,11 +14,9 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { removeTokens } from "../../utils/tokenManager";
-import tokenRefreshManager from "../../utils/tokenRefreshManager";
-import { logoutUser } from "../../services/authService";
 
 export default function DashboardSidebar({ activePage = "overview", onClose, onLogout }) {
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const navigationItems = [
