@@ -492,6 +492,8 @@
     "selectCategoryPrompt": "Vui lòng chọn danh mục để xem dữ liệu chi tiêu",
     "noDataAvailable": "Không có dữ liệu chi tiêu cho khoảng thời gian đã chọn",
     "setAsDefault": "Đặt làm danh mục mặc định",
-    "removeDefault": "Bỏ danh mục mặc định"
+    "removeDefault": "Bỏ danh mục mặc định",
+    "totalExceeded": "Tổng số vượt quá",
+    "totalSaved": "Tổng số tiết kiệm"
   }
 }

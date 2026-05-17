@@ -297,6 +297,23 @@ export default function ThresholdDashboard() {
 
   const thresholdValue = chartData?.transactions?.[0]?.threshold || 0;
 
+  // Calculate cumulative exceeded/savings amount
+  // If one day is over budget, it carries forward. If next day is under, it offsets the overage.
+  const { cumulativeExceeded, cumulativeSaved } = useMemo(() => {
+    if (!formattedChartData.length) return { cumulativeExceeded: 0, cumulativeSaved: 0 };
+
+    let runningBalance = 0;
+    formattedChartData.forEach((item) => {
+      const dayDifference = item.threshold - item.totalAmount;
+      runningBalance += dayDifference;
+    });
+
+    return {
+      cumulativeExceeded: Math.max(0, -runningBalance),
+      cumulativeSaved: Math.max(0, runningBalance),
+    };
+  }, [formattedChartData]);
+
   // Calculate max total amount for Y-axis when threshold is 0
   const maxTotalAmount = useMemo(() => {
     if (!formattedChartData.length) return 0;
@@ -450,6 +467,42 @@ export default function ThresholdDashboard() {
                   </p>
                 )}
               </div>
+
+              {/* Cumulative Exceeded/Savings Summary Card */}
+              {(cumulativeExceeded > 0 || cumulativeSaved > 0) && (
+                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {cumulativeExceeded > 0 && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            {t("thresholdDashboard.totalExceeded")}
+                          </p>
+                          <p className="text-2xl font-bold text-red-600">
+                            {chartData.currency} {cumulativeExceeded.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {cumulativeSaved > 0 && (
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Star className="w-5 h-5 text-green-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            {t("thresholdDashboard.totalSaved")}
+                          </p>
+                          <p className="text-2xl font-bold text-green-600">
+                            {chartData.currency} {cumulativeSaved.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Bar Chart */}
               <div className="h-[400px] w-full">

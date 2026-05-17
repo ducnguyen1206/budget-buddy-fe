@@ -492,6 +492,8 @@
     "selectCategoryPrompt": "Please select a category to view spending data",
     "noDataAvailable": "No spending data available for the selected period",
     "setAsDefault": "Set as default category",
-    "removeDefault": "Remove as default category"
+    "removeDefault": "Remove as default category",
+    "totalExceeded": "Total Exceeded",
+    "totalSaved": "Total Saved"
   }
 }
