@@ -433,7 +433,7 @@ const TransactionForm = () => {
     if (!isEditMode && stagedTransactions.length > 0) {
       const transactionsToCreate = [...stagedTransactions];
 
-      if (!isFormEffectivelyEmpty()) {
+      if (!isFormEffectivelyEmpty() && editingStagedIndex === null) {
         if (!validateForm()) {
           return;
         }
